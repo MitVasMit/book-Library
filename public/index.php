@@ -2,7 +2,18 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
-include('../includes/header.php'); ?>
+
+// Add these lines to check login status
+session_start();
+$isLoggedIn = isset($_SESSION['user']);
+
+// Add this script tag to pass the login status to JavaScript
+?>
+<script>
+  var userIsLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+</script>
+
+<?php include('../includes/header.php'); ?>
 
 
 
@@ -27,7 +38,7 @@ include('../includes/header.php'); ?>
             <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
         </div>
 
-        <div class="swiper-wrapper mb-10 hidden" id="bestseller-list"></div>
+        <div class="swiper-wrapper mb-10" id="bestseller-list"></div>
 
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
@@ -68,6 +79,41 @@ include('../includes/header.php'); ?>
             <div class="page right-page">
                 <h2>Book Details</h2>
                 <p id="bookDetails">This is the right page of the open book.</p>
+                
+                <!-- Rating Section -->
+                <div class="rating-section mt-6">
+                    <h3 class="text-lg font-semibold mb-3">Rate this book</h3>
+                    
+                    <!-- Average Rating Display -->
+                    <div class="avg-rating mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Average Rating:</span>
+                            <div class="flex items-center gap-1">
+                                <span id="avgRatingStars" class="text-yellow-400"></span>
+                                <span id="avgRatingValue" class="text-sm font-medium">0.0</span>
+                                <span id="totalRatings" class="text-xs text-gray-500">(0 ratings)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Rating -->
+                    <div class="user-rating mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Your Rating:</p>
+                        <div class="flex items-center gap-1">
+                            <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="1">★</button>
+                            <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="2">★</button>
+                            <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="3">★</button>
+                            <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="4">★</button>
+                            <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="5">★</button>
+                        </div>
+                        <p id="ratingMessage" class="text-sm mt-2"></p>
+                    </div>
+                    
+                    <!-- Login Prompt -->
+                    <div id="loginPrompt" class="hidden">
+                        <p class="text-sm text-gray-600">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to rate this book.</p>
+                    </div>
+                </div>
             </div>
             <div class="cover">
                 <h2 id="coverTitle">Cover</h2>

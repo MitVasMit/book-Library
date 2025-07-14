@@ -2,7 +2,7 @@
 session_start();
 
 //for every page that requires login
-function rquireLogin()
+function requireLogin()
 {
     if (!isset($_SESSION['user'])) {
         header('Location: ../public/login.php');

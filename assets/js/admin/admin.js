@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const toggleBtn = document.getElementById("toggleSidebar");
   const sidebarTextItems = document.querySelectorAll(".sidebar-text");
   const sidebarTitle = document.getElementById("sidebarTitle");
-  const navLinks = sidebar.querySelectorAll("nav a");
+  const navLinks = sidebar ? sidebar.querySelectorAll("nav a") : [];
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "sidebarExpanded=" + (isExpanded ? "true" : "false") + "; path=/";
   }
 
-  toggleBtn.addEventListener("click", () => {
+  if (toggleBtn) toggleBtn.addEventListener("click", () => {
     isExpanded = !isExpanded;
     updateSidebar();
   });

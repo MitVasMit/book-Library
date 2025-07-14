@@ -4,7 +4,7 @@ class Book extends DB
 {
     public function searchBooks(string $query): array
     {
-        $stmt = $this->instance->prepare("SELECT title, author, cover_image FROM books WHERE title LIKE :search AND deleted = 0");
+        $stmt = $this->instance->prepare("SELECT title, author, cover_image, rating FROM books WHERE title LIKE :search AND deleted = 0");
         $stmt->execute(['search' => '%' . $query . '%']);
         return $stmt->fetchAll();
     }
