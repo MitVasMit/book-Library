@@ -92,6 +92,21 @@ CREATE TABLE IF NOT EXISTS reviews (
   CONSTRAINT fk_review_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- OPENLIBRARY RATINGS table for storing user ratings of OpenLibrary books
+CREATE TABLE IF NOT EXISTS openlibrary_ratings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  book_key VARCHAR(255) NOT NULL,
+  book_title VARCHAR(255) NOT NULL,
+  book_author VARCHAR(255) NOT NULL,
+  rating TINYINT UNSIGNED NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_rating_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  UNIQUE KEY unique_user_book (user_id, book_key)
+);
+
 -- populating 10 books for start
 INSERT INTO books (title, author, description, published_year, pages, rating, cover_image, category_id)
 VALUES
