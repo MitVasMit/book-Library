@@ -10,42 +10,38 @@ $isLoggedIn = isset($_SESSION['user']);
 // Add this script tag to pass the login status to JavaScript
 ?>
 <script>
-  var userIsLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+    var userIsLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 </script>
 
 <?php include('../includes/header.php'); ?>
 
-
-
 <?php if (!empty($_SESSION['errors']['auth'])): ?>hi
-    hi
-    <div id="flash-message" class="relative bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center max-w-xl mx-auto my-6 transition-opacity duration-500 ease-in-out">
-        <span><?= $_SESSION['errors']['auth'];
-                unset($_SESSION['errors']['auth']); ?></span>
-        <button class="absolute top-0 right-0 px-3 py-2 text-red-700 hover:text-red-900" onclick="dismissFlash()">
-            &times;
-        </button>
-    </div>
+hi
+<div id="flash-message" class="relative bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center max-w-xl mx-auto my-6 transition-opacity duration-500 ease-in-out">
+    <span><?= $_SESSION['errors']['auth'];
+            unset($_SESSION['errors']['auth']); ?></span>
+    <button class="absolute top-0 right-0 px-3 py-2 text-red-700 hover:text-red-900" onclick="dismissFlash()">
+        &times;
+    </button>
+</div>
 <?php endif; ?>
 
-<div class="max-w-6xl mx-auto py-8">
+<div class="max-w-6xl mx-auto">
     <h2 class="text-2xl font-bold mb-4 text-center">Our Bestsellers:</h2>
 
-    <div class="m-8 swiper bestseller-swiper">
-
-
+    <div class="relative">
         <div id="bestseller-loader" class="flex justify-center items-center my-12">
             <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-
-        <div class="swiper-wrapper mb-10" id="bestseller-list"></div>
-
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
+        <div class="swiper bestseller-swiper">
+            <div class="swiper-wrapper" id="bestseller-list"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
     </div>
 </div>
-<div class="sticky top-[92px] max-w z-20 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md shadow px-4 py-2 dark:border-gray-700">
+<div class="sticky top-[92px] max-w z-20 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md shadow px-4 py-2 mt-5 dark:border-gray-700">
     <input
         type="text"
         id="searchInput"
@@ -59,7 +55,7 @@ $isLoggedIn = isset($_SESSION['user']);
             <div id="book-list-loader" class="flex justify-center items-center my-12 hidden">
                 <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
             </div>
-            
+
             <div id="book-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 flex-1"></div>
             <div id="pagination" class="flex justify-center items-center mt-10 mb-6"></div>
         </div>
@@ -79,11 +75,11 @@ $isLoggedIn = isset($_SESSION['user']);
             <div class="page right-page">
                 <h2>Book Details</h2>
                 <p id="bookDetails">This is the right page of the open book.</p>
-                
+
                 <!-- Rating Section -->
                 <div class="rating-section mt-6">
                     <h3 class="text-lg font-semibold mb-3">Rate this book</h3>
-                    
+
                     <!-- Average Rating Display -->
                     <div class="avg-rating mb-4">
                         <div class="flex items-center gap-2">
@@ -95,7 +91,7 @@ $isLoggedIn = isset($_SESSION['user']);
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- User Rating -->
                     <div class="user-rating mb-4">
                         <p class="text-sm text-gray-600 mb-2">Your Rating:</p>
@@ -108,7 +104,7 @@ $isLoggedIn = isset($_SESSION['user']);
                         </div>
                         <p id="ratingMessage" class="text-sm mt-2"></p>
                     </div>
-                    
+
                     <!-- Login Prompt -->
                     <div id="loginPrompt" class="hidden">
                         <p class="text-sm text-gray-600">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to rate this book.</p>

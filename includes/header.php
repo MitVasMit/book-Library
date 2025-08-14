@@ -22,6 +22,8 @@ $user = $_SESSION['user'] ?? null;
     <link rel="stylesheet" href="../assets/css/admin-nav.css" />
     <!-- Book Modal CSS -->
     <link rel="stylesheet" href="../assets/css/book-modal.css" />
+    <!-- Carousel CSS -->
+    <link rel="stylesheet" href="../assets/css/carousel.css" />
 
 
 </head>

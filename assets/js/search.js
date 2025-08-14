@@ -20,8 +20,14 @@ function fetchBooks(query) {
   loader.classList.remove("hidden");
   bookList.innerHTML = "";
 
+  console.log('Searching for:', query);
+  console.log('Search URL:', "/book-Library/actions/book_search.php?q=" + encodeURIComponent(query));
+
   fetch("/book-Library/actions/book_search.php?q=" + encodeURIComponent(query))
     .then((response) => {
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -67,7 +73,7 @@ function fetchBooks(query) {
         });
 
         // Create rating badge for search results
-        const rating = book.rating_average || book.rating || book.ratings_average || book.ratings?.average || 0;
+        const rating = parseFloat(book.rating) || 0;
         const ratingCount = book.rating_count || book.ratings_count || book.ratings?.count || 0;
         console.log('Search book data:', book);
         console.log('Rating for search result:', rating, 'Count:', ratingCount);
@@ -123,8 +129,14 @@ function fetchBooks(query) {
       });
     })
     .catch((err) => {
-      bookList.innerHTML = `<p class="text-red-600">Search error occurred.</p>`;
-      console.error(err);
+      console.error('Search fetch error:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      
+      bookList.innerHTML = `<p class="text-red-600">Search error occurred: ${err.message}</p>`;
     })
     .finally(() => {
       loader.classList.add("hidden");

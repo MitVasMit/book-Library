@@ -2,8 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const bestsellerList = document.getElementById("bestseller-list");
   const bestsellerLoader = document.getElementById("bestseller-loader");
 
-  bestsellerLoader.classList.remove("hidden");
-  bestsellerList.classList.add("hidden");
+  // Check if loader exists before using it
+  if (bestsellerLoader) {
+    bestsellerLoader.classList.remove("hidden");
+  }
+  if (bestsellerList) {
+    bestsellerList.classList.add("hidden");
+  }
 
   fetch("https://openlibrary.org/search.json?q=bestsellers&limit=9")
     .then((res) => res.json())
@@ -54,36 +59,56 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
 
-      bestsellerLoader.classList.add("hidden");
-      bestsellerList.classList.remove("hidden");
+      // Hide loader and show list if they exist
+      if (bestsellerLoader) {
+        bestsellerLoader.classList.add("hidden");
+      }
+      if (bestsellerList) {
+        bestsellerList.classList.remove("hidden");
+      }
 
-      // swiper for the carousel
-      new Swiper(".bestseller-swiper", {
-  slidesPerView: 3,
-  spaceBetween: 20,
-  loop: true, // Enable infinite loop
-  autoplay: {
-    delay: 3000, // Time between slides in ms
-    disableOnInteraction: false, // Keeps autoplay going after user interaction
-  },
-  navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
-  },
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true,
-  },
-  breakpoints: {
-    640: { slidesPerView: 1 },
-    768: { slidesPerView: 2 },
-    1024: { slidesPerView: 3 },
-  },
-});
+      // Initialize Swiper
+      console.log("Initializing Swiper...");
+      const swiper = new Swiper(".bestseller-swiper", {
+        slidesPerView: 3,
+        spaceBetween: 40,
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        breakpoints: {
+          640: { slidesPerView: 1 },
+          768: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 },
+        },
+        on: {
+          init: function() {
+            console.log("Swiper initialized successfully!");
+          },
+          init: function() {
+            console.log("Swiper initialized successfully!");
+          }
+        }
+      });
+      
+      console.log("Swiper instance:", swiper);
     })
     .catch((err) => {
-      bestsellerLoader.classList.add("hidden");
-      bestsellerList.innerHTML = `<p class="text-red-600 mx-auto">Failed to load bestsellers.</p>`;
-      console.error(err);
+      if (bestsellerLoader) {
+        bestsellerLoader.classList.add("hidden");
+      }
+      if (bestsellerList) {
+        bestsellerList.innerHTML = `<p class="text-red-600 mx-auto">Failed to load bestsellers.</p>`;
+      }
+      console.error("Error loading bestsellers:", err);
     });
 });
