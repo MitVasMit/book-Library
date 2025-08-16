@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = [];
 
-    // simple validations
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = "Please enter a valid email address.";
     }
@@ -38,14 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-
-    // return with errors
     $_SESSION['errors'] = $errors;
     $_SESSION['old'] = ['email' => $email];
     header('Location: ../public/login.php');
     exit;
 } else {
-    // if not POST method, back to login.php
     header('Location: ../public/login.php');
     exit;
 }

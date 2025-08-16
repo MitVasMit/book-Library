@@ -47,19 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Auto-focus logic for login and register pages
   const emailInput = document.getElementById("email");
   const nameInput = document.getElementById("name");
   
-  // Focus on email field for login page
   if (emailInput && !nameInput) {
-    // This is the login page (has email but no name field)
     emailInput.focus();
   }
   
-  // Focus on name field for register page
   if (nameInput) {
-    // This is the register page (has name field)
     nameInput.focus();
   }
 });
@@ -70,7 +65,6 @@ function dismissFlash() {
     flash.style.transition = "opacity 1s ease";
     flash.style.opacity = "0";
 
-    // Remove from DOM after the fade-out transition completes (1s)
     setTimeout(() => {
       flash.remove();
     }, 1000);

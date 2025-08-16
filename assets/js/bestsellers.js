@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const bestsellerList = document.getElementById("bestseller-list");
   const bestsellerLoader = document.getElementById("bestseller-loader");
 
-  // Check if loader exists before using it
+  // check if loader exists before using it
   if (bestsellerLoader) {
     bestsellerLoader.classList.remove("hidden");
   }
@@ -41,10 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         bestsellerList.appendChild(slide);
         
-        // Add click event listener to make the book clickable
         const bookCard = slide.querySelector('div');
         bookCard.addEventListener('click', () => {
-          // Convert bestseller data format to match modal expectations
           const bookData = {
             title: book.title,
             authors: [{ name: book.author_name?.[0] || "Unknown Author" }],
@@ -52,14 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
             key: book.key || null
           };
           
-          // Open the modal with the book data
           if (typeof window.openBookModal === 'function') {
             window.openBookModal(bookData);
           }
         });
       });
 
-      // Hide loader and show list if they exist
       if (bestsellerLoader) {
         bestsellerLoader.classList.add("hidden");
       }
@@ -67,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bestsellerList.classList.remove("hidden");
       }
 
-      // Initialize Swiper
       console.log("Initializing Swiper...");
       const swiper = new Swiper(".bestseller-swiper", {
         slidesPerView: 3,

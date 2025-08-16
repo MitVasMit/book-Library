@@ -24,7 +24,10 @@ $user = $_SESSION['user'] ?? null;
     <link rel="stylesheet" href="../assets/css/book-modal.css" />
     <!-- Carousel CSS -->
     <link rel="stylesheet" href="../assets/css/carousel.css" />
-
+    <!-- Filters CSS -->
+    <link rel="stylesheet" href="../assets/css/filters.css" />
+    <!-- Filters JavaScript -->
+    <script src="../assets/js/filters.js" defer></script>
 
 </head>
 

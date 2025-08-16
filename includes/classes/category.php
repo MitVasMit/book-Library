@@ -42,7 +42,7 @@ class Category extends DB
         $count = $stmt->fetchColumn();
         
         if ($count > 0) {
-            return false; // Cannot delete category that has books
+            return false; // cannot delete category that has books
         }
         
         $sql = "DELETE FROM categories WHERE id = :id";

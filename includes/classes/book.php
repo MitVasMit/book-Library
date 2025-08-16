@@ -4,7 +4,7 @@ class Book extends DB
 {
     public function searchBooks(string $query): array
     {
-        // Split query into words for more precise matching
+        // split query into words for more precise matching
         $queryWords = explode(' ', trim($query));
         $queryWords = array_filter($queryWords, function($word) { return strlen($word) > 0; });
         
@@ -12,14 +12,14 @@ class Book extends DB
             return [];
         }
         
-        // Build a more precise search query
+        // build a more precise search query
         $conditions = [];
         $params = [];
         
         foreach ($queryWords as $index => $word) {
             $paramName = "word" . $index;
             $conditions[] = "(title LIKE :{$paramName} OR author LIKE :{$paramName})";
-            $params[$paramName] = $word . '%'; // Only match beginning of words
+            $params[$paramName] = $word . '%';
         }
         
         $sql = "SELECT title, author, cover_image, rating FROM books WHERE (" . implode(' OR ', $conditions) . ") AND deleted = 0";

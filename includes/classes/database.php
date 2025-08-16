@@ -17,4 +17,9 @@ abstract class DB
             die();
         }
     }
+
+    public function getConnection()
+    {
+        return $this->instance;
+    }
 }

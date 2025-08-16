@@ -18,7 +18,6 @@ try {
     $avgRating = $ratingModel->getAverageRating($bookKey);
     $userRating = null;
     
-    // Get user's rating if logged in
     if (isset($_SESSION['user_id'])) {
         $userRating = $ratingModel->getUserRating($_SESSION['user_id'], $bookKey);
     }

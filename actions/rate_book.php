@@ -3,7 +3,7 @@ header('Content-Type: application/json');
 
 require_once '../includes/autoload.php';
 require_once '../includes/auth.php';
-requireLogin(); // This will block/redirect if not logged in
+requireLogin(); 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -28,7 +28,6 @@ try {
     $success = $ratingModel->saveRating($_SESSION['user_id'], $bookKey, $bookTitle, $bookAuthor, $rating);
     
     if ($success) {
-        // Get updated average rating
         $avgRating = $ratingModel->getAverageRating($bookKey);
         echo json_encode([
             'success' => true,
