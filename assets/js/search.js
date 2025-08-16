@@ -23,7 +23,8 @@ function fetchBooks(query) {
   console.log('Searching for:', query);
   console.log('Search URL:', "/book-Library/actions/book_search.php?q=" + encodeURIComponent(query));
 
-  fetch("/book-Library/actions/book_search.php?q=" + encodeURIComponent(query))
+  // Make both API calls in parallel for better performance
+  const searchPromise = fetch("/book-Library/actions/book_search.php?q=" + encodeURIComponent(query))
     .then((response) => {
       console.log('Response status:', response.status);
       console.log('Response headers:', response.headers);
@@ -37,17 +38,83 @@ function fetchBooks(query) {
       console.log('Search response:', data);
       
       if (data.error) {
-        bookList.innerHTML = `<p class="text-red-600">Search error: ${data.error}</p>`;
-        return;
+        throw new Error(data.error);
       }
       
-      if (data.length === 0) {
+      return data || [];
+    });
+
+  const bestsellersPromise = fetch("https://openlibrary.org/search.json?q=bestsellers&limit=20") // Reduced from 50 to 20
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((bestsellersData) => {
+      console.log('Bestsellers data:', bestsellersData);
+      
+      if (!bestsellersData || !bestsellersData.docs) {
+        return [];
+      }
+      
+      // Filter bestsellers that match the search query
+      const matchingBestsellers = bestsellersData.docs.filter(book => {
+        const title = book.title?.toLowerCase() || '';
+        const author = book.author_name?.[0]?.toLowerCase() || '';
+        const queryLower = query.toLowerCase();
+        
+        // Split query into words for more precise matching
+        const queryWords = queryLower.split(' ').filter(word => word.length > 0);
+        
+        // Check if any query word matches the beginning of title or author
+        return queryWords.some(word => 
+          title.startsWith(word) || 
+          author.startsWith(word) ||
+          title.includes(' ' + word) || // Word after a space
+          author.includes(' ' + word)   // Word after a space
+        );
+      });
+
+      // Convert bestsellers to match our search result format
+      return matchingBestsellers.map(book => ({
+        title: book.title,
+        author: book.author_name?.[0] || 'Unknown Author',
+        cover_id: book.cover_i,
+        cover_image: null,
+        source: 'Bestsellers',
+        rating: 0,
+        key: book.key || null
+      }));
+    })
+    .catch((err) => {
+      console.error('Bestsellers fetch error:', err);
+      return []; // Return empty array if bestsellers fail
+    });
+
+  // Wait for both promises to complete
+  Promise.all([searchPromise, bestsellersPromise])
+    .then(([searchResults, bestsellersResults]) => {
+      // Combine all results
+      const allResults = [...searchResults, ...bestsellersResults];
+      
+      console.log('Combined results:', allResults);
+
+      // Remove duplicates based on title and author
+      const uniqueResults = allResults.filter((book, index, self) => 
+        index === self.findIndex(b => 
+          b.title === book.title && b.author === book.author
+        )
+      );
+
+      // Display all results
+      if (uniqueResults.length === 0) {
         bookList.innerHTML =
           '<p class="text-center col-span-full text-gray-500">No results found.</p>';
         return;
       }
 
-      data.forEach((book) => {
+      uniqueResults.forEach((book) => {
         const item = document.createElement("div");
         item.className =
           "bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
@@ -86,10 +153,18 @@ function fetchBooks(query) {
           </div>
         ` : '';
 
+        // Add source indicator for bestsellers
+        const sourceBadge = book.source === 'Bestsellers' ? `
+          <div class="absolute top-2 bg-blue-400 text-white px-2 py-1 rounded-md text-xs font-bold shadow-md z-10" style="left: 8px;">
+            🔥
+          </div>
+        ` : '';
+
         if (book.cover_image) {
           item.innerHTML = `
             <div class="relative w-full">
               ${ratingBadge}
+              ${sourceBadge}
               <div class="flex flex-col items-center">
                 <img src="/book-Library/uploads/${book.cover_image}" alt="${book.title}"
                     class="w-[120px] h-[180px] object-contain mb-4 p-2 bg-white rounded shadow pointer-events-none" />
@@ -102,6 +177,7 @@ function fetchBooks(query) {
           item.innerHTML = `
             <div class="relative w-full">
               ${ratingBadge}
+              ${sourceBadge}
               <div class="flex flex-col items-center">
                 <img src="https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg" alt="${book.title}"
                     class="w-[120px] h-[180px] object-contain mb-4 p-2 bg-white rounded shadow pointer-events-none" />
@@ -113,7 +189,7 @@ function fetchBooks(query) {
         } else {
           item.innerHTML = `
             <div class="relative w-full">
-              ${ratingBadge}
+              ${sourceBadge}
               <div class="flex flex-col items-center">
                 <div class="w-full max-w-[150px] h-[200px] flex items-center justify-center bg-gray-200 dark:bg-gray-600 mb-4 rounded text-gray-500 dark:text-gray-400 italic text-center px-2 pointer-events-none">
                   No cover available from this book.

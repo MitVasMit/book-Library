@@ -55,7 +55,20 @@ try {
             
             if (!empty($apiData['docs'])) {
                 $filteredBooks = array_filter($apiData['docs'], function ($book) use ($searchQuery) {
-                    return isset($book['title']) && stripos($book['title'], $searchQuery) !== false;
+                    if (!isset($book['title'])) return false;
+                    
+                    $title = strtolower($book['title']);
+                    $queryLower = strtolower($searchQuery);
+                    
+                    // Split query into words for more precise matching
+                    $queryWords = explode(' ', $queryLower);
+                    $queryWords = array_filter($queryWords, function($word) { return strlen($word) > 0; });
+                    
+                    // Check if any query word matches the beginning of title or after a space
+                    return array_reduce($queryWords, function($carry, $word) use ($title) {
+                        return $carry || strpos($title, $word) === 0 || // Word at beginning
+                               strpos($title, ' ' . $word) !== false; // Word after space
+                    }, false);
                 });
                 
                 foreach (array_slice($filteredBooks, 0, 6) as $book) {
