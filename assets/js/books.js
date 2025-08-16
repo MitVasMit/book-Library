@@ -58,13 +58,11 @@ document.addEventListener("DOMContentLoaded", () => {
       item.className =
         "bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
 
-      // Add click event to open book modal
       item.addEventListener("click", () => {
         console.log("Regular book clicked:", book);
         window.openBookModal(book);
       });
 
-      // Create rating badge - temporarily show a test badge
       console.log("Book data:", book); // Debug: log book data
       const rating =
         book.rating_average ||
@@ -76,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         book.rating_count || book.ratings_count || book.ratings?.count || 0;
       console.log("Rating:", rating, "Count:", ratingCount); // Debug: log rating data
 
-      // Temporary: Always show a test badge to verify positioning
       const ratingBadge = `
         <div class="absolute top-2 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow-md z-10" style="left: auto; right: 8px;">
           <span>★</span>
@@ -129,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const totalPages = Math.ceil(books.length / booksPerPage);
 
-    // Create pagination container
     const paginationContainer = document.createElement("div");
     paginationContainer.className =
       "flex items-center justify-end space-x-2 w-full";
@@ -173,18 +169,15 @@ document.addEventListener("DOMContentLoaded", () => {
     pagination.appendChild(paginationContainer);
   }
 
-  // Modal functions
   let touchStartX = 0;
   let touchEndX = 0;
 
-  // Make openBookModal function globally accessible
   window.openBookModal = function (book) {
     const modal = document.getElementById("bookModal");
     const bookElement = document.getElementById("book");
     const closeBtn = document.getElementById("closeBtn");
     const coverElement = document.querySelector(".cover");
 
-    // Update modal content with book data immediately
     document.getElementById("bookTitle").textContent = book.title;
     document.getElementById("bookAuthor").textContent = `Author: ${
       book.authors?.[0]?.name || "Unknown Author"
@@ -193,33 +186,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("coverAuthor").textContent =
       book.authors?.[0]?.name || "Unknown Author";
 
-    // Set default background immediately
     coverElement.style.background = "#8b5e3c";
     coverElement.style.backgroundImage = "none";
 
-    // Start modal animation immediately (no delay)
     modal.style.display = "flex";
 
-    // Reset close button
     closeBtn.style.opacity = "0";
     closeBtn.style.transition = "none";
     void closeBtn.offsetWidth;
 
-    // Start the opening animation immediately
     setTimeout(() => {
       bookElement.classList.add("opened");
     }, 10);
 
-    // Show close button after animation starts
     setTimeout(() => {
       closeBtn.style.transition = "opacity 0.4s ease";
       closeBtn.style.opacity = "1";
     }, 400);
 
-    // Add click event listener to modal backdrop
     modal.addEventListener("click", handleModalClick);
 
-    // Load cover image immediately (use medium size that's likely already cached)
     if (book.cover_image) {
       const coverImageUrl = `/book-Library/uploads/${book.cover_image}`;
       coverElement.style.background = `linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.08)), url(${coverImageUrl})`;
@@ -233,18 +219,15 @@ document.addEventListener("DOMContentLoaded", () => {
       coverElement.style.backgroundPosition = "center";
       coverElement.style.backgroundRepeat = "no-repeat";
     } else {
-      // No cover image, keep default background
       coverElement.style.background = "#8b5e3c";
       coverElement.style.backgroundImage = "none";
     }
 
-    // Load rating data if we have a book key
     if (book.key) {
       loadBookRating(book.key);
       setupRatingSystem(book);
     }
 
-    // Fetch additional book details if we have a key
     if (book.key) {
       fetch(`https://openlibrary.org${book.key}.json`)
         .then((response) => response.json())
@@ -273,19 +256,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("bookModal");
     const bookWrapper = document.querySelector(".book-wrapper");
 
-    // Close modal if clicking on the backdrop (not on the book wrapper)
     if (event.target === modal) {
       window.closeBook();
     }
   }
 
-  // Make closeBook function globally accessible
   window.closeBook = function () {
     const modal = document.getElementById("bookModal");
     const book = document.getElementById("book");
     const closeBtn = document.getElementById("closeBtn");
 
-    // Remove the click event listener
     modal.removeEventListener("click", handleModalClick);
 
     closeBtn.style.transition = "opacity 0.4s ease";
@@ -297,7 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   };
 
-  // Touch events for mobile
   document.addEventListener("DOMContentLoaded", () => {
     const leftPage = document.querySelector(".left-page");
 
@@ -321,7 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Rating system functions
   function loadBookRating(bookKey) {
     fetch(
       `/book-Library/actions/get_book_rating.php?book_key=${encodeURIComponent(
@@ -335,7 +313,6 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Update average rating display
         const avgRatingValue = document.getElementById("avgRatingValue");
         const totalRatings = document.getElementById("totalRatings");
         const avgRatingStars = document.getElementById("avgRatingStars");
@@ -350,7 +327,6 @@ document.addEventListener("DOMContentLoaded", () => {
           avgRatingStars.innerHTML = getStarHTML(data.average_rating, false);
         }
 
-        // Set user's rating if available
         if (data.user_rating) {
           setUserRating(data.user_rating);
         }
@@ -375,12 +351,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (loginPrompt) loginPrompt.classList.add("hidden");
     if (userRating) userRating.classList.remove("hidden");
 
-    // Clear previous event listeners
     starButtons.forEach((btn) => {
       btn.replaceWith(btn.cloneNode(true));
     });
 
-    // Get fresh references after cloning
     const freshStarButtons = document.querySelectorAll(".star-btn");
 
     freshStarButtons.forEach((btn) => {
@@ -423,7 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
       .then(async (response) => {
         if (response.status === 401) {
-          // Show login prompt
           document.getElementById("loginPrompt").classList.remove("hidden");
           showRatingMessage("Please log in to rate this book.", "error");
           return;

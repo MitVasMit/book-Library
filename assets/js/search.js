@@ -23,7 +23,9 @@ function fetchBooks(query) {
   console.log('Searching for:', query);
   console.log('Search URL:', "/book-Library/actions/book_search.php?q=" + encodeURIComponent(query));
 
-  // Make both API calls in parallel for better performance
+  const currentFilters = window.bookFilters ? window.bookFilters.getCurrentFilters() : null;
+  console.log('Current filters:', currentFilters);
+
   const searchPromise = fetch("/book-Library/actions/book_search.php?q=" + encodeURIComponent(query))
     .then((response) => {
       console.log('Response status:', response.status);
@@ -58,25 +60,21 @@ function fetchBooks(query) {
         return [];
       }
       
-      // Filter bestsellers that match the search query
       const matchingBestsellers = bestsellersData.docs.filter(book => {
         const title = book.title?.toLowerCase() || '';
         const author = book.author_name?.[0]?.toLowerCase() || '';
         const queryLower = query.toLowerCase();
         
-        // Split query into words for more precise matching
         const queryWords = queryLower.split(' ').filter(word => word.length > 0);
         
-        // Check if any query word matches the beginning of title or author
         return queryWords.some(word => 
           title.startsWith(word) || 
           author.startsWith(word) ||
-          title.includes(' ' + word) || // Word after a space
-          author.includes(' ' + word)   // Word after a space
+          title.includes(' ' + word) || 
+          author.includes(' ' + word)   
         );
       });
 
-      // Convert bestsellers to match our search result format
       return matchingBestsellers.map(book => ({
         title: book.title,
         author: book.author_name?.[0] || 'Unknown Author',
@@ -89,28 +87,33 @@ function fetchBooks(query) {
     })
     .catch((err) => {
       console.error('Bestsellers fetch error:', err);
-      return []; // Return empty array if bestsellers fail
+      return []; 
     });
 
-  // Wait for both promises to complete
   Promise.all([searchPromise, bestsellersPromise])
     .then(([searchResults, bestsellersResults]) => {
-      // Combine all results
-      const allResults = [...searchResults, ...bestsellersResults];
+      let allResults = [...searchResults, ...bestsellersResults];
       
-      console.log('Combined results:', allResults);
+      console.log('Combined results before filtering:', allResults);
 
-      // Remove duplicates based on title and author
+      if (currentFilters) {
+        allResults = applyFiltersToResults(allResults, currentFilters);
+        console.log('Results after filtering:', allResults);
+      }
+
       const uniqueResults = allResults.filter((book, index, self) => 
         index === self.findIndex(b => 
           b.title === book.title && b.author === book.author
         )
       );
 
-      // Display all results
+      if (currentFilters && (currentFilters.sortBy !== 'title' || currentFilters.sortOrder !== 'asc')) {
+        sortResults(uniqueResults, currentFilters.sortBy, currentFilters.sortOrder);
+      }
+
       if (uniqueResults.length === 0) {
         bookList.innerHTML =
-          '<p class="text-center col-span-full text-gray-500">No results found.</p>';
+          '<p class="text-center col-span-full text-gray-500">No results found matching your search and filters.</p>';
         return;
       }
 
@@ -139,13 +142,11 @@ function fetchBooks(query) {
           }
         });
 
-        // Create rating badge for search results
         const rating = parseFloat(book.rating) || 0;
         const ratingCount = book.rating_count || book.ratings_count || book.ratings?.count || 0;
         console.log('Search book data:', book);
         console.log('Rating for search result:', rating, 'Count:', ratingCount);
         
-        // Show rating badge only if there's an actual rating
         const ratingBadge = rating > 0 ? `
           <div class="absolute top-2 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow-md z-10" style="left: auto; right: 8px;">
             <span>★</span>
@@ -153,7 +154,6 @@ function fetchBooks(query) {
           </div>
         ` : '';
 
-        // Add source indicator for bestsellers
         const sourceBadge = book.source === 'Bestsellers' ? `
           <div class="absolute top-2 bg-blue-400 text-white px-2 py-1 rounded-md text-xs font-bold shadow-md z-10" style="left: 8px;">
             🔥
@@ -217,4 +217,52 @@ function fetchBooks(query) {
     .finally(() => {
       loader.classList.add("hidden");
     });
+}
+
+function applyFiltersToResults(results, filters) {
+  return results.filter(book => {
+    if (filters.ratingFilter === 'high' && (parseFloat(book.rating) || 0) < 4.0) {
+      return false;
+    }
+    if (filters.ratingFilter === 'low' && (parseFloat(book.rating) || 0) >= 3.0) {
+      return false;
+    }
+    
+    if (filters.minRating > 0 && (parseFloat(book.rating) || 0) < filters.minRating) {
+      return false;
+    }
+    
+    return true;
+  });
+}
+
+function sortResults(results, sortBy, sortOrder) {
+  results.sort((a, b) => {
+    let aValue, bValue;
+    
+    switch (sortBy) {
+      case 'title':
+        aValue = a.title?.toLowerCase() || '';
+        bValue = b.title?.toLowerCase() || '';
+        break;
+      case 'author':
+        aValue = a.author?.toLowerCase() || '';
+        bValue = b.author?.toLowerCase() || '';
+        break;
+      case 'rating':
+        aValue = parseFloat(a.rating) || 0;
+        bValue = parseFloat(b.rating) || 0;
+        break;
+      case 'date':
+        return 0;
+      default:
+        return 0;
+    }
+    
+    if (sortOrder === 'desc') {
+      return bValue > aValue ? 1 : bValue < aValue ? -1 : 0;
+    } else {
+      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+    }
+  });
 }

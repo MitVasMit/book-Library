@@ -10,7 +10,6 @@ include('../includes/header.php');
 require_once __DIR__ . '/../includes/autoload.php';
 $books = $bookModel->getAllWithCategory();
 
-// Get categories for the form
 $categories = $categoryModel->getAll();
 ?>
 
@@ -18,7 +17,6 @@ $categories = $categoryModel->getAll();
     <?php include_once '../includes/admin/admin_nav.php'; ?>
 
     <main class="flex-1 p-6">
-        <!-- Success/Error Messages -->
         <?php if (isset($_SESSION['success'])): ?>
             <div class="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4">
                 <?= htmlspecialchars($_SESSION['success']) ?>
@@ -41,7 +39,6 @@ $categories = $categoryModel->getAll();
             </button>
         </div>
 
-        <!-- Add Book Form Modal -->
         <div id="addBookModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
@@ -122,7 +119,6 @@ $categories = $categoryModel->getAll();
             </div>
         </div>
 
-        <!-- Books Grid -->
         <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Active books (<?= count(array_filter($books, function($b){return !$b['deleted'];})) ?>)</h3>

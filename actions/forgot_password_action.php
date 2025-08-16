@@ -35,11 +35,9 @@ if (!$userModel->emailExists($email)) {
     exit;
 }
 
-// generate token
 $token = bin2hex(random_bytes(32));
 $expires = date('Y-m-d H:i:s', time() + 900); // 15 min from now
 
-// store token 
 $userModel->storePasswordResetToken($email, $token, $expires);
 
 $mailer = new Mailer();

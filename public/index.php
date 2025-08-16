@@ -3,11 +3,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-// Add these lines to check login status
 session_start();
 $isLoggedIn = isset($_SESSION['user']);
 
-// Add this script tag to pass the login status to JavaScript
 ?>
 <script>
     var userIsLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
@@ -42,11 +40,129 @@ hi
     </div>
 </div>
 <div class="sticky top-[92px] max-w z-20 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md shadow px-4 py-2 mt-5 dark:border-gray-700">
-    <input
-        type="text"
-        id="searchInput"
-        placeholder="Search title..."
-        class="w-full max-w-xl mx-auto mb-6 block p-2 border border-gray-300 rounded-md focus:outline-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 placeholder-gray-400 dark:placeholder-gray-500" />
+    <div class="flex items-center gap-3 max-w-xl mx-auto">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search title..."
+            class="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 placeholder-gray-400 dark:placeholder-gray-500" />
+        <button
+            id="filterBtn"
+            class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200 flex items-center gap-2"
+            title="Filter Books">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+            </svg>
+            <span class="hidden sm:inline">Filters</span>
+        </button>
+    </div>
+    
+    <div id="searchActiveFilters" class="max-w-xl mx-auto mt-3 hidden">
+        <div class="flex flex-wrap gap-2" id="searchActiveFiltersList">
+        </div>
+    </div>
+</div>
+
+<div id="filterModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Filter Books</h2>
+            <button id="closeFilterModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
+        </div>
+
+        <form id="filterForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Categories</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="categoryFilters">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Publication Date</label>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="newBooks" class="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">New Books (Last Month)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Rating</label>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center">
+                            <input type="radio" name="ratingFilter" value="all" checked class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-700 dark:text-gray-300">All Ratings</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="ratingFilter" value="high" class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-700 dark:text-gray-300">4+ Stars</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="ratingFilter" value="low" class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-gray-700 dark:text-gray-300">Below 3 Stars</span>
+                        </label>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <label class="text-sm text-gray-700 dark:text-gray-300">Min Rating:</label>
+                        <input type="range" id="minRating" min="0" max="5" step="0.5" value="0" class="flex-1">
+                        <span id="minRatingValue" class="text-sm font-medium text-gray-700 dark:text-gray-300">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Sort By</label>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center">
+                        <input type="radio" name="sortBy" value="title" checked class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Title</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="sortBy" value="author" class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Author</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="sortBy" value="rating" class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Rating</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="sortBy" value="date" class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Date Added</span>
+                    </label>
+                </div>
+                <div class="flex items-center gap-4 mt-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="sortOrder" value="asc" checked class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">A-Z / Low to High</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="sortOrder" value="desc" class="mr-2 border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Z-A / High to Low</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="activeFilters" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Active Filters:</label>
+                <div id="activeFiltersList" class="flex flex-wrap gap-2">
+                </div>
+                <button type="button" id="clearAllFilters" class="text-sm text-red-600 hover:text-red-800 mt-2">
+                    Clear All Filters
+                </button>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+                <button type="button" id="cancelFilter" class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 <section class="py-20 bg-gray-100 dark:bg-gray-800">
     <div class="container mx-auto px-4">
@@ -62,7 +178,6 @@ hi
     </div>
 </section>
 
-<!-- Book Modal -->
 <div class="modal-backdrop" id="bookModal">
     <div class="book-wrapper">
         <button id="closeBtn" class="close-button" onclick="closeBook()">×</button>
@@ -76,11 +191,9 @@ hi
                 <h2>Book Details</h2>
                 <p id="bookDetails">This is the right page of the open book.</p>
 
-                <!-- Rating Section -->
                 <div class="rating-section mt-6">
                     <h3 class="text-lg font-semibold mb-3">Rate this book</h3>
 
-                    <!-- Average Rating Display -->
                     <div class="avg-rating mb-4">
                         <div class="flex items-center gap-2">
                             <span class="text-sm text-gray-600">Average Rating:</span>
@@ -92,7 +205,6 @@ hi
                         </div>
                     </div>
 
-                    <!-- User Rating -->
                     <div class="user-rating mb-4">
                         <p class="text-sm text-gray-600 mb-2">Your Rating:</p>
                         <div class="flex items-center gap-1">
@@ -105,7 +217,6 @@ hi
                         <p id="ratingMessage" class="text-sm mt-2"></p>
                     </div>
 
-                    <!-- Login Prompt -->
                     <div id="loginPrompt" class="hidden">
                         <p class="text-sm text-gray-600">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to rate this book.</p>
                     </div>

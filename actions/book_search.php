@@ -15,7 +15,6 @@ try {
         exit;
     }
     
-    // Test database connection first
     try {
         $bookModel = new Book();
         $testConnection = $bookModel->getAllWithCategory();
@@ -25,7 +24,6 @@ try {
         throw new Exception('Database connection failed: ' . $e->getMessage());
     }
     
-    // Search local database first
     try {
         $localBooks = $bookModel->searchBooks($searchQuery);
         error_log('Local search found ' . count($localBooks) . ' books for query: ' . $searchQuery);
@@ -42,10 +40,8 @@ try {
         }
     } catch (Exception $e) {
         error_log('Local search failed: ' . $e->getMessage());
-        // Continue with API search even if local search fails
     }
     
-    // Search OpenLibrary API
     try {
         $apiUrl = 'https://openlibrary.org/search.json?title=' . urlencode($searchQuery);
         $apiResponse = file_get_contents($apiUrl);
@@ -60,14 +56,12 @@ try {
                     $title = strtolower($book['title']);
                     $queryLower = strtolower($searchQuery);
                     
-                    // Split query into words for more precise matching
                     $queryWords = explode(' ', $queryLower);
                     $queryWords = array_filter($queryWords, function($word) { return strlen($word) > 0; });
                     
-                    // Check if any query word matches the beginning of title or after a space
                     return array_reduce($queryWords, function($carry, $word) use ($title) {
-                        return $carry || strpos($title, $word) === 0 || // Word at beginning
-                               strpos($title, ' ' . $word) !== false; // Word after space
+                        return $carry || strpos($title, $word) === 0 || 
+                               strpos($title, ' ' . $word) !== false; 
                     }, false);
                 });
                 
@@ -85,7 +79,6 @@ try {
         }
     } catch (Exception $e) {
         error_log('API search failed: ' . $e->getMessage());
-        // Continue with local results only
     }
     
     error_log('Final search results: ' . json_encode($results));

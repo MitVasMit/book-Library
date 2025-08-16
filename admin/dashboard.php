@@ -4,14 +4,12 @@ require_once '../includes/autoload.php';
 requireAdmin();
 include('../includes/header.php');
 
-// Use existing models
 $bookModel = new Book();
 $userModel = new User();
 
-// Get stats
 $totalBooks = count($bookModel->getAllWithCategory());
 $totalUsers = count($userModel->getAllUsers());
-$totalReviews = 0; // Placeholder, implement if you have a Review model
+$totalReviews = 0; 
 $recentBooksList = array_slice($bookModel->getAllWithCategory(), 0, 5);
 $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
 
@@ -23,7 +21,6 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
     <main class="flex-1 p-6">
         <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
         
-        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
                 <div class="flex items-center">
@@ -74,9 +71,7 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
             </div>
         </div>
 
-        <!-- Quick Actions and Recent Activity -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Quick Actions -->
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
                 <div class="space-y-3">
@@ -99,7 +94,6 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
                 </div>
             </div>
 
-            <!-- Recent Books -->
             <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-bold mb-4">Recent Books</h2>
                 <div class="space-y-3">
@@ -122,7 +116,6 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
             </div>
         </div>
 
-        <!-- Recent Users -->
         <div class="mt-6 bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
             <h2 class="text-xl font-bold mb-4">Recent Users</h2>
             <div class="space-y-3">
