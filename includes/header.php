@@ -28,6 +28,14 @@ $user = $_SESSION['user'] ?? null;
     <link rel="stylesheet" href="../assets/css/filters.css" />
     <!-- Filters JavaScript -->
     <script src="../assets/js/filters.js" defer></script>
+    <!-- Main JavaScript -->
+    <script src="../assets/js/main.js" defer></script>
+    
+    <!-- User Authentication Status -->
+    <script>
+        window.userIsLoggedIn = <?= $user ? 'true' : 'false' ?>;
+        window.currentUser = <?= $user ? json_encode($user) : 'null' ?>;
+    </script>
 
 </head>
 

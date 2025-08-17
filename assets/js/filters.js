@@ -356,6 +356,7 @@ class BookFilters {
             item.addEventListener('click', () => {
                 if (typeof window.openBookModal === 'function') {
                     const bookData = {
+                        id: book.id,
                         title: book.title,
                         authors: [{ name: book.author }],
                         cover_image: book.cover_image,

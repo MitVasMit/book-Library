@@ -67,6 +67,82 @@
   opacity: 1;
   border-radius: 5px 10px 10px 5px;
   color: #2d3748;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.right-page::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right-page::-webkit-scrollbar-track {
+  background: #f7fafc;
+  border-radius: 3px;
+}
+
+.right-page::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.right-page::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Review system styles */
+#showAllReviewsBtn,
+#showLessReviewsBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+#showAllReviewsBtn:hover,
+#showLessReviewsBtn:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+#showAllReviewsBtn:focus,
+#showLessReviewsBtn:focus {
+  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Smooth review transitions */
+.review-item {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.review-item.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.review-item.hide {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+}
+
+/* Smooth height transitions for reviews container */
+#reviewsList {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Button loading state */
+#showAllReviewsBtn.loading,
+#showLessReviewsBtn.loading {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .right-page h2 {
