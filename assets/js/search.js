@@ -127,6 +127,7 @@ function fetchBooks(query) {
           console.log('openBookModal function available:', typeof window.openBookModal);
           
           const bookData = {
+            id: book.id || null,
             title: book.title,
             authors: [{ name: book.author }],
             cover_id: book.cover_id,

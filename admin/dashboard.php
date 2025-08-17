@@ -9,7 +9,9 @@ $userModel = new User();
 
 $totalBooks = count($bookModel->getAllWithCategory());
 $totalUsers = count($userModel->getAllUsers());
-$totalReviews = 0; 
+$reviewModel = new Review();
+$totalReviews = $reviewModel->getAllReviews();
+$pendingReviews = count($reviewModel->getPendingReviews());
 $recentBooksList = array_slice($bookModel->getAllWithCategory(), 0, 5);
 $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
 
@@ -52,8 +54,11 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
                         <i class="fas fa-star text-yellow-600 dark:text-yellow-400 text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Reviews</p>
+                        <div class="flex items-baseline space-x-2">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Reviews</p>
+                        </div>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $totalReviews ?></p>
+                        <p class="text-sm text-orange-600 dark:text-orange-400"><?= $pendingReviews ?> pending</p>
                     </div>
                 </div>
             </div>

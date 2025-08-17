@@ -2,54 +2,70 @@
 
 class Rating extends DB
 {
-    public function saveRating($userId, $bookKey, $bookTitle, $bookAuthor, $rating)
+    public function createRating($userId, $bookId, $rating)
     {
-        $sql = "INSERT INTO openlibrary_ratings (user_id, book_key, book_title, book_author, rating) 
-                VALUES (:user_id, :book_key, :book_title, :book_author, :rating)
-                ON DUPLICATE KEY UPDATE rating = :rating, updated_at = CURRENT_TIMESTAMP";
+        // Check if user already rated this book
+        $existingRating = $this->getUserRating($userId, $bookId);
         
-        $stmt = $this->instance->prepare($sql);
-        return $stmt->execute([
-            'user_id' => $userId,
-            'book_key' => $bookKey,
-            'book_title' => $bookTitle,
-            'book_author' => $bookAuthor,
-            'rating' => $rating
-        ]);
+        if ($existingRating) {
+            // Update existing rating
+            $sql = "UPDATE ratings SET rating = :rating, updated_at = NOW() WHERE user_id = :user_id AND book_id = :book_id";
+            $stmt = $this->instance->prepare($sql);
+            return $stmt->execute([
+                'rating' => $rating,
+                'user_id' => $userId,
+                'book_id' => $bookId
+            ]);
+        } else {
+            // Create new rating
+            $sql = "INSERT INTO ratings (user_id, book_id, rating) VALUES (:user_id, :book_id, :rating)";
+            $stmt = $this->instance->prepare($sql);
+            return $stmt->execute([
+                'user_id' => $userId,
+                'book_id' => $bookId,
+                'rating' => $rating
+            ]);
+        }
     }
 
-    public function getUserRating($userId, $bookKey)
+    public function getUserRating($userId, $bookId)
     {
-        $sql = "SELECT rating FROM openlibrary_ratings WHERE user_id = :user_id AND book_key = :book_key";
+        $sql = "SELECT rating FROM ratings WHERE user_id = :user_id AND book_id = :book_id";
         $stmt = $this->instance->prepare($sql);
-        $stmt->execute(['user_id' => $userId, 'book_key' => $bookKey]);
-        $result = $stmt->fetch();
+        $stmt->execute([
+            'user_id' => $userId,
+            'book_id' => $bookId
+        ]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result ? $result['rating'] : null;
     }
 
-    public function getAverageRating($bookKey)
+    public function getBookRating($bookId)
     {
-        $sql = "SELECT AVG(rating) as avg_rating, COUNT(*) as total_ratings 
-                FROM openlibrary_ratings WHERE book_key = :book_key";
+        $sql = "SELECT AVG(rating) as average_rating, COUNT(*) as total_ratings FROM ratings WHERE book_id = :book_id";
         $stmt = $this->instance->prepare($sql);
-        $stmt->execute(['book_key' => $bookKey]);
-        $result = $stmt->fetch();
+        $stmt->execute(['book_id' => $bookId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
         return [
-            'average' => $result['avg_rating'] ? round($result['avg_rating'], 1) : 0,
-            'total' => $result['total_ratings'] ? (int)$result['total_ratings'] : 0
+            'average_rating' => round($result['average_rating'], 1) ?: 0,
+            'total_ratings' => (int)$result['total_ratings']
         ];
     }
 
-    public function getBookRatings($bookKey)
+    public function getBookRatingWithUser($bookId, $userId = null)
     {
-        $sql = "SELECT r.rating, r.created_at, u.name as user_name 
-                FROM openlibrary_ratings r 
-                JOIN users u ON r.user_id = u.id 
-                WHERE r.book_key = :book_key 
-                ORDER BY r.created_at DESC 
-                LIMIT 10";
-        $stmt = $this->instance->prepare($sql);
-        $stmt->execute(['book_key' => $bookKey]);
-        return $stmt->fetchAll();
+        $bookRating = $this->getBookRating($bookId);
+        $userRating = null;
+        
+        if ($userId) {
+            $userRating = $this->getUserRating($userId, $bookId);
+        }
+        
+        return [
+            'average_rating' => $bookRating['average_rating'],
+            'total_ratings' => $bookRating['total_ratings'],
+            'user_rating' => $userRating
+        ];
     }
 } 

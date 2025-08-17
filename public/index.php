@@ -192,11 +192,10 @@ hi
                 <p id="bookDetails">This is the right page of the open book.</p>
 
                 <div class="rating-section mt-6">
-                    <h3 class="text-lg font-semibold mb-3">Rate this book</h3>
 
                     <div class="avg-rating mb-4">
                         <div class="flex items-center gap-2">
-                            <span class="text-sm text-gray-600">Average Rating:</span>
+                            <span class="text-sm text-gray-600"> Rating:</span>
                             <div class="flex items-center gap-1">
                                 <span id="avgRatingStars" class="text-yellow-400"></span>
                                 <span id="avgRatingValue" class="text-sm font-medium">0.0</span>
@@ -206,7 +205,7 @@ hi
                     </div>
 
                     <div class="user-rating mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Your Rating:</p>
+                        <p id="ratingLabel" class="text-sm text-gray-600 mb-2">Rate this book:</p>
                         <div class="flex items-center gap-1">
                             <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="1">★</button>
                             <button class="star-btn text-2xl text-gray-300 hover:text-yellow-400 transition-colors" data-rating="2">★</button>
@@ -219,6 +218,46 @@ hi
 
                     <div id="loginPrompt" class="hidden">
                         <p class="text-sm text-gray-600">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to rate this book.</p>
+                    </div>
+                </div>
+
+                <!-- Review Section - Only for Database Books -->
+                <div id="reviewSection" class="mt-6 hidden">
+                    <h3 class="text-lg font-semibold mb-3">Write a Review</h3>
+                    
+                    <div id="reviewForm" class="space-y-4">
+                        <div>
+
+                            <textarea 
+                                id="reviewComment" 
+                                rows="4" 
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-grey-500 focus:border-grey-500 dark:bg-gray-500 dark:text-gray-300"
+                                placeholder="Share your thoughts about this book..."
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button 
+                                id="submitReviewBtn" 
+                                class="bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition-colors duration-200 text-sm"
+                            >
+                                Submit Review
+                            </button>
+                        </div>
+                        
+                        <div id="reviewMessage" class="text-sm mt-2"></div>
+                    </div>
+                    
+                    <div id="reviewLoginPrompt" class="hidden">
+                        <p class="text-sm text-gray-600">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to write a review.</p>
+                    </div>
+                </div>
+
+                <!-- Reviews Display Section -->
+                <div id="reviewsSection" class="mt-6 hidden">
+                    <h3 class="text-lg font-semibold mb-3">Reviews</h3>
+                    <div id="reviewsList" class="space-y-3">
+                        <!-- Reviews will be loaded here -->
                     </div>
                 </div>
             </div>

@@ -22,7 +22,7 @@ class Book extends DB
             $params[$paramName] = $word . '%';
         }
         
-        $sql = "SELECT title, author, cover_image, rating FROM books WHERE (" . implode(' OR ', $conditions) . ") AND deleted = 0";
+        $sql = "SELECT id, title, author, cover_image, rating FROM books WHERE (" . implode(' OR ', $conditions) . ") AND deleted = 0";
         $stmt = $this->instance->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
@@ -60,5 +60,17 @@ class Book extends DB
     {
         $stmt = $this->instance->prepare('UPDATE books SET deleted = 0 WHERE id = :id');
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function getById($id)
+    {
+        $sql = "SELECT b.*, c.name AS category_name
+                FROM books b 
+                JOIN categories c ON b.category_id = c.id 
+                WHERE b.id = :id AND b.deleted = 0";
+        
+        $stmt = $this->instance->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

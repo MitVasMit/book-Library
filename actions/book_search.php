@@ -30,6 +30,7 @@ try {
         
         foreach ($localBooks as $book) {
             $results[] = [
+                'id'       => $book['id'],
                 'title'    => $book['title'],
                 'author'   => $book['author'],
                 'cover_image' => $book['cover_image'] ?? null,

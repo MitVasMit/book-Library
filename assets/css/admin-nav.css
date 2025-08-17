@@ -40,3 +40,27 @@
   flex: 1;
   transition: margin-left 0.3s ease;
 }
+
+/* Tab Management Styles */
+.tab-content {
+  display: block;
+}
+
+.tab-content.hidden {
+  display: none !important;
+}
+
+/* Ensure proper tab button states */
+.tab-button {
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.tab-button.active {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
