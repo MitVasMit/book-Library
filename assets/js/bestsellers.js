@@ -24,7 +24,20 @@ document.addEventListener("DOMContentLoaded", () => {
         slide.className = "swiper-slide p-4";
 
         slide.innerHTML = `
-          <div class="bg-white dark:bg-gray-700 rounded shadow p-4 flex flex-col items-center max-w-[180px] mx-auto cursor-pointer hover:scale-105 transition-transform duration-300">
+          <div class="bg-white dark:bg-gray-700 rounded shadow p-4 flex flex-col items-center max-w-[180px] mx-auto cursor-pointer hover:scale-105 transition-transform duration-300 relative">
+            <!-- Favorite Button for Logged In Users -->
+            ${window.userIsLoggedIn ? `
+              <button class="favorite-btn absolute top-2 left-2 bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 p-2 rounded-full shadow-md z-10 transition-colors duration-200" 
+                      data-book-id="${book.key}" data-favorited="false">
+                <i class="far fa-heart"></i>
+              </button>
+            ` : ''}
+            
+            <!-- Bestseller Badge -->
+            <div class="absolute top-2 right-2 bg-blue-400 text-white text-xs px-2 py-1 rounded-md font-bold shadow-md z-10">
+              🔥
+            </div>
+            
             <div class="w-full h-[220px] p-2 bg-white dark:bg-gray-600 rounded flex items-center justify-center">
               <img src="${cover}" alt="${
           book.title
@@ -42,7 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
         bestsellerList.appendChild(slide);
         
         const bookCard = slide.querySelector('div');
-        bookCard.addEventListener('click', () => {
+        bookCard.addEventListener('click', (e) => {
+          // Don't open modal if clicking on favorite button
+          if (e.target.closest('.favorite-btn')) {
+            return;
+          }
+          
           const bookData = {
             title: book.title,
             authors: [{ name: book.author_name?.[0] || "Unknown Author" }],
@@ -54,6 +72,26 @@ document.addEventListener("DOMContentLoaded", () => {
             window.openBookModal(bookData);
           }
         });
+
+        // Add favorite button functionality
+        if (window.userIsLoggedIn) {
+          const favoriteBtn = slide.querySelector('.favorite-btn');
+          if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const isFavorited = favoriteBtn.dataset.favorited === 'true';
+              const newState = await window.toggleFavorite(book.key, isFavorited);
+              
+              if (newState !== undefined) {
+                favoriteBtn.dataset.favorited = newState.toString();
+                const icon = favoriteBtn.querySelector('i');
+                if (icon) {
+                  icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+                }
+              }
+            });
+          }
+        }
       });
 
       if (bestsellerLoader) {

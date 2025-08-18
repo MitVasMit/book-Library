@@ -41,6 +41,10 @@ if (isset($_COOKIE['sidebarExpanded'])) {
         <i class="fas fa-star"></i>
         <span class="sidebar-text transition-opacity duration-300">Reviews</span>
       </a>
+      <a href="favorites.php" class="flex items-center space-x-3 px-3 py-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        <i class="fas fa-heart"></i>
+        <span class="sidebar-text transition-opacity duration-300">User Favorites</span>
+      </a>
     </nav>
   </div>
 </aside>

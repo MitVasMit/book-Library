@@ -86,11 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
       item.className =
         "bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
 
-      item.addEventListener("click", () => {
-        console.log("Book clicked:", book);
-        window.openBookModal(book);
-      });
-
       // Get rating based on book source
       let rating = 0;
       let ratingCount = 0;
@@ -115,9 +110,18 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       ` : '';
 
+      // Add favorite button for logged-in users
+      const favoriteButton = window.userIsLoggedIn ? `
+        <button class="favorite-btn absolute top-2 left-2 bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 p-2 rounded-full shadow-md z-10 transition-colors duration-200" 
+                data-book-id="${book.source === 'database' ? book.id : book.key}" data-favorited="false">
+          <i class="far fa-heart"></i>
+        </button>
+      ` : '';
+
       if (cover) {
         item.innerHTML = `
       <div class="relative w-full">
+        ${favoriteButton}
         ${ratingBadge}
         <div class="flex flex-col items-center">
           <img src="${cover}" alt="${book.title}" 
@@ -136,6 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         item.innerHTML = `
       <div class="relative w-full">
+        ${favoriteButton}
         ${ratingBadge}
         <div class="flex flex-col items-center">
           <div class="w-full max-w-[150px] h-[200px] flex items-center justify-center bg-gray-200 dark:bg-gray-600 mb-4 rounded text-gray-500 dark:text-gray-400 italic text-center px-2">
@@ -151,6 +156,38 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
     `;
+      }
+
+      // Add click event for opening book modal
+      item.addEventListener('click', (e) => {
+        // Don't open modal if clicking on favorite button
+        if (e.target.closest('.favorite-btn')) {
+          return;
+        }
+        
+        console.log("Book clicked:", book);
+        window.openBookModal(book);
+      });
+
+      // Add favorite button functionality
+      if (window.userIsLoggedIn) {
+        const favoriteBtn = item.querySelector('.favorite-btn');
+        if (favoriteBtn) {
+          favoriteBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const bookId = favoriteBtn.dataset.bookId;
+            const isFavorited = favoriteBtn.dataset.favorited === 'true';
+            const newState = await window.toggleFavorite(bookId, isFavorited);
+            
+            if (newState !== undefined) {
+              favoriteBtn.dataset.favorited = newState.toString();
+              const icon = favoriteBtn.querySelector('i');
+              if (icon) {
+                icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+              }
+            }
+          });
+        }
       }
 
       bookList.appendChild(item);
@@ -301,6 +338,20 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('reviewsSection').classList.add('hidden');
     }
 
+    // Handle favorite functionality
+    if (typeof userIsLoggedIn !== "undefined" && userIsLoggedIn) {
+      document.getElementById('favoriteSection').classList.remove('hidden');
+      document.getElementById('favoriteBtn').style.display = 'inline-flex';
+      document.getElementById('favoriteLoginPrompt').classList.add('hidden');
+      
+      // Set up favorite button
+      setupFavoriteButton(book);
+    } else {
+      document.getElementById('favoriteSection').classList.remove('hidden');
+      document.getElementById('favoriteBtn').style.display = 'none';
+      document.getElementById('favoriteLoginPrompt').classList.remove('hidden');
+    }
+
     if (book.key) {
       fetch(`https://openlibrary.org${book.key}.json`)
         .then((response) => response.json())
@@ -324,6 +375,63 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
   };
+
+  function setupFavoriteButton(book) {
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    const favoriteIcon = favoriteBtn.querySelector('i');
+    const favoriteText = favoriteBtn.querySelector('.favorite-text');
+    
+    // Get book ID for database books or key for API books
+    let bookId = null;
+    if (book.cover_image) {
+      // Database book
+      bookId = book.id;
+    } else if (book.key) {
+      // API book - we'll use the key as identifier
+      bookId = book.key;
+    }
+    
+    if (!bookId) return;
+    
+    // Set data attributes
+    favoriteBtn.dataset.bookId = bookId;
+    favoriteBtn.dataset.favorited = 'false';
+    
+    // Check if book is already favorited
+    checkFavoriteStatus(bookId, favoriteBtn, favoriteIcon, favoriteText);
+    
+    // Add click event
+    favoriteBtn.addEventListener('click', async () => {
+      const isFavorited = favoriteBtn.dataset.favorited === 'true';
+      const newState = await window.toggleFavorite(bookId, isFavorited);
+      
+      if (newState !== undefined) {
+        favoriteBtn.dataset.favorited = newState.toString();
+        updateFavoriteButtonUI(favoriteBtn, favoriteIcon, favoriteText, newState);
+      }
+    });
+  }
+
+  function checkFavoriteStatus(bookId, favoriteBtn, favoriteIcon, favoriteText) {
+    // For now, we'll assume not favorited and let the user toggle
+    // In a real implementation, you'd check against the user's favorites
+    favoriteBtn.dataset.favorited = 'false';
+    updateFavoriteButtonUI(favoriteBtn, favoriteIcon, favoriteText, false);
+  }
+
+  function updateFavoriteButtonUI(favoriteBtn, favoriteIcon, favoriteText, isFavorited) {
+    if (isFavorited) {
+      favoriteIcon.className = 'fas fa-heart text-red-500';
+      favoriteText.textContent = 'Remove from Favorites';
+      favoriteBtn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+      favoriteBtn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+    } else {
+      favoriteIcon.className = 'far fa-heart text-gray-400';
+      favoriteText.textContent = 'Add to Favorites';
+      favoriteBtn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+      favoriteBtn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+    }
+  }
 
   function handleModalClick(event) {
     const modal = document.getElementById("bookModal");
