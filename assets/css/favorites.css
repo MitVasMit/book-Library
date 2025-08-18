@@ -1,0 +1,155 @@
+/* Favorites Modal Styles */
+.favorite-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+}
+
+.favorite-btn:active {
+    transform: scale(0.95);
+}
+
+/* Favorite button states */
+.favorite-btn[data-favorited="true"] {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+}
+
+.favorite-btn[data-favorited="true"]:hover {
+    background-color: #fee2e2;
+}
+
+.dark .favorite-btn[data-favorited="true"] {
+    background-color: rgba(239, 68, 68, 0.2);
+    border-color: #dc2626;
+}
+
+.dark .favorite-btn[data-favorited="true"]:hover {
+    background-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Favorites modal animations */
+#favoritesModal {
+    animation: fadeIn 0.3s ease-out;
+}
+
+#favoritesModal .bg-white {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal header gradient */
+#favoritesModal .bg-gradient-to-r {
+    background: linear-gradient(135deg, #fef2f2 0%, #fce7f3 100%);
+}
+
+.dark #favoritesModal .bg-gradient-to-r {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+}
+
+/* Compact favorite cards */
+#favoritesGrid .bg-white {
+    transition: all 0.2s ease;
+}
+
+#favoritesGrid .bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove button hover effects */
+.remove-favorite-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for modal */
+@media (max-width: 640px) {
+    #favoritesModal .max-w-2xl {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    #favoritesModal .p-4 {
+        padding: 0.75rem;
+    }
+    
+    #favoritesModal .p-3 {
+        padding: 0.5rem;
+    }
+}
+
+/* Favorite count badge */
+#favoriteCount {
+    transition: all 0.2s ease-in-out;
+}
+
+#favoriteCount.hidden {
+    opacity: 0;
+    transform: scale(0);
+}
+
+/* Favorite cards in modal */
+.favorite-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.favorite-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove favorite button */
+.remove-favorite-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.remove-favorite-btn:hover {
+    transform: scale(1.1);
+    background-color: #dc2626;
+}
+
+/* Line clamp for text truncation */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #favoritesModal .max-w-4xl {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    .favorite-btn {
+        padding: 0.5rem;
+    }
+    
+    .favorite-btn i {
+        font-size: 0.875rem;
+    }
+}

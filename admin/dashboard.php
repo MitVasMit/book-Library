@@ -12,6 +12,13 @@ $totalUsers = count($userModel->getAllUsers());
 $reviewModel = new Review();
 $totalReviews = $reviewModel->getAllReviews();
 $pendingReviews = count($reviewModel->getPendingReviews());
+
+// Get favorites statistics
+$favoriteModel = new Favorite();
+$favorites = $favoriteModel->getAllUserFavorites();
+$totalFavorites = count($favorites);
+$uniqueUsersWithFavorites = count(array_unique(array_column($favorites, 'user_id')));
+
 $recentBooksList = array_slice($bookModel->getAllWithCategory(), 0, 5);
 $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
 
@@ -74,6 +81,19 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
                     </div>
                 </div>
             </div>
+
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
+                        <i class="fas fa-heart text-red-600 dark:text-red-400 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Favorites</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $totalFavorites ?></p>
+                        <p class="text-sm text-red-600 dark:text-red-400"><?= $uniqueUsersWithFavorites ?> users</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -95,6 +115,10 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
                     <a href="reviews.php" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                         <i class="fas fa-star text-purple-600 dark:text-purple-400 mr-3"></i>
                         <span>Reviews</span>
+                    </a>
+                    <a href="favorites.php" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-heart text-red-600 dark:text-red-400 mr-3"></i>
+                        <span>Manage Favorites</span>
                     </a>
                 </div>
             </div>

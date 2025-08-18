@@ -7,9 +7,6 @@ session_start();
 $isLoggedIn = isset($_SESSION['user']);
 
 ?>
-<script>
-    var userIsLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
-</script>
 
 <?php include('../includes/header.php'); ?>
 
@@ -190,6 +187,17 @@ hi
             <div class="page right-page">
                 <h2>Book Details</h2>
                 <p id="bookDetails">This is the right page of the open book.</p>
+
+                <!-- Favorite Button - Only for Logged In Users -->
+                <div id="favoriteSection" class="mt-6 mb-4">
+                    <button id="favoriteBtn" class="favorite-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200" style="display: none;">
+                        <i class="far fa-heart text-gray-400"></i>
+                        <span class="favorite-text">Add to Favorites</span>
+                    </button>
+                    <div id="favoriteLoginPrompt" class="hidden">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to add books to favorites.</p>
+                    </div>
+                </div>
 
                 <div class="rating-section mt-6">
 

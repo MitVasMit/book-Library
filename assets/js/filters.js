@@ -326,45 +326,73 @@ class BookFilters {
                 </div>
             ` : '';
 
+            // Add favorite button for logged-in users
+            const favoriteButton = window.userIsLoggedIn ? `
+                <button class="favorite-btn absolute top-2 left-2 bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 p-2 rounded-full shadow-md z-10 transition-colors duration-200" 
+                        data-book-id="${book.id}" data-favorited="false">
+                    <i class="far fa-heart"></i>
+                </button>
+            ` : '';
+
             if (book.cover_image) {
                 item.innerHTML = `
-                    <div class="relative w-full">
-                        ${ratingBadge}
-                        <div class="flex flex-col items-center">
-                            <img src="/book-Library/uploads/${book.cover_image}" alt="${book.title}"
-                                class="w-[120px] h-[180px] object-contain mb-4 p-2 bg-white rounded shadow pointer-events-none" />
-                            <h3 class="text-md font-semibold text-gray-900 dark:text-white text-center pointer-events-none">${book.title}</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 text-center pointer-events-none">${book.author}</p>
-                        </div>
-                    </div>
+                    ${favoriteButton}
+                    ${ratingBadge}
+                    <img src="/book-Library/uploads/${book.cover_image}" alt="${book.title}" class="w-full h-48 object-cover rounded-lg mb-3">
+                    <h3 class="font-semibold text-gray-800 dark:text-white text-sm text-center mb-2 line-clamp-2">${book.title}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-xs text-center">by ${book.author}</p>
                 `;
             } else {
                 item.innerHTML = `
-                    <div class="relative w-full">
-                        ${ratingBadge}
-                        <div class="flex flex-col items-center">
-                            <div class="w-full max-w-[150px] h-[200px] flex items-center justify-center bg-gray-200 dark:bg-gray-600 mb-4 rounded text-gray-500 dark:text-gray-400 italic text-center px-2 pointer-events-none">
-                                No cover available
-                            </div>
-                            <h3 class="text-md font-semibold text-gray-900 dark:text-white text-center pointer-events-none">${book.title}</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 text-center pointer-events-none">${book.author}</p>
-                        </div>
+                    ${favoriteButton}
+                    ${ratingBadge}
+                    <div class="w-full h-48 bg-gray-200 dark:bg-gray-600 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-book text-4xl text-gray-400 dark:text-gray-500"></i>
                     </div>
+                    <h3 class="font-semibold text-gray-800 dark:text-white text-sm text-center mb-2 line-clamp-2">${book.title}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-xs text-center">by ${book.author}</p>
                 `;
             }
 
-            item.addEventListener('click', () => {
+            // Add click event for opening book modal
+            item.addEventListener('click', (e) => {
+                // Don't open modal if clicking on favorite button
+                if (e.target.closest('.favorite-btn')) {
+                    return;
+                }
+                
+                const bookData = {
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    cover_image: book.cover_image,
+                    source: 'database'
+                };
+                
                 if (typeof window.openBookModal === 'function') {
-                    const bookData = {
-                        id: book.id,
-                        title: book.title,
-                        authors: [{ name: book.author }],
-                        cover_image: book.cover_image,
-                        key: null
-                    };
                     window.openBookModal(bookData);
                 }
             });
+
+            // Add favorite button functionality
+            if (window.userIsLoggedIn) {
+                const favoriteBtn = item.querySelector('.favorite-btn');
+                if (favoriteBtn) {
+                    favoriteBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const isFavorited = favoriteBtn.dataset.favorited === 'true';
+                        const newState = await window.toggleFavorite(book.id, isFavorited);
+                        
+                        if (newState !== undefined) {
+                            favoriteBtn.dataset.favorited = newState.toString();
+                            const icon = favoriteBtn.querySelector('i');
+                            if (icon) {
+                                icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+                            }
+                        }
+                    });
+                }
+            }
 
             bookList.appendChild(item);
         });

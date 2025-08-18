@@ -121,6 +121,18 @@ CREATE TABLE IF NOT EXISTS ratings (
   UNIQUE KEY unique_user_db_book (user_id, book_id)
 );
 
+-- FAVORITES table for storing user book favorites
+CREATE TABLE IF NOT EXISTS favorites (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  book_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_favorite_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_favorite_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  UNIQUE KEY unique_user_favorite_book (user_id, book_id)
+);
+
 -- populating 10 books for start
 INSERT INTO books (title, author, description, published_year, pages, rating, cover_image, category_id)
 VALUES
