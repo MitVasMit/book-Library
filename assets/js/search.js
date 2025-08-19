@@ -223,6 +223,13 @@ function fetchBooks(query) {
 
         bookList.appendChild(item);
       });
+      
+      // Initialize favorite states after books are displayed
+      if (window.userIsLoggedIn && window.initializeFavoriteStates) {
+        setTimeout(() => {
+          window.initializeFavoriteStates();
+        }, 100);
+      }
     })
     .catch((err) => {
       console.error('Search fetch error:', err);

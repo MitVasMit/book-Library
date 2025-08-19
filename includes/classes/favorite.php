@@ -48,7 +48,7 @@ class Favorite extends DB
 
     public function getUserFavorites($userId)
     {
-        $sql = "SELECT f.*, b.title, b.author, b.cover_image, b.rating, c.name as category_name 
+        $sql = "SELECT f.book_id as id, b.title, b.author, b.cover_image, b.rating, c.name as category_name 
                 FROM favorites f 
                 JOIN books b ON f.book_id = b.id 
                 JOIN categories c ON b.category_id = c.id 
@@ -57,6 +57,15 @@ class Favorite extends DB
         $stmt = $this->instance->prepare($sql);
         $stmt->execute(['user_id' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getBookFavoriteCount($bookId)
+    {
+        $sql = "SELECT COUNT(*) as count FROM favorites WHERE book_id = :book_id";
+        $stmt = $this->instance->prepare($sql);
+        $stmt->execute(['book_id' => $bookId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return intval($result['count']);
     }
 
     public function getFavoriteCount($userId)

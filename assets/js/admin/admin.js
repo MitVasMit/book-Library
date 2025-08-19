@@ -5,12 +5,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const sidebarTitle = document.getElementById("sidebarTitle");
   const navLinks = sidebar ? sidebar.querySelectorAll("nav a") : [];
 
+  // If no sidebar exists, don't proceed (this script is loaded on all pages)
+  if (!sidebar) return;
+
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(";").shift();
     return null;
   }
+  
   let isExpanded = true;
   const cookieValue = getCookie("sidebarExpanded");
   if (cookieValue !== null) {
@@ -52,17 +56,21 @@ document.addEventListener("DOMContentLoaded", function () {
       "sidebarExpanded=" + (isExpanded ? "true" : "false") + "; path=/";
   }
 
-  if (toggleBtn) toggleBtn.addEventListener("click", () => {
-    isExpanded = !isExpanded;
-    updateSidebar();
-  });
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      isExpanded = !isExpanded;
+      updateSidebar();
+    });
+  }
 
   navLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
       if (!isExpanded) {
+        // Handle collapsed sidebar navigation if needed
       }
     });
   });
 
+  // Initialize sidebar state
   updateSidebar();
 });

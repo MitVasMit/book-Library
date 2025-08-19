@@ -30,6 +30,72 @@
     background-color: rgba(239, 68, 68, 0.3);
 }
 
+/* Book card favorite button specific styles */
+.favorite-btn.absolute.top-2[data-favorited="true"] {
+    background-color: #fef2f2 !important;
+    border: 2px solid #fca5a5 !important;
+    color: #dc2626 !important;
+}
+
+.favorite-btn.absolute.top-2[data-favorited="true"] i {
+    color: #dc2626 !important;
+}
+
+.dark .favorite-btn.absolute.top-2[data-favorited="true"] {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+    border: 2px solid #dc2626 !important;
+}
+
+.dark .favorite-btn.absolute.top-2[data-favorited="true"] i {
+    color: #dc2626 !important;
+}
+
+/* Book card favorite button non-favorited state */
+.favorite-btn.absolute.top-2[data-favorited="false"] {
+    background-color: #ffffff !important;
+    border: 2px solid #e5e7eb !important;
+    color: #9ca3af !important;
+}
+
+.favorite-btn.absolute.top-2[data-favorited="false"] i {
+    color: #9ca3af !important;
+}
+
+.dark .favorite-btn.absolute.top-2[data-favorited="false"] {
+    background-color: #374151 !important;
+    border: 2px solid #4b5563 !important;
+}
+
+.dark .favorite-btn.absolute.top-2[data-favorited="false"] i {
+    color: #9ca3af !important;
+}
+
+/* Hover effects for book card favorite buttons */
+.favorite-btn.absolute.top-2:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.favorite-btn.absolute.top-2[data-favorited="true"]:hover {
+    background-color: #fee2e2 !important;
+    border-color: #f87171 !important;
+}
+
+.dark .favorite-btn.absolute.top-2[data-favorited="true"]:hover {
+    background-color: rgba(239, 68, 68, 0.3) !important;
+    border-color: #ef4444 !important;
+}
+
+.favorite-btn.absolute.top-2[data-favorited="false"]:hover {
+    background-color: #f9fafb !important;
+    border-color: #d1d5db !important;
+}
+
+.dark .favorite-btn.absolute.top-2[data-favorited="false"]:hover {
+    background-color: #4b5563 !important;
+    border-color: #6b7280 !important;
+}
+
 /* Favorites modal animations */
 #favoritesModal {
     animation: fadeIn 0.3s ease-out;
@@ -126,8 +192,25 @@
 }
 
 .remove-favorite-btn:hover {
-    transform: scale(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #dc2626;
+}
+
+/* View comments button */
+.view-comments-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.view-comments-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Favorite card hover effects */
+#favoritesGrid .bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Line clamp for text truncation */
