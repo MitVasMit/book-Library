@@ -48,7 +48,7 @@ class Favorite extends DB
 
     public function getUserFavorites($userId)
     {
-        $sql = "SELECT f.*, b.title, b.author, b.cover_image, b.rating, c.name as category_name 
+        $sql = "SELECT f.book_id as id, b.title, b.author, b.cover_image, b.rating, c.name as category_name 
                 FROM favorites f 
                 JOIN books b ON f.book_id = b.id 
                 JOIN categories c ON b.category_id = c.id 

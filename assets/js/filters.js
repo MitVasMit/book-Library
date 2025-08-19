@@ -396,6 +396,13 @@ class BookFilters {
 
             bookList.appendChild(item);
         });
+        
+        // Initialize favorite states after books are displayed
+        if (window.userIsLoggedIn && window.initializeFavoriteStates) {
+            setTimeout(() => {
+                window.initializeFavoriteStates();
+            }, 100);
+        }
     }
 
     getCurrentFilters() {

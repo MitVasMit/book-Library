@@ -843,12 +843,16 @@ video {
   height: 2rem;
 }
 
-.max-h-\[75vh\] {
-  max-height: 75vh;
-}
-
 .max-h-\[90vh\] {
   max-height: 90vh;
+}
+
+.max-h-\[calc\(100vh-12rem\)\] {
+  max-height: calc(100vh - 12rem);
+}
+
+.max-h-\[calc\(100vh-6rem\)\] {
+  max-height: calc(100vh - 6rem);
 }
 
 .min-h-\[600px\] {
@@ -1398,6 +1402,14 @@ video {
 .py-6 {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+.pb-6 {
+  padding-bottom: 1.5rem;
+}
+
+.pt-20 {
+  padding-top: 5rem;
 }
 
 .pt-4 {

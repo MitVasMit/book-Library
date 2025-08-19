@@ -95,8 +95,8 @@ $user = $_SESSION['user'] ?? null;
     </header>
 
     <!-- Favorites Modal -->
-    <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-6">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[75vh] overflow-hidden">
+    <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-start justify-center pt-20 pb-6 px-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[calc(100vh-6rem)] overflow-hidden">
             <!-- Header -->
             <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20">
                 <div class="flex items-center gap-3">
@@ -114,7 +114,7 @@ $user = $_SESSION['user'] ?? null;
             </div>
             
             <!-- Content -->
-            <div id="favoritesContent" class="p-4">
+            <div id="favoritesContent" class="p-4 overflow-y-auto max-h-[calc(100vh-12rem)]">
                 <!-- Loader -->
                 <div id="favoritesLoader" class="flex flex-col items-center justify-center py-16">
                     <div class="animate-spin rounded-full h-10 w-10 border-4 border-red-200 border-t-red-500 mb-3"></div>
