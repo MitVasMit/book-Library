@@ -284,12 +284,47 @@ document.addEventListener("DOMContentLoaded", () => {
     const coverElement = document.querySelector(".cover");
 
     document.getElementById("bookTitle").textContent = book.title;
-    document.getElementById("bookAuthor").textContent = `Author: ${
-      book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author")
-    }`;
+    document.getElementById("bookAuthor").textContent = book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
     document.getElementById("coverTitle").textContent = book.title;
     document.getElementById("coverAuthor").textContent =
       book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
+
+    // Populate category if available
+    const categoryElement = document.getElementById("bookCategory");
+    if (book.source === 'database' && book.category_name) {
+      categoryElement.textContent = book.category_name;
+      categoryElement.style.display = 'block';
+    } else {
+      categoryElement.style.display = 'none';
+    }
+
+    // Populate additional details for database books
+    if (book.source === 'database') {
+      const pagesElement = document.getElementById("bookPages");
+      const yearElement = document.getElementById("bookYear");
+      
+      if (book.pages) {
+        pagesElement.textContent = `${book.pages} pages`;
+        pagesElement.style.display = 'block';
+      } else {
+        pagesElement.style.display = 'none';
+      }
+      
+      if (book.published_year) {
+        yearElement.textContent = `Published ${book.published_year}`;
+        yearElement.style.display = 'block';
+      } else {
+        yearElement.style.display = 'none';
+      }
+      
+      // Fetch and display favorite count
+      fetchFavoriteCount(book.id);
+    } else {
+      // Hide additional details for API books
+      document.getElementById("bookPages").style.display = 'none';
+      document.getElementById("bookYear").style.display = 'none';
+      document.getElementById("bookFavoriteCount").style.display = 'none';
+    }
 
     coverElement.style.background = "#8b5e3c";
     coverElement.style.backgroundImage = "none";
@@ -527,18 +562,43 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isFavorited) {
       favoriteIcon.className = 'fas fa-heart text-red-500';
       favoriteText.textContent = 'Remove from Favorites';
-      favoriteBtn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-      favoriteBtn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+      // For modal button, we don't need to add/remove classes as CSS handles it via data-favorited attribute
     } else {
       favoriteIcon.className = 'far fa-heart text-gray-400';
       favoriteText.textContent = 'Add to Favorites';
-      favoriteBtn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-      favoriteBtn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+      // For modal button, we don't need to add/remove classes as CSS handles it via data-favorited attribute
     }
   }
 
   // Make the function globally accessible
   window.updateFavoriteButtonUI = updateFavoriteButtonUI;
+
+  // Function to fetch favorite count for a book
+  async function fetchFavoriteCount(bookId) {
+    try {
+      const response = await fetch(`/book-Library/actions/get_book_favorite_count.php?book_id=${bookId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const favoriteCountElement = document.getElementById("bookFavoriteCount");
+        const count = data.favorite_count;
+        
+        if (count === 0) {
+          favoriteCountElement.textContent = "This book hasn't been favorited yet";
+        } else if (count === 1) {
+          favoriteCountElement.textContent = "This book is a favorite to 1 user";
+        } else {
+          favoriteCountElement.textContent = `This book is a favorite to ${count} users`;
+        }
+        
+        favoriteCountElement.style.display = 'flex';
+      }
+    } catch (error) {
+      console.error('Error fetching favorite count:', error);
+      // Hide the element if there's an error
+      document.getElementById("bookFavoriteCount").style.display = 'none';
+    }
+  }
 
   // Missing functions that are referenced in the code
   function getBookIdForReview(book) {
@@ -1564,7 +1624,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const reviewsList = document.getElementById('reviewsList');
     
     if (reviews.length === 0) {
-      reviewsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No reviews yet. Be the first to review this book!</p>';
+      reviewsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm pb-3">No reviews yet. Be the first to review this book!</p>';
       return;
     }
     

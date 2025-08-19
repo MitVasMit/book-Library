@@ -1,7 +1,10 @@
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: none;
   justify-content: center;
   align-items: center;
@@ -35,9 +38,9 @@
   padding: 30px;
   box-sizing: border-box;
   background: #ffffff;
-  box-shadow: 0 0 8px rgba(0,0,0,0.08);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
   transform-style: preserve-3d;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.6;
   color: #2d3748;
 }
@@ -58,7 +61,8 @@
   transform: scaleX(1);
   opacity: 1;
   filter: brightness(1);
-  transition: transform 0.8s ease 0.2s, opacity 0.8s ease 0.2s, filter 0.8s ease 0.2s;
+  transition: transform 0.8s ease 0.2s, opacity 0.8s ease 0.2s,
+    filter 0.8s ease 0.2s;
 }
 
 .right-page {
@@ -73,22 +77,364 @@
   scrollbar-color: #cbd5e0 #f7fafc;
 }
 
+/* Custom Scrollbar Styling */
 .right-page::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .right-page::-webkit-scrollbar-track {
-  background: #f7fafc;
-  border-radius: 3px;
+  background: transparent;
+  margin-right: 3px;
 }
 
 .right-page::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 3px;
+  background: rgba(156, 163, 175, 0.6);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 .right-page::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
+  background: rgba(107, 114, 128, 0.8);
+  background-clip: content-box;
+}
+
+.right-page::-webkit-scrollbar-thumb:active {
+  background: rgba(75, 85, 99, 0.9);
+  background-clip: content-box;
+}
+
+/* Firefox scrollbar styling */
+.right-page {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.6) transparent;
+}
+
+/* Global Scrollbar Styling for all modals and scrollable areas */
+.overflow-y-auto::-webkit-scrollbar,
+[class*="overflow-y-auto"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track,
+[class*="overflow-y-auto"]::-webkit-scrollbar-track {
+  background: transparent;
+  margin-right: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb,
+[class*="overflow-y-auto"]::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.6);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+[class*="overflow-y-auto"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8);
+  background-clip: content-box;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:active,
+[class*="overflow-y-auto"]::-webkit-scrollbar-thumb:active {
+  background: rgba(75, 85, 99, 0.9);
+  background-clip: content-box;
+}
+
+/* Firefox global scrollbar styling */
+.overflow-y-auto,
+[class*="overflow-y-auto"] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.6) transparent;
+}
+
+/* Left Page Content Styling */
+.left-page-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.book-title {
+  color: #1a202c;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.book-meta {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.book-author {
+  color: #4a5568;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-style: italic;
+}
+
+.book-category {
+  color: #718096;
+  font-size: 14px;
+  margin: 0;
+  background: #f7fafc;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  border: 1px solid #e2e8f0;
+}
+
+.book-favorite-count {
+  color: #805ad5;
+  font-size: 13px;
+  margin: 8px 0 0 0;
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.book-favorite-count::before {
+  content: "❤️";
+  font-size: 12px;
+}
+
+.book-description h3 {
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #4a5568;
+}
+
+.book-description p {
+  color: #4a5568;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0;
+  text-align: justify;
+}
+
+.book-details p {
+  color: #718096;
+  font-size: 14px;
+  margin: 0;
+  font-style: italic;
+}
+
+.book-pages,
+.book-year {
+  color: #718096;
+  font-size: 13px;
+  margin: 8px 0 0 0;
+  font-style: normal;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.book-pages::before {
+  content: "📖";
+  font-size: 14px;
+}
+
+.book-year::before {
+  content: "📅";
+  font-size: 14px;
+}
+
+/* Right Page Content Styling */
+.right-page-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.section-title {
+  color: #1a202c;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* Official Rating - Left side of Right Page */
+.official-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.official-rating .rating-text {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.official-rating .rating-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.official-rating .total-ratings {
+  font-size: 10px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* Favorite Section - Now contains both rating and button */
+.favorite-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.favorite-btn-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #4a5568;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.favorite-btn-modal:hover {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+}
+
+.favorite-btn-modal[data-favorited="true"] {
+  background: #fed7d7;
+  border-color: #feb2b2;
+  color: #c53030;
+}
+
+.favorite-btn-modal[data-favorited="true"]:hover {
+  background: #feb2b2;
+}
+
+.favorite-btn-modal i {
+  font-size: 14px;
+}
+
+/* User Actions Frame */
+.user-actions-frame {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  background: #fefefe;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+}
+
+.action-title {
+  color: #2d3748;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #4a5568;
+}
+
+.rating-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.user-rating {
+  margin-bottom: 10px;
+}
+
+.star-btn {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.star-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Review Section */
+.review-section {
+  margin-top: 20px;
+}
+
+.review-section .action-title {
+  margin-bottom: 8px;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.review-textarea:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.submit-review-btn {
+  background: #93c5fd;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-review-btn:hover {
+  background: #60a5fa;
+  transform: translateY(-1px);
+}
+
+/* Reviews Section */
+.reviews-section {
+  margin-top: 10px;
+}
+
+/* No reviews message styling */
+.reviews-section p {
+  padding-bottom: 12px;
 }
 
 /* Review system styles */
@@ -145,32 +491,6 @@
   cursor: not-allowed;
 }
 
-.right-page h2 {
-  color: #1a202c;
-  font-size: 24px;
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-.right-page p {
-  color: #4a5568;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
-.left-page h2 {
-  color: #1a202c;
-  font-size: 24px;
-  margin-bottom: 15px;
-  font-weight: bold;
-}
-
-.left-page p {
-  color: #4a5568;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
 .cover {
   position: absolute;
   top: 0;
@@ -189,7 +509,7 @@
   transition: transform 1s ease;
   z-index: 2;
   backface-visibility: hidden;
-  box-shadow: -1px 0 5px rgba(0,0,0,0.2);
+  box-shadow: -1px 0 5px rgba(0, 0, 0, 0.2);
   border-radius: 1px 5px 5px 1px;
   transition: transform 1s ease, border-radius 0.4s ease;
   text-align: center;
@@ -203,8 +523,8 @@
   font-size: 28px;
   margin-bottom: 15px;
   font-weight: bold;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-  background: rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.2);
   padding: 10px 15px;
   border-radius: 8px;
   backdrop-filter: blur(1px);
@@ -212,8 +532,8 @@
 
 .cover p {
   font-size: 20px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-  background: rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.2);
   padding: 8px 12px;
   border-radius: 6px;
   backdrop-filter: blur(1px);
@@ -241,9 +561,150 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
-  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .close-button:hover {
   color: #333;
-} 
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .page {
+    background: #1a202c;
+    color: #e2e8f0;
+  }
+
+  .book-title {
+    color: #f7fafc;
+    border-bottom-color: #4a5568;
+  }
+
+  .book-author {
+    color: #a0aec0;
+  }
+
+  .book-category {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+  }
+
+  .book-favorite-count {
+    color: #d6bcfa;
+  }
+
+  .book-description h3 {
+    color: #a0aec0;
+  }
+
+  .book-description p {
+    color: #cbd5e0;
+  }
+
+  .book-details p,
+  .book-pages,
+  .book-year {
+    color: #a0aec0;
+  }
+
+  .section-title {
+    color: #f7fafc;
+    border-bottom-color: #4a5568;
+    border-bottom: none;
+
+  }
+
+  .action-title {
+    color: #a0aec0;
+  }
+
+  .user-actions-frame {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+
+  .rating-section {
+    border-bottom-color: #4a5568;
+  }
+
+  .review-textarea {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .review-textarea:focus {
+    border-color: #63b3ed;
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
+  }
+
+  .favorite-btn-modal {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+  }
+
+  .favorite-btn-modal:hover {
+    background: #4a5568;
+    border-color: #718096;
+  }
+
+  .official-rating {
+    background: rgba(26, 32, 44, 0.95);
+    color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .official-rating .rating-text {
+    color: #a0aec0;
+  }
+
+  .official-rating .total-ratings {
+    color: #718096;
+  }
+
+  /* Dark mode scrollbar styling */
+  .right-page::-webkit-scrollbar-thumb {
+    background: rgba(160, 174, 192, 0.6);
+    background-clip: content-box;
+  }
+
+  .right-page::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.8);
+    background-clip: content-box;
+  }
+
+  .right-page::-webkit-scrollbar-thumb:active {
+    background: rgba(136, 153, 166, 0.9);
+    background-clip: content-box;
+  }
+
+  .right-page {
+    scrollbar-color: rgba(160, 174, 192, 0.6) transparent;
+  }
+
+  /* Dark mode global scrollbar styling */
+  .overflow-y-auto::-webkit-scrollbar-thumb,
+  [class*="overflow-y-auto"]::-webkit-scrollbar-thumb {
+    background: rgba(160, 174, 192, 0.6);
+    background-clip: content-box;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover,
+  [class*="overflow-y-auto"]::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.8);
+    background-clip: content-box;
+  }
+
+  .overflow-y-auto::-webkit-scrollbar-thumb:active,
+  [class*="overflow-y-auto"]::-webkit-scrollbar-thumb:active {
+    background: rgba(136, 153, 166, 0.9);
+    background-clip: content-box;
+  }
+
+  .overflow-y-auto,
+  [class*="overflow-y-auto"] {
+    scrollbar-color: rgba(160, 174, 192, 0.6) transparent;
+  }
+}

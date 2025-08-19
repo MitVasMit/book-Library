@@ -56,7 +56,14 @@ try {
     
     // Save the rating
     $ratingModel = new Rating();
-    $userId = $_SESSION['user_id'];
+    $userId = $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? null;
+    
+    if (!$userId) {
+        http_response_code(400);
+        echo json_encode(['error' => 'User ID not found in session']);
+        exit;
+    }
+    
     $success = $ratingModel->createRating($userId, $bookId, $rating);
     
     if ($success) {

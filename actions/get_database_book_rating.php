@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 require_once '../includes/autoload.php';
+require_once '../includes/auth.php';
 
 try {
     $bookId = $_GET['book_id'] ?? null;
@@ -23,7 +24,7 @@ try {
     
     // Get rating data
     $ratingModel = new Rating();
-    $userId = isset($_SESSION['user']) ? $_SESSION['user']['id'] : null;
+    $userId = $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? null;
     $ratingData = $ratingModel->getBookRatingWithUser($bookId, $userId);
     
     echo json_encode([
