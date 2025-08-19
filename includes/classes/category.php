@@ -2,6 +2,10 @@
 
 class Category extends DB
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
     public function getAll(): array
     {
         $sql = "SELECT * FROM categories ORDER BY name ASC";
@@ -15,7 +19,7 @@ class Category extends DB
         $sql = "SELECT * FROM categories WHERE id = :id";
         $stmt = $this->instance->prepare($sql);
         $stmt->execute(['id' => $id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch();
         return $result ?: null;
     }
 
