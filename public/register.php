@@ -6,14 +6,17 @@ if (session_status() === PHP_SESSION_NONE) {
 
 ?>
 
-<div class="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
+<div class="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
+    <div class="text-center mb-2 -mt-24">
+        <img src="../assets/images/logo.png" alt="Library Logo" class="mx-auto h-12 w-auto mb-6">
+        <h2 class="text-3xl font-extrabold text-blue-600 mb-4">Create Your Account</h2>
+    </div>
     <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-10 max-w-md w-full">
-        <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-8">Create Your Account</h2>
 
         <form action="../actions/register_action.php" method="POST" class="space-y-6">
 
             <div>
-                <label for="name" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">Full Name</label>
+                <label for="name" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Full Name</label>
                 <input
                     type="text"
                     id="name"
@@ -25,7 +28,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
 
             <div>
-                <label for="email" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">Email Address</label>
+                <label for="email" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Email Address</label>
                 <input
                     type="email"
                     id="email"
@@ -38,7 +41,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
 
             <div>
-                <label for="password" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">Password</label>
+                <label for="password" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Password</label>
                 <input
                     type="password"
                     id="password"
@@ -49,7 +52,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
 
             <div>
-                <label for="confirm_password" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">Confirm Password</label>
+                <label for="confirm_password" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Confirm Password</label>
                 <input
                     type="password"
                     id="confirm_password"
@@ -62,7 +65,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
             <button
                 type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white py-3 rounded-md font-semibold text-lg">
+                class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white py-2 rounded-md font-semibold text-lg">
                 Register
             </button>
         </form>
