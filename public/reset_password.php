@@ -28,15 +28,19 @@ $email = htmlspecialchars($reset['email']);
 
 <?php include('../includes/header.php'); ?>
 
-<div class="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
+<div class="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
+    <div class="text-center mb-2 -mt-36">
+    <img src="../assets/images/logo.png" alt="Library Logo" class="mx-auto h-12 w-auto mb-6">
+    <h2 class="text-3xl font-extrabold text-blue-600 mb-4">Reset Your Password</h2>
+    </div>
+    
     <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-10 max-w-md w-full">
-        <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">Reset Your Password</h2>
 
         <form action="../actions/reset_password_action.php" method="POST" class="space-y-6">
             <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
 
             <div>
-                <label for="new_password" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">New Password</label>
+                <label for="new_password" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">New Password</label>
                 <input
                     type="password"
                     id="new_password"
@@ -48,7 +52,7 @@ $email = htmlspecialchars($reset['email']);
             </div>
 
             <div>
-                <label for="confirm_password" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">Confirm Password</label>
+                <label for="confirm_password" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Confirm Password</label>
                 <input
                     type="password"
                     id="confirm_password"
@@ -61,7 +65,7 @@ $email = htmlspecialchars($reset['email']);
 
             <button
                 type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md font-semibold text-lg transition-colors">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-semibold text-lg transition-colors">
                 Reset Password
             </button>
         </form>

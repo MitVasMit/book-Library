@@ -5,10 +5,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 ?>
 
-<div class="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
+<div class="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
+    <div class="text-center mb-2 -mt-36">
+    <img src="../assets/images/logo.png" alt="Library Logo" class="mx-auto h-12 w-auto mb-6">
+    <h2 class="text-3xl font-extrabold text-blue-600 mb-4">Reset Your Password</h2>
+    </div>
+    
     <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-10 max-w-md w-full">
-
-        <h2 class="text-3xl font-extrabold text-center text-blue-600 mb-8">Reset Your Password</h2>
 
         <?php if (!empty($_SESSION['success'])): ?>
             <div class="mb-4 text-center text-green-600 dark:text-green-400 font-semibold">
@@ -23,7 +26,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <div class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
 
-                <label for="email" class="block mb-2 font-medium text-gray-700 dark:text-gray-200">Your Email</label>
+                <label for="email" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Your Email</label>
                 <input
                     type="email"
                     id="email"
@@ -36,7 +39,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <button
                 type="submit"
                 id="submitBtn"
-                class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white py-3 rounded-md font-semibold text-lg">
+                class="w-full bg-blue-600 hover:bg-blue-700 transition-colors text-white py-2 rounded-md font-semibold text-lg">
                 Send Reset Link
             </button>
         </form>
