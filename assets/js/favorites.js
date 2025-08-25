@@ -53,7 +53,8 @@ class FavoritesManager {
     openFavoritesModal() {
         const modal = document.getElementById('favoritesModal');
         if (modal) {
-            modal.classList.remove('hidden');
+            // Add show class for smooth animation
+            modal.classList.add('show');
             this.loadFavorites();
         }
     }
@@ -61,7 +62,8 @@ class FavoritesManager {
     closeFavoritesModal() {
         const modal = document.getElementById('favoritesModal');
         if (modal) {
-            modal.classList.add('hidden');
+            // Remove show class to trigger closing animation
+            modal.classList.remove('show');
         }
     }
 
