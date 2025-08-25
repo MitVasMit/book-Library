@@ -20,34 +20,140 @@ class FavoritesManager {
     }
 
     bindEvents() {
-        // Favorites button click
-        const favoritesBtn = document.getElementById('favoritesBtn');
-        if (favoritesBtn) {
-            favoritesBtn.addEventListener('click', () => this.openFavoritesModal());
-        }
+        // Only bind favorites events if user is logged in
+        if (window.userIsLoggedIn) {
+            // Favorites button click (Desktop)
+            const favoritesBtn = document.getElementById('favoritesBtn');
+            if (favoritesBtn) {
+                favoritesBtn.addEventListener('click', () => this.openFavoritesModal());
+            }
 
-        // Close modal button
-        const closeBtn = document.getElementById('closeFavoritesModal');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => this.closeFavoritesModal());
-        }
+            // Favorites button click (Tablet)
+            const favoritesBtnTablet = document.getElementById('favoritesBtnTablet');
+            if (favoritesBtnTablet) {
+                favoritesBtnTablet.addEventListener('click', () => this.openFavoritesModal());
+            }
 
-        // Close modal when clicking outside
-        const modal = document.getElementById('favoritesModal');
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
+            // Favorites button click (Mobile)
+            const favoritesBtnMobile = document.getElementById('favoritesBtnMobile');
+            if (favoritesBtnMobile) {
+                favoritesBtnMobile.addEventListener('click', () => {
+                    this.openFavoritesModal();
+                    this.closeMobileMenu();
+                });
+            }
+
+            // Close modal button
+            const closeBtn = document.getElementById('closeFavoritesModal');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => this.closeFavoritesModal());
+            }
+
+            // Close modal when clicking outside
+            const modal = document.getElementById('favoritesModal');
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        this.closeFavoritesModal();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
                     this.closeFavoritesModal();
+                }
+            });
+
+            // Mobile menu functionality
+            this.bindMobileMenuEvents();
+        }
+    }
+
+    bindMobileMenuEvents() {
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => this.openMobileMenu());
+        }
+
+        if (closeMobileMenuBtn) {
+            closeMobileMenuBtn.addEventListener('click', () => this.closeMobileMenu());
+        }
+
+        if (mobileMenu) {
+            // Close menu when clicking on backdrop
+            mobileMenu.addEventListener('click', (e) => {
+                if (e.target === mobileMenu) {
+                    this.closeMobileMenu();
+                }
+            });
+
+            // Close menu with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.closeMobileMenu();
                 }
             });
         }
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.closeFavoritesModal();
+        // Handle window resize to reposition menu if needed
+        window.addEventListener('resize', () => {
+            if (mobileMenu && mobileMenu.classList.contains('show')) {
+                this.repositionMobileMenu();
             }
         });
+    }
+
+    repositionMobileMenu() {
+        const mobileMenuContent = document.getElementById('mobileMenuContent');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (mobileMenuContent && mobileMenuBtn) {
+            const btnRect = mobileMenuBtn.getBoundingClientRect();
+            
+            // Reposition the menu
+            mobileMenuContent.style.top = `${btnRect.bottom + 8}px`;
+            mobileMenuContent.style.right = `${window.innerWidth - btnRect.right}px`;
+        }
+    }
+
+    openMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuContent = document.getElementById('mobileMenuContent');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (mobileMenu && mobileMenuContent && mobileMenuBtn) {
+            // Get the position of the hamburger button
+            const btnRect = mobileMenuBtn.getBoundingClientRect();
+            const headerHeight = 80; // Approximate header height
+            
+            // Position the menu below the hamburger button
+            mobileMenuContent.style.top = `${btnRect.bottom + 8}px`; // 8px gap
+            mobileMenuContent.style.right = `${window.innerWidth - btnRect.right}px`;
+            
+            // Show the menu
+            mobileMenu.classList.remove('hidden');
+            
+            // Use requestAnimationFrame to ensure the menu is visible before adding show class
+            requestAnimationFrame(() => {
+                mobileMenu.classList.add('show');
+            });
+        }
+    }
+
+    closeMobileMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu) {
+            mobileMenu.classList.remove('show');
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                mobileMenu.classList.add('hidden');
+            }, 300);
+        }
     }
 
     openFavoritesModal() {
@@ -199,11 +305,40 @@ class FavoritesManager {
 
     updateFavoriteCount(count) {
         this.favoriteCount = count;
-        const countElement = document.getElementById('favoriteCount');
-        if (countElement) {
-            countElement.textContent = count;
-            countElement.classList.toggle('hidden', count === 0);
-        }
+        
+        // Update all count elements
+        const countElements = [
+            document.getElementById('favoriteCount'),
+            document.getElementById('favoriteCountTablet'),
+            document.getElementById('favoriteCountMobile')
+        ];
+        
+        countElements.forEach(element => {
+            if (element) {
+                element.textContent = count;
+                // Only show count when there are favorites (for hover elements)
+                if (element.id === 'favoriteCount' || element.id === 'favoriteCountTablet') {
+                    element.classList.toggle('opacity-0', count === 0);
+                }
+            }
+        });
+        
+        // Update all heart icons
+        const iconElements = [
+            document.getElementById('favoritesIcon'),
+            document.getElementById('favoritesIconTablet'),
+            document.getElementById('favoritesIconMobile')
+        ];
+        
+        iconElements.forEach(element => {
+            if (element) {
+                if (count > 0) {
+                    element.className = 'fas fa-heart text-red-500 transition-colors';
+                } else {
+                    element.className = 'fas fa-heart transition-colors';
+                }
+            }
+        });
     }
 
     async removeFavorite(bookId) {
@@ -267,6 +402,27 @@ class FavoritesManager {
             const generalTextSpan = btn.querySelector('span');
             if (generalTextSpan && !btn.querySelector('.favorite-text')) {
                 generalTextSpan.textContent = isFavorited ? 'Remove from Favorites' : 'Add to Favorites';
+            }
+        });
+        
+        // Update header heart icon based on total favorites
+        this.updateHeaderHeartIcon();
+    }
+    
+    updateHeaderHeartIcon() {
+        const iconElements = [
+            document.getElementById('favoritesIcon'),
+            document.getElementById('favoritesIconTablet'),
+            document.getElementById('favoritesIconMobile')
+        ];
+        
+        iconElements.forEach(element => {
+            if (element) {
+                if (this.favoriteCount > 0) {
+                    element.className = 'fas fa-heart text-red-500 transition-colors';
+                } else {
+                    element.className = 'fas fa-heart transition-colors';
+                }
             }
         });
     }
@@ -496,6 +652,7 @@ class FavoritesManager {
 
 // Initialize favorites manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Only initialize favorites manager if user is logged in
     if (window.userIsLoggedIn) {
         window.favoritesManager = new FavoritesManager();
     }

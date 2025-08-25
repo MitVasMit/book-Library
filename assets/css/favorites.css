@@ -361,3 +361,146 @@
 #favoritesCount {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Favorites button styling */
+#favoritesBtn {
+    position: relative;
+}
+
+#favoritesBtn:hover #favoritesIcon {
+    transform: scale(1.1);
+}
+
+#favoritesBtn #favoritesIcon {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Favorite count badge styling */
+#favoriteCount {
+    position: absolute;
+    right: -8px;
+    top: -12px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    z-index: 10;
+}
+
+/* Ensure count is visible on hover when there are favorites */
+#favoritesBtn:hover #favoriteCount:not(.opacity-0) {
+    opacity: 1 !important;
+}
+
+/* Mobile Menu Styles */
+#mobileMenu {
+    transition: opacity 0.3s ease-in-out;
+}
+
+#mobileMenu.show {
+    opacity: 1;
+}
+
+#mobileMenuContent {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateX(100%);
+    opacity: 0;
+    position: fixed;
+    z-index: 60;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark #mobileMenuContent {
+    background: rgba(31, 41, 55, 0.85);
+    border: 1px solid rgba(75, 85, 99, 0.2);
+}
+
+#mobileMenu.show #mobileMenuContent {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Ensure mobile menu doesn't go off-screen on small devices */
+@media (max-height: 600px) {
+    #mobileMenuContent {
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 400px) {
+    #mobileMenuContent {
+        width: calc(100vw - 2rem);
+    }
+}
+
+/* Responsive Navigation */
+@media (max-width: 768px) {
+    /* Hide desktop navigation on mobile */
+    .hidden.md\\:flex {
+        display: none !important;
+    }
+    
+    /* Show mobile menu button */
+    .sm\\:hidden {
+        display: block !important;
+    }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+    /* Hide tablet navigation on mobile */
+    .hidden.sm\\:flex.md\\:hidden {
+        display: none !important;
+    }
+    
+    /* Show mobile menu button on small screens */
+    .sm\\:hidden {
+        display: block !important;
+    }
+}
+
+@media (min-width: 768px) {
+    /* Hide mobile menu button on larger screens */
+    .sm\\:hidden {
+        display: none !important;
+    }
+}
+
+/* Tablet Navigation Icon Styling */
+#favoritesBtnTablet, #mobileMenuBtn {
+    position: relative;
+}
+
+#favoritesBtnTablet:hover, #mobileMenuBtn:hover {
+    transform: scale(1.05);
+}
+
+/* Mobile Menu Button Hover Effects */
+#mobileMenuBtn:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Mobile Menu Item Hover Effects */
+#mobileMenu nav button:hover,
+#mobileMenu nav a:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Ensure proper z-index for mobile menu */
+#mobileMenu {
+    z-index: 60;
+}
+
+/* Mobile menu backdrop click to close */
+#mobileMenu > div:first-child {
+    cursor: pointer;
+}
+
+#mobileMenu > div:first-child > div {
+    cursor: default;
+}

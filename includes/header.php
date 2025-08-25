@@ -11,7 +11,13 @@ $user = $_SESSION['user'] ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>Book Library</title>
+    
+    <!-- Dark Mode CSS - Loaded first to prevent flash -->
+    <link rel="stylesheet" href="../assets/css/dark-mode.css" />
+    
+    <!-- Main CSS -->
     <link href="../assets/css/output.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <!-- swiper CSS -->
@@ -28,11 +34,13 @@ $user = $_SESSION['user'] ?? null;
     <link rel="stylesheet" href="../assets/css/filters.css" />
     <!-- Favorites CSS -->
     <link rel="stylesheet" href="../assets/css/favorites.css" />
-    <!-- Filters JavaScript -->
+    
+    <!-- Dark Mode JavaScript - Loaded early to prevent flash -->
+    <script src="../assets/js/dark-mode.js"></script>
+    
+    <!-- Other JavaScript -->
     <script src="../assets/js/filters.js" defer></script>
-    <!-- Main JavaScript -->
     <script src="../assets/js/main.js" defer></script>
-    <!-- Favorites JavaScript -->
     <script src="../assets/js/favorites.js" defer></script>
     
     <!-- User Authentication Status -->
@@ -45,52 +53,99 @@ $user = $_SESSION['user'] ?? null;
 
 <body class="bg-blue-100 text-gray-900 dark:bg-gray-900 dark:text-white">
     <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md shadow">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-
-            <div class="flex items-center gap-2 w-1/3">
+        <div class="w-full px-6 py-4 flex items-center">
+            <!-- Left Section: Logo and Welcome Message -->
+            <div class="flex items-center gap-4 flex-shrink-0">
                 <a href="../public/index.php"><img class="w-[40px]" src="../assets/images/logo.png" alt="logo"></a>
+                
+                <?php if ($user): ?>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-300">
+                            Welcome, <strong class="text-blue-600 dark:text-blue-400"><?= htmlspecialchars($user['name']) ?></strong>
+                        </span>
+                    </div>
+                <?php endif; ?>
             </div>
 
-            <div class="text-center w-1/3">
+            <!-- Center Section: open Library Branding -->
+            <div class="flex-1 flex justify-center">
                 <a href="../public/index.php" class="flex flex-col">
                     <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">open</span>
                     <span class="text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-lg transition-transform duration-300 hover:scale-105">Library</span>
                 </a>
             </div>
 
-            <nav class="w-1/3 text-right space-x-4">
+            <!-- Right Section: Navigation -->
+            <nav class="flex-shrink-0">
                 <?php if (!$user): ?>
-                    <a href="../public/login.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Login</a>
-                    <a href="../public/register.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Register</a>
+                    <div class="flex items-center space-x-4">
+                        <a href="../public/login.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Login</a>
+                        <a href="../public/register.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Register</a>
+                        
+                        <!-- Standalone Dark Mode Toggle for guest users -->
+                        <button id="darkToggleStandalone" class="text-gray-600 dark:text-gray-300 hover:text-yellow-500 transition-colors ml-4" title="Toggle Dark Mode">
+                            🌙
+                        </button>
+                    </div>
                 <?php else: ?>
-                    <span class="text-sm text-gray-600 dark:text-gray-300">
-                        Welcome, <strong><?= htmlspecialchars($user['name']) ?></strong>
-                    </span>
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex items-center space-x-4">
+                        <button id="favoritesBtn" class="text-gray-600 hover:text-red-600 inline-flex items-center gap-1 font-medium transition-colors group relative">
+                            <i class="fas fa-heart transition-colors" id="favoritesIcon"></i>
+                            <span>Favorites</span>
+                            <span id="favoriteCount" class="bg-red-500 text-white text-xs rounded-full px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">0</span>
+                        </button>
 
-                    <button id="favoritesBtn" class="text-gray-600 hover:text-red-600 inline-flex items-center gap-1 font-medium transition-colors">
-                        <i class="fas fa-heart"></i>
-                        <span>Favorites</span>
-                        <span id="favoriteCount" class="bg-red-500 text-white text-xs rounded-full px-2 py-1 ml-1">0</span>
-                    </button>
+                        <?php if ($user['role'] === 'admin'): ?>
+                            <a href="../admin/dashboard.php" class="text-blue-600 font-semibold">Admin Panel</a>
+                        <?php endif; ?>
 
-                    <?php if ($user['role'] === 'admin'): ?>
-                        <a href="../admin/dashboard.php" class="text-blue-600 font-semibold">Admin Panel</a>
-                    <?php endif; ?>
+                        <a href="../actions/logout.php" class="inline-flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+                            </svg>
+                            Logout
+                        </a>
 
-                    <a href="../actions/logout.php" class="inline-flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
-                        </svg>
-                        Logout
-                    </a>
+                        <button id="darkToggleDesktop" class="text-gray-600 dark:text-gray-300 hover:text-yellow-500 transition-colors" title="Toggle Dark Mode">
+                            🌙
+                        </button>
+                    </div>
+
+                    <!-- Tablet Navigation (Icons Only) -->
+                    <div class="hidden sm:flex md:hidden items-center space-x-3">
+                        <button id="favoritesBtnTablet" class="text-gray-600 hover:text-red-600 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group relative" title="Favorites">
+                            <i class="fas fa-heart transition-colors text-lg" id="favoritesIconTablet"></i>
+                            <span id="favoriteCountTablet" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">0</span>
+                        </button>
+
+                        <?php if ($user['role'] === 'admin'): ?>
+                            <a href="../admin/dashboard.php" class="text-blue-600 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors" title="Admin Panel">
+                                <i class="fas fa-cog text-lg"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <a href="../actions/logout.php" class="text-gray-600 hover:text-blue-600 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Logout">
+                            <i class="fas fa-sign-out-alt text-lg"></i>
+                        </a>
+
+                        <button id="darkToggleTablet" class="text-gray-600 dark:text-gray-300 hover:text-yellow-500 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Toggle Dark Mode">
+                            🌙
+                        </button>
+                    </div>
+
+                    <!-- Mobile Navigation (Hamburger Menu) -->
+                    <div class="sm:hidden flex flex-col items-end gap-2">
+                        <button id="darkToggle" class="text-gray-600 dark:text-gray-300 hover:text-yellow-500 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Toggle Dark Mode">
+                            🌙
+                        </button>
+                        <button id="mobileMenuBtn" class="text-gray-600 hover:text-blue-600 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Menu">
+                            <i class="fas fa-bars text-lg"></i>
+                        </button>
+                    </div>
                 <?php endif; ?>
-
-                <button id="darkToggle" class="ml-2 text-gray-600 dark:text-gray-300 hover:text-yellow-500" title="Toggle Dark Mode">
-                    🌙
-                </button>
             </nav>
-
         </div>
     </header>
 
@@ -141,6 +196,46 @@ $user = $_SESSION['user'] ?? null;
                         Start Exploring
                     </a>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="absolute top-0 right-0 w-64 bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-all duration-300 ease-in-out rounded-lg" id="mobileMenuContent">
+            <div class="p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Menu</h3>
+                    <button id="closeMobileMenu" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <nav class="space-y-3">
+                    <button id="favoritesBtnMobile" class="w-full text-left p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group relative">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-heart text-red-500 text-lg" id="favoritesIconMobile"></i>
+                            <span class="text-gray-800 dark:text-white font-medium">Favorites</span>
+                            <span id="favoriteCountMobile" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">0</span>
+                        </div>
+                    </button>
+
+                    <?php if ($user && $user['role'] === 'admin'): ?>
+                        <a href="../admin/dashboard.php" class="block p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-cog text-blue-600 text-lg"></i>
+                                <span class="text-gray-800 dark:text-white font-medium">Admin Panel</span>
+                            </div>
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="../actions/logout.php" class="block p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-sign-out-alt text-gray-600 text-lg"></i>
+                            <span class="text-gray-800 dark:text-white font-medium">Logout</span>
+                        </div>
+                    </a>
+                </nav>
             </div>
         </div>
     </div>

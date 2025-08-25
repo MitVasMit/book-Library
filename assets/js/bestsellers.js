@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const bestsellerList = document.getElementById("bestseller-list");
   const bestsellerLoader = document.getElementById("bestseller-loader");
 
+  // Check if required elements exist before proceeding
+  if (!bestsellerList) {
+    console.warn("Bestseller list element not found, bestsellers.js may not be needed on this page");
+    return;
+  }
+
   // check if loader exists before using it
   if (bestsellerLoader) {
     bestsellerLoader.classList.remove("hidden");
@@ -56,7 +62,13 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
 `;
 
-        bestsellerList.appendChild(slide);
+        // Safely append the slide if bestsellerList exists
+        if (bestsellerList) {
+          bestsellerList.appendChild(slide);
+        } else {
+          console.warn("Bestseller list element not found, cannot append slide");
+          return;
+        }
 
         const bookCard = slide.querySelector("div");
         bookCard.addEventListener("click", (e) => {
@@ -117,34 +129,39 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
       }
 
-      const swiper = new Swiper(".bestseller-swiper", {
-        slidesPerView: 3,
-        spaceBetween: 40,
-        loop: true,
-        autoplay: {
-          delay: 3000,
-          disableOnInteraction: false,
-        },
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev",
-        },
-        pagination: {
-          el: ".swiper-pagination",
-          clickable: true,
-        },
-        breakpoints: {
-          640: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 },
-        },
-        on: {
-          init: function () {
-            console.log("Swiper initialized successfully!");
+      // Safely initialize Swiper if the container exists
+      const swiperContainer = document.querySelector(".bestseller-swiper");
+      if (swiperContainer) {
+        const swiper = new Swiper(".bestseller-swiper", {
+          slidesPerView: 3,
+          spaceBetween: 40,
+          loop: true,
+          autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
           },
-          init: function () {},
-        },
-      });
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          breakpoints: {
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+          },
+          on: {
+            init: function () {
+              console.log("Swiper initialized successfully!");
+            },
+          },
+        });
+      } else {
+        console.warn("Swiper container not found, skipping Swiper initialization");
+      }
     })
     .catch((err) => {
       if (bestsellerLoader) {
