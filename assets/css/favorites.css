@@ -98,11 +98,89 @@
 
 /* Favorites modal animations */
 #favoritesModal {
-    animation: fadeIn 0.3s ease-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#favoritesModal.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 #favoritesModal .bg-white {
-    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+}
+
+#favoritesModal.show .bg-white {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* Admin favorites modal animations */
+#userFavoritesModal {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#userFavoritesModal.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+#userFavoritesModal .bg-white {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+}
+
+#userFavoritesModal.show .bg-white {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* Modal content smooth transitions */
+#favoritesContent, #userFavoritesContent {
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Modal backdrop smooth transitions */
+#favoritesModal, #userFavoritesModal {
+    backdrop-filter: blur(0px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.3s ease;
+    transform: scale(0.98);
+}
+
+#favoritesModal.show, #userFavoritesModal.show {
+    backdrop-filter: blur(4px);
+    transform: scale(1);
+}
+
+/* Smooth transitions for modal elements */
+#favoritesModal .bg-white > *, #userFavoritesModal .bg-white > * {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
+}
+
+#favoritesModal.show .bg-white > *, #userFavoritesModal.show .bg-white > * {
+    opacity: 1;
+}
+
+/* Modal content fade-in with delay */
+#favoritesContent, #userFavoritesContent {
+    transition: opacity 0.4s ease-in-out;
+    opacity: 0;
+}
+
+#favoritesModal.show #favoritesContent, #userFavoritesModal.show #userFavoritesContent {
+    opacity: 1;
 }
 
 @keyframes fadeIn {
@@ -235,4 +313,51 @@
     .favorite-btn i {
         font-size: 0.875rem;
     }
+}
+
+/* Close button smooth transitions */
+#closeFavoritesModal, #userFavoritesModal button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#closeFavoritesModal:hover, #userFavoritesModal button:hover {
+    transform: scale(1.05);
+}
+
+/* Staggered entrance animations for favorite cards */
+#favoritesGrid .bg-white, #userFavoritesContent .bg-white {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: cardEntrance 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+#favoritesGrid .bg-white:nth-child(1), #userFavoritesContent .bg-white:nth-child(1) { animation-delay: 0.2s; }
+#favoritesGrid .bg-white:nth-child(2), #userFavoritesContent .bg-white:nth-child(2) { animation-delay: 0.25s; }
+#favoritesGrid .bg-white:nth-child(3), #userFavoritesContent .bg-white:nth-child(3) { animation-delay: 0.3s; }
+#favoritesGrid .bg-white:nth-child(4), #userFavoritesContent .bg-white:nth-child(4) { animation-delay: 0.35s; }
+#favoritesGrid .bg-white:nth-child(5), #userFavoritesContent .bg-white:nth-child(5) { animation-delay: 0.4s; }
+#favoritesGrid .bg-white:nth-child(6), #userFavoritesContent .bg-white:nth-child(6) { animation-delay: 0.45s; }
+
+@keyframes cardEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal grid items smooth transitions */
+#favoritesGrid .bg-white:hover, #userFavoritesContent .bg-white:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Smooth loading transitions */
+#favoritesLoader {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Smooth count badge transitions */
+#favoritesCount {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

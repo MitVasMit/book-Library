@@ -95,7 +95,7 @@ $user = $_SESSION['user'] ?? null;
     </header>
 
     <!-- Favorites Modal -->
-    <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-start justify-center pt-20 pb-6 px-6">
+    <div id="favoritesModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-20 pb-6 px-6">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[calc(100vh-6rem)] overflow-hidden">
             <!-- Header -->
             <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20">
@@ -137,9 +137,9 @@ $user = $_SESSION['user'] ?? null;
                     </div>
                     <h3 class="text-base font-semibold text-gray-800 dark:text-white mb-2">No favorites yet</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm mb-3">You haven't added any books to your favorites collection.</p>
-                    <button id="closeFavoritesModal" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
+                    <a href="../public/index.php" class="inline-block px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
                         Start Exploring
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

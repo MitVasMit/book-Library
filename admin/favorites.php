@@ -160,7 +160,7 @@ uasort($userStats, function($a, $b) {
     </div>
 
     <!-- User Favorites Modal -->
-    <div id="userFavoritesModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div id="userFavoritesModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white" id="modalTitle">User Favorites</h2>
@@ -221,12 +221,16 @@ uasort($userStats, function($a, $b) {
                 </div>
             `;
             
-            modal.classList.remove('hidden');
+            // Add show class for smooth animation
+            modal.classList.add('show');
         }
 
         function closeUserFavoritesModal() {
             const modal = document.getElementById('userFavoritesModal');
-            modal.classList.add('hidden');
+            if (modal) {
+                // Remove show class to trigger closing animation
+                modal.classList.remove('show');
+            }
         }
 
         // Close modal when clicking outside
