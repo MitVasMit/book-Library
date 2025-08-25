@@ -1,4 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Helper function to safely get DOM elements
+  function safeGetElement(id, fallback = null) {
+    const element = document.getElementById(id);
+    if (!element && fallback !== null) {
+      console.warn(`Element with id '${id}' not found, using fallback`);
+      return fallback;
+    }
+    return element;
+  }
+
+  // Helper function to safely set element properties
+  function safeSetElement(id, property, value, fallback = null) {
+    const element = safeGetElement(id, fallback);
+    if (element && element[property] !== undefined) {
+      try {
+        element[property] = value;
+      } catch (error) {
+        console.warn(`Could not set ${property} on element '${id}':`, error);
+      }
+    }
+  }
+
   const categories = [
     "computer_programming",
     "science",
@@ -12,71 +34,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loader = document.getElementById("book-list-loader");
   const bookList = document.getElementById("book-list");
-  if (loader) loader.classList.remove("hidden");
   const pagination = document.getElementById("pagination");
 
+  // Check if required elements exist before proceeding
+  if (!bookList) {
+    console.warn("Book list element not found, books.js may not be needed on this page");
+    return;
+  }
+
+  if (loader) loader.classList.remove("hidden");
+  
   const booksPerPage = 20;
   let currentPage = 1;
   let books = [];
 
-        // Load both OpenLibrary and database books
-      loadAllBooks();
+  // Load both OpenLibrary and database books
+  loadAllBooks();
+  
+  async function loadAllBooks() {
+    try {
+      // Load OpenLibrary books
+      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+      const openLibraryResponse = await fetch(`https://openlibrary.org/subjects/${randomCategory}.json?limit=50`);
+      const openLibraryData = await openLibraryResponse.json();
+      const openLibraryBooks = (openLibraryData.works || []).map(book => ({
+        ...book,
+        source: 'openlibrary'
+      }));
       
-      async function loadAllBooks() {
+      // Load database books
+      const databaseResponse = await fetch('/book-Library/actions/get_filtered_books.php');
+      const databaseBooks = await databaseResponse.json();
+      const formattedDatabaseBooks = databaseBooks.map(book => ({
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        description: book.description,
+        published_year: book.published_year,
+        pages: book.pages,
+        rating: parseFloat(book.rating) || 0,
+        cover_image: book.cover_image,
+        category_name: book.category_name,
+        source: 'database'
+      }));
+      
+      // Combine and sort books
+      books = [...formattedDatabaseBooks, ...openLibraryBooks];
+      
+      // Safely hide loader if it exists
+      if (loader) {
+        loader.classList.add("hidden");
+      }
+      
+      // Initialize favorites first if user is logged in, then render books
+      if (window.userIsLoggedIn) {
         try {
-          // Load OpenLibrary books
-          const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-          const openLibraryResponse = await fetch(`https://openlibrary.org/subjects/${randomCategory}.json?limit=50`);
-          const openLibraryData = await openLibraryResponse.json();
-          const openLibraryBooks = (openLibraryData.works || []).map(book => ({
-            ...book,
-            source: 'openlibrary'
-          }));
-          
-          // Load database books
-          const databaseResponse = await fetch('/book-Library/actions/get_filtered_books.php');
-          const databaseBooks = await databaseResponse.json();
-          const formattedDatabaseBooks = databaseBooks.map(book => ({
-            id: book.id,
-            title: book.title,
-            author: book.author,
-            description: book.description,
-            published_year: book.published_year,
-            pages: book.pages,
-            rating: parseFloat(book.rating) || 0,
-            cover_image: book.cover_image,
-            category_name: book.category_name,
-            source: 'database'
-          }));
-          
-          // Combine and sort books
-          books = [...formattedDatabaseBooks, ...openLibraryBooks];
-          loader.classList.add("hidden");
-          
-          // Initialize favorites first if user is logged in, then render books
-          if (window.userIsLoggedIn) {
-            try {
-              const favoritesLoaded = await window.ensureFavoritesLoaded();
-              if (favoritesLoaded) {
+          const favoritesLoaded = await window.ensureFavoritesLoaded();
+          if (favoritesLoaded) {
 
-              } else {
-                console.warn('Favorites could not be initialized');
-              }
-            } catch (error) {
-              console.error('Error initializing favorites:', error);
-            }
+          } else {
+            console.warn('Favorites could not be initialized');
           }
-          
-          renderPage(currentPage);
-          setupPagination();
-        } catch (err) {
-          loader.classList.add("hidden");
-          bookList.innerHTML = `<p class="text-red-600">Error loading Books.</p>`;
-          console.error(err);
+        } catch (error) {
+          console.error('Error initializing favorites:', error);
         }
       }
+      
+      renderPage(currentPage);
+      setupPagination();
+    } catch (err) {
+      // Safely handle loader and bookList
+      if (loader) {
+        loader.classList.add("hidden");
+      }
+      if (bookList) {
+        bookList.innerHTML = `<p class="text-red-600">Error loading Books.</p>`;
+      }
+      console.error(err);
+    }
+  }
 
   function renderPage(page) {
+    if (!bookList) {
+      console.warn("Book list element not found, cannot render page");
+      return;
+    }
+    
     bookList.innerHTML = "";
 
     const start = (page - 1) * booksPerPage;
@@ -227,6 +270,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setupPagination() {
+    if (!pagination) {
+      console.warn("Pagination element not found, cannot setup pagination");
+      return;
+    }
+    
     pagination.innerHTML = "";
 
     const totalPages = Math.ceil(books.length / booksPerPage);
@@ -283,19 +331,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeBtn = document.getElementById("closeBtn");
     const coverElement = document.querySelector(".cover");
 
-    document.getElementById("bookTitle").textContent = book.title;
-    document.getElementById("bookAuthor").textContent = book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
-    document.getElementById("coverTitle").textContent = book.title;
-    document.getElementById("coverAuthor").textContent =
-      book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
+    // Check if required elements exist
+    if (!modal || !bookElement || !closeBtn || !coverElement) {
+      console.warn("Required modal elements not found, cannot open book modal");
+      return;
+    }
+
+    // Safely set text content for elements that might not exist
+    const bookTitle = document.getElementById("bookTitle");
+    const bookAuthor = document.getElementById("bookAuthor");
+    const coverTitle = document.getElementById("coverTitle");
+    const coverAuthor = document.getElementById("coverAuthor");
+    
+    if (bookTitle) bookTitle.textContent = book.title;
+    if (bookAuthor) bookAuthor.textContent = book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
+    if (coverTitle) coverTitle.textContent = book.title;
+    if (coverAuthor) coverAuthor.textContent = book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
 
     // Populate category if available
     const categoryElement = document.getElementById("bookCategory");
-    if (book.source === 'database' && book.category_name) {
-      categoryElement.textContent = book.category_name;
-      categoryElement.style.display = 'block';
-    } else {
-      categoryElement.style.display = 'none';
+    if (categoryElement) {
+      if (book.source === 'database' && book.category_name) {
+        categoryElement.textContent = book.category_name;
+        categoryElement.style.display = 'block';
+      } else {
+        categoryElement.style.display = 'none';
+      }
     }
 
     // Populate additional details for database books
@@ -303,27 +364,35 @@ document.addEventListener("DOMContentLoaded", () => {
       const pagesElement = document.getElementById("bookPages");
       const yearElement = document.getElementById("bookYear");
       
-      if (book.pages) {
-        pagesElement.textContent = `${book.pages} pages`;
-        pagesElement.style.display = 'block';
-      } else {
-        pagesElement.style.display = 'none';
+      if (pagesElement) {
+        if (book.pages) {
+          pagesElement.textContent = `${book.pages} pages`;
+          pagesElement.style.display = 'block';
+        } else {
+          pagesElement.style.display = 'none';
+        }
       }
       
-      if (book.published_year) {
-        yearElement.textContent = `Published ${book.published_year}`;
-        yearElement.style.display = 'block';
-      } else {
-        yearElement.style.display = 'none';
+      if (yearElement) {
+        if (book.published_year) {
+          yearElement.textContent = `Published ${book.published_year}`;
+          yearElement.style.display = 'block';
+        } else {
+          yearElement.style.display = 'none';
+        }
       }
       
       // Fetch and display favorite count
       fetchFavoriteCount(book.id);
     } else {
       // Hide additional details for API books
-      document.getElementById("bookPages").style.display = 'none';
-      document.getElementById("bookYear").style.display = 'none';
-      document.getElementById("bookFavoriteCount").style.display = 'none';
+      const pagesElement = document.getElementById("bookPages");
+      const yearElement = document.getElementById("bookYear");
+      const favoriteCountElement = document.getElementById("bookFavoriteCount");
+      
+      if (pagesElement) pagesElement.style.display = 'none';
+      if (yearElement) yearElement.style.display = 'none';
+      if (favoriteCountElement) favoriteCountElement.style.display = 'none';
     }
 
     coverElement.style.background = "#8b5e3c";

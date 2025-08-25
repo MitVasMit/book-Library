@@ -1,0 +1,39 @@
+/* Dark Mode Styles - Applied immediately to prevent flash */
+
+/* Apply dark mode styles immediately if data-theme is set */
+[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+}
+
+/* Ensure dark mode styles are applied before main CSS loads */
+[data-theme="dark"] body {
+    background-color: #111827 !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] html {
+    background-color: #111827 !important;
+}
+
+/* Dark mode header styles */
+[data-theme="dark"] header {
+    background-color: rgba(17, 24, 39, 0.7) !important;
+}
+
+/* Dark mode text colors */
+[data-theme="dark"] .text-gray-900 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .bg-white {
+    background-color: #1f2937 !important;
+}
+
+/* Dark mode border colors */
+[data-theme="dark"] .border-gray-200 {
+    border-color: #374151 !important;
+}
