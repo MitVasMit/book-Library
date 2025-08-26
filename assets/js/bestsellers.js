@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check if required elements exist before proceeding
   if (!bestsellerList) {
-    console.warn("Bestseller list element not found, bestsellers.js may not be needed on this page");
+    
     return;
   }
 
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bestsellerList) {
           bestsellerList.appendChild(slide);
         } else {
-          console.warn("Bestseller list element not found, cannot append slide");
+  
           return;
         }
 
@@ -155,12 +155,12 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           on: {
             init: function () {
-              console.log("Swiper initialized successfully!");
+      
             },
           },
         });
       } else {
-        console.warn("Swiper container not found, skipping Swiper initialization");
+
       }
     })
     .catch((err) => {

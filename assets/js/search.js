@@ -20,16 +20,14 @@ function fetchBooks(query) {
   loader.classList.remove("hidden");
   bookList.innerHTML = "";
 
-  console.log('Searching for:', query);
-  console.log('Search URL:', "/book-Library/actions/book_search.php?q=" + encodeURIComponent(query));
+  
 
   const currentFilters = window.bookFilters ? window.bookFilters.getCurrentFilters() : null;
-  console.log('Current filters:', currentFilters);
+  
 
   const searchPromise = fetch("/book-Library/actions/book_search.php?q=" + encodeURIComponent(query))
     .then((response) => {
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -37,7 +35,7 @@ function fetchBooks(query) {
       return response.json();
     })
     .then((data) => {
-      console.log('Search response:', data);
+      
       
       if (data.error) {
         throw new Error(data.error);
@@ -54,7 +52,7 @@ function fetchBooks(query) {
       return response.json();
     })
     .then((bestsellersData) => {
-      console.log('Bestsellers data:', bestsellersData);
+      
       
       if (!bestsellersData || !bestsellersData.docs) {
         return [];
@@ -94,11 +92,11 @@ function fetchBooks(query) {
     .then(([searchResults, bestsellersResults]) => {
       let allResults = [...searchResults, ...bestsellersResults];
       
-      console.log('Combined results before filtering:', allResults);
+      
 
       if (currentFilters) {
         allResults = applyFiltersToResults(allResults, currentFilters);
-        console.log('Results after filtering:', allResults);
+
       }
 
       const uniqueResults = allResults.filter((book, index, self) => 
@@ -123,8 +121,7 @@ function fetchBooks(query) {
           "bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
 
         item.addEventListener('click', () => {
-          console.log('Search result clicked:', book);
-          console.log('openBookModal function available:', typeof window.openBookModal);
+          
           
           const bookData = {
             id: book.id || null,
@@ -134,7 +131,7 @@ function fetchBooks(query) {
             cover_image: book.cover_image,
             key: book.key || null
           };
-          console.log('Book data for modal:', bookData);
+  
           
           if (typeof window.openBookModal === 'function') {
             window.openBookModal(bookData);
@@ -145,8 +142,7 @@ function fetchBooks(query) {
 
         const rating = parseFloat(book.rating) || 0;
         const ratingCount = book.rating_count || book.ratings_count || book.ratings?.count || 0;
-        console.log('Search book data:', book);
-        console.log('Rating for search result:', rating, 'Count:', ratingCount);
+
         
         const ratingBadge = rating > 0 ? `
           <div class="absolute top-2 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow-md z-10" style="left: auto; right: 8px;">

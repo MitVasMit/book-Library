@@ -59,7 +59,7 @@
 
       const attemptBinding = () => {
         if (retryCount >= maxRetries) {
-          console.log("Max retries reached for dark mode toggle binding");
+  
           return;
         }
 
@@ -77,12 +77,10 @@
 
         if (availableToggles.length < allToggles.length) {
           retryCount++;
-          console.log(
-            `Retry ${retryCount}: Some toggles not found, retrying in 200ms...`
-          );
+
           setTimeout(attemptBinding, 200);
         } else {
-          console.log("All dark mode toggles found, binding successful");
+
           this.bindDarkModeToggles();
         }
       };
@@ -138,18 +136,12 @@
             toggle.removeEventListener("click", this.toggleDarkMode);
             toggle.addEventListener("click", () => this.toggleDarkMode());
           } catch (error) {
-            console.warn(`Error binding toggle ${toggle.id}:`, error);
+    
           }
         }
       });
 
-      // Log for debugging
-      console.log("Dark mode toggles bound:", {
-        mobile: !!document.getElementById("darkToggle"),
-        desktop: !!document.getElementById("darkToggleDesktop"),
-        tablet: !!document.getElementById("darkToggleTablet"),
-        standalone: !!document.getElementById("darkToggleStandalone"),
-      });
+
     }
 
     toggleDarkMode() {
@@ -193,7 +185,7 @@
           try {
             toggle.textContent = icon;
           } catch (error) {
-            console.warn(`Error updating icon for ${toggle.id}:`, error);
+    
           }
         }
       });
@@ -260,22 +252,14 @@
   window.addEventListener("load", () => {
     // Ensure dark mode manager exists
     if (!window.darkModeManager) {
-      console.log("Creating DarkModeManager on page load...");
+
       window.darkModeManager = new DarkModeManager();
     }
 
     // Force state preservation
     window.forceDarkModeState();
 
-    // Log current state for debugging
-    const html = document.documentElement;
-    const isDark = html.classList.contains("dark");
-    const theme = html.getAttribute("data-theme");
-    console.log("Dark mode state:", {
-      isDark,
-      theme,
-      localStorage: localStorage.getItem("darkMode"),
-    });
+
   });
 
   // Add a mutation observer to watch for unauthorized dark mode changes

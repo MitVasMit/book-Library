@@ -70,13 +70,13 @@ async function rejectReview(reviewId) {
 
 // Tab Management Functions
 function showTab(tabName) {
-    console.log('Switching to tab:', tabName); // Debug log
+    
     
     // Hide all tab contents first
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => {
         content.classList.add('hidden');
-        console.log('Hiding content:', content.id); // Debug log
+
     });
     
     // Remove active state from all tabs
@@ -90,7 +90,7 @@ function showTab(tabName) {
     const selectedContent = document.getElementById(`${tabName}-content`);
     if (selectedContent) {
         selectedContent.classList.remove('hidden');
-        console.log('Showing content:', selectedContent.id); // Debug log
+
     } else {
         console.error('Content not found for tab:', tabName); // Debug log
     }
@@ -108,11 +108,11 @@ function showTab(tabName) {
 
 async function loadTabContent(tabName) {
     const contentDiv = document.getElementById(`${tabName}-content`);
-    console.log('Loading content for tab:', tabName, 'Content div:', contentDiv); // Debug log
+    
     
     if (tabName === 'pending') {
         // Pending reviews are already loaded via PHP
-        console.log('Pending tab - content already loaded via PHP'); // Debug log
+
         return;
     }
     
@@ -212,19 +212,18 @@ function renderReviewsList(container, reviews, tabName) {
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing tabs...'); // Debug log
+    
     
     // Ensure all tabs are hidden initially
     const allTabContents = document.querySelectorAll('.tab-content');
     allTabContents.forEach(content => {
         content.classList.add('hidden');
-        console.log('Initially hiding:', content.id); // Debug log
+
     });
     
     // Show pending tab by default
     showTab('pending');
     
     // Debug: Log all tab elements found
-    console.log('Found tab contents:', allTabContents.length);
-    allTabContents.forEach(content => console.log('Tab content:', content.id));
+    
 });

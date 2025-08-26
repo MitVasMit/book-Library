@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function safeGetElement(id, fallback = null) {
     const element = document.getElementById(id);
     if (!element && fallback !== null) {
-      console.warn(`Element with id '${id}' not found, using fallback`);
+      
       return fallback;
     }
     return element;
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         element[property] = value;
       } catch (error) {
-        console.warn(`Could not set ${property} on element '${id}':`, error);
+
       }
     }
   }
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Check if required elements exist before proceeding
   if (!bookList) {
-    console.warn("Book list element not found, books.js may not be needed on this page");
+    
     return;
   }
 
@@ -93,13 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
           if (favoritesLoaded) {
             // Favorites initialized successfully
           } else {
-            console.warn('Favorites could not be initialized');
+    
           }
         } catch (error) {
           console.error('Error initializing favorites:', error);
         }
       } else if (window.userIsLoggedIn && !window.ensureFavoritesLoaded) {
-        console.log('Favorites functionality not available, skipping initialization');
+
       }
       
       renderPage(currentPage);
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderPage(page) {
     if (!bookList) {
-      console.warn("Book list element not found, cannot render page");
+      
       return;
     }
     
@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
               }
             } else {
-              console.warn('Favorites functionality not available');
+              
             }
           });
         }
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setupPagination() {
     if (!pagination) {
-      console.warn("Pagination element not found, cannot setup pagination");
+      
       return;
     }
     
@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Check if required elements exist
     if (!modal || !bookElement || !closeBtn || !coverElement) {
-      console.warn("Required modal elements not found, cannot open book modal");
+      
       return;
     }
 
@@ -647,7 +647,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
         }
       } else {
-        console.warn('Favorites functionality not available');
+        
       }
     });
   }
