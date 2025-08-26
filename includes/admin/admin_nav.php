@@ -6,7 +6,7 @@ if (isset($_COOKIE['sidebarExpanded'])) {
 ?>
 <aside
   id="adminSidebar"
-  class="min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white flex flex-col py-6 px-4 transition-all duration-300 ease-in-out relative<?php echo !$sidebarExpanded ? ' collapsed' : ''; ?>"
+  class="min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white flex flex-col py-6 px-4 mt-5 transition-all duration-300 ease-in-out relative<?php echo !$sidebarExpanded ? ' collapsed' : ''; ?>"
   style="width: 16rem;">
 
   <button
@@ -33,9 +33,9 @@ if (isset($_COOKIE['sidebarExpanded'])) {
         <i class="fas fa-layer-group"></i>
         <span class="sidebar-text transition-opacity duration-300">Book Categories</span>
       </a>
-      <a href="comments.php" class="flex items-center space-x-3 px-3 py-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-        <i class="fas fa-user-lock"></i>
-        <span class="sidebar-text transition-opacity duration-300">Private Comments</span>
+      <a href="private_comments.php" class="flex items-center space-x-3 px-3 py-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        <i class="fas fa-sticky-note"></i>
+        <span class="sidebar-text transition-opacity duration-300">Personal Notes</span>
       </a>
       <a href="reviews.php" class="flex items-center space-x-3 px-3 py-3 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
         <i class="fas fa-star"></i>

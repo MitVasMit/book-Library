@@ -39,7 +39,10 @@ class FavoritesManager {
             if (favoritesBtnMobile) {
                 favoritesBtnMobile.addEventListener('click', () => {
                     this.openFavoritesModal();
-                    this.closeMobileMenu();
+                    // Close mobile menu using the global function from mobile-menu.js
+                    if (window.closeMobileMenu) {
+                        window.closeMobileMenu();
+                    }
                 });
             }
 
@@ -66,95 +69,13 @@ class FavoritesManager {
                 }
             });
 
-            // Mobile menu functionality
-            this.bindMobileMenuEvents();
+            // Mobile menu functionality is now handled by mobile-menu.js
         }
     }
 
-    bindMobileMenuEvents() {
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
-        const mobileMenu = document.getElementById('mobileMenu');
 
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', () => this.openMobileMenu());
-        }
 
-        if (closeMobileMenuBtn) {
-            closeMobileMenuBtn.addEventListener('click', () => this.closeMobileMenu());
-        }
 
-        if (mobileMenu) {
-            // Close menu when clicking on backdrop
-            mobileMenu.addEventListener('click', (e) => {
-                if (e.target === mobileMenu) {
-                    this.closeMobileMenu();
-                }
-            });
-
-            // Close menu with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    this.closeMobileMenu();
-                }
-            });
-        }
-
-        // Handle window resize to reposition menu if needed
-        window.addEventListener('resize', () => {
-            if (mobileMenu && mobileMenu.classList.contains('show')) {
-                this.repositionMobileMenu();
-            }
-        });
-    }
-
-    repositionMobileMenu() {
-        const mobileMenuContent = document.getElementById('mobileMenuContent');
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        
-        if (mobileMenuContent && mobileMenuBtn) {
-            const btnRect = mobileMenuBtn.getBoundingClientRect();
-            
-            // Reposition the menu
-            mobileMenuContent.style.top = `${btnRect.bottom + 8}px`;
-            mobileMenuContent.style.right = `${window.innerWidth - btnRect.right}px`;
-        }
-    }
-
-    openMobileMenu() {
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileMenuContent = document.getElementById('mobileMenuContent');
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        
-        if (mobileMenu && mobileMenuContent && mobileMenuBtn) {
-            // Get the position of the hamburger button
-            const btnRect = mobileMenuBtn.getBoundingClientRect();
-            const headerHeight = 80; // Approximate header height
-            
-            // Position the menu below the hamburger button
-            mobileMenuContent.style.top = `${btnRect.bottom + 8}px`; // 8px gap
-            mobileMenuContent.style.right = `${window.innerWidth - btnRect.right}px`;
-            
-            // Show the menu
-            mobileMenu.classList.remove('hidden');
-            
-            // Use requestAnimationFrame to ensure the menu is visible before adding show class
-            requestAnimationFrame(() => {
-                mobileMenu.classList.add('show');
-            });
-        }
-    }
-
-    closeMobileMenu() {
-        const mobileMenu = document.getElementById('mobileMenu');
-        if (mobileMenu) {
-            mobileMenu.classList.remove('show');
-            // Wait for animation to complete before hiding
-            setTimeout(() => {
-                mobileMenu.classList.add('hidden');
-            }, 300);
-        }
-    }
 
     openFavoritesModal() {
         const modal = document.getElementById('favoritesModal');

@@ -86,18 +86,20 @@ document.addEventListener("DOMContentLoaded", () => {
         loader.classList.add("hidden");
       }
       
-      // Initialize favorites first if user is logged in, then render books
-      if (window.userIsLoggedIn) {
+      // Initialize favorites first if user is logged in and favorites functionality is available
+      if (window.userIsLoggedIn && window.ensureFavoritesLoaded) {
         try {
           const favoritesLoaded = await window.ensureFavoritesLoaded();
           if (favoritesLoaded) {
-
+            // Favorites initialized successfully
           } else {
             console.warn('Favorites could not be initialized');
           }
         } catch (error) {
           console.error('Error initializing favorites:', error);
         }
+      } else if (window.userIsLoggedIn && !window.ensureFavoritesLoaded) {
+        console.log('Favorites functionality not available, skipping initialization');
       }
       
       renderPage(currentPage);
@@ -241,23 +243,28 @@ document.addEventListener("DOMContentLoaded", () => {
           favoriteBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
             const isFavorited = favoriteBtn.dataset.favorited === 'true';
-            const newState = await window.toggleFavorite(bookId, isFavorited);
             
-            if (newState !== undefined) {
-              favoriteBtn.dataset.favorited = newState.toString();
-              const icon = favoriteBtn.querySelector('i');
-              if (icon) {
-                icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
-              }
+            if (window.toggleFavorite) {
+              const newState = await window.toggleFavorite(bookId, isFavorited);
               
-              // Update button styling
-              if (newState) {
-                favoriteBtn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-                favoriteBtn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
-              } else {
-                favoriteBtn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-                favoriteBtn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+              if (newState !== undefined) {
+                favoriteBtn.dataset.favorited = newState.toString();
+                const icon = favoriteBtn.querySelector('i');
+                if (icon) {
+                  icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+                }
+                
+                // Update button styling
+                if (newState) {
+                  favoriteBtn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+                  favoriteBtn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+                } else {
+                  favoriteBtn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+                  favoriteBtn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+                }
               }
+            } else {
+              console.warn('Favorites functionality not available');
             }
           });
         }
@@ -472,6 +479,9 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('reviewsSection').classList.add('hidden');
     }
 
+    // Handle private comments functionality
+    setupPrivateComments(book);
+
     // Handle favorite functionality
     if (typeof userIsLoggedIn !== "undefined" && userIsLoggedIn) {
       document.getElementById('favoriteSection').classList.remove('hidden');
@@ -559,8 +569,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (window.userFavorites && Array.isArray(window.userFavorites)) {
       isFavorited = window.userFavorites.includes(bookId.toString());
-    } else {
-      // Ensure favorites are loaded
+    } else if (window.ensureFavoritesLoaded) {
+      // Ensure favorites are loaded if the function is available
       const favoritesLoaded = await window.ensureFavoritesLoaded();
       
       if (favoritesLoaded && window.userFavorites && Array.isArray(window.userFavorites)) {
@@ -579,6 +589,19 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error('Error checking favorite state:', error);
         }
       }
+    } else {
+      // Favorites functionality not available, check from server directly
+      try {
+        const response = await fetch('../actions/get_user_favorites.php');
+        const data = await response.json();
+        
+        if (data.success && data.favorites) {
+          const favoriteBookIds = data.favorites.map(fav => fav.id.toString());
+          isFavorited = favoriteBookIds.includes(bookId.toString());
+        }
+      } catch (error) {
+        console.error('Error checking favorite state:', error);
+      }
     }
     
     // Set the correct initial state
@@ -594,33 +617,37 @@ document.addEventListener("DOMContentLoaded", () => {
     freshFavoriteBtn.addEventListener('click', async () => {
       const currentState = freshFavoriteBtn.dataset.favorited === 'true';
       
-      const newState = await window.toggleFavorite(bookId, currentState);
-      
-      if (newState !== undefined) {
-        freshFavoriteBtn.dataset.favorited = newState.toString();
-        updateFavoriteButtonUI(freshFavoriteBtn, freshFavoriteIcon, freshFavoriteText, newState);
+      if (window.toggleFavorite) {
+        const newState = await window.toggleFavorite(bookId, currentState);
         
-        // Also update any book card favorite buttons for this book
-        const cardButtons = document.querySelectorAll(`[data-book-id="${bookId}"].favorite-btn`);
-        
-        cardButtons.forEach(btn => {
-          btn.dataset.favorited = newState.toString();
-          const icon = btn.querySelector('i');
-          if (icon) {
-            icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
-          }
+        if (newState !== undefined) {
+          freshFavoriteBtn.dataset.favorited = newState.toString();
+          updateFavoriteButtonUI(freshFavoriteBtn, freshFavoriteIcon, freshFavoriteText, newState);
           
-          // Update button styling for book card buttons
-          if (btn.classList.contains('absolute') && btn.classList.contains('top-2')) {
-            if (newState) {
-              btn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-              btn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
-            } else {
-              btn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-              btn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+          // Also update any book card favorite buttons for this book
+          const cardButtons = document.querySelectorAll(`[data-book-id="${bookId}"].favorite-btn`);
+          
+          cardButtons.forEach(btn => {
+            btn.dataset.favorited = newState.toString();
+            const icon = btn.querySelector('i');
+            if (icon) {
+              icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
             }
-          }
-        });
+            
+            // Update button styling for book card buttons
+            if (btn.classList.contains('absolute') && btn.classList.contains('top-2')) {
+              if (newState) {
+                btn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+                btn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+              } else {
+                btn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+                btn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+              }
+            }
+          });
+        }
+      } else {
+        console.warn('Favorites functionality not available');
       }
     });
   }
@@ -2058,5 +2085,251 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Error submitting database book rating:", err);
         showRatingMessage("Error saving rating", "error");
       });
+  }
+
+  // Private Comments Functionality
+  function setupPrivateComments(book) {
+    const privateCommentForm = document.getElementById('privateCommentForm');
+    const privateCommentLoginPrompt = document.getElementById('privateCommentLoginPrompt');
+    const existingComment = document.getElementById('existingComment');
+    const privateCommentText = document.getElementById('privateCommentText');
+    const charCount = document.getElementById('charCount');
+    const submitPrivateCommentBtn = document.getElementById('submitPrivateCommentBtn');
+    const editCommentBtn = document.getElementById('editCommentBtn');
+
+    // Check if user is logged in
+    if (typeof userIsLoggedIn !== "undefined" && userIsLoggedIn) {
+      if (privateCommentForm) privateCommentForm.style.display = 'block';
+      if (privateCommentLoginPrompt) privateCommentLoginPrompt.style.display = 'none';
+      
+      // Load existing comment if it's a database book
+      if (book.cover_image) {
+        loadExistingComment(book.id);
+      }
+    } else {
+      if (privateCommentForm) privateCommentForm.style.display = 'none';
+      if (privateCommentLoginPrompt) privateCommentLoginPrompt.style.display = 'block';
+      if (existingComment) existingComment.style.display = 'none';
+    }
+
+    // Character count for textarea
+    if (privateCommentText) {
+      privateCommentText.addEventListener('input', function() {
+        const count = this.value.length;
+        if (charCount) charCount.textContent = `${count}/1000`;
+        
+        // Show/hide favorite auto-add message
+        const favoriteAutoAddMessage = document.getElementById('favoriteAutoAddMessage');
+        if (favoriteAutoAddMessage) {
+          if (count > 0) {
+            favoriteAutoAddMessage.classList.remove('hidden');
+          } else {
+            favoriteAutoAddMessage.classList.add('hidden');
+          }
+        }
+        
+        // Disable submit button if comment is too long
+        if (submitPrivateCommentBtn) {
+          submitPrivateCommentBtn.disabled = count > 1000;
+        }
+      });
+    }
+
+    // Submit comment
+    if (submitPrivateCommentBtn) {
+      submitPrivateCommentBtn.addEventListener('click', function() {
+        submitPrivateComment(book);
+      });
+    }
+
+    // Edit comment
+    if (editCommentBtn) {
+      editCommentBtn.addEventListener('click', function() {
+        editExistingComment();
+      });
+    }
+  }
+
+  async function loadExistingComment(bookId) {
+    try {
+      const response = await fetch(`/book-Library/actions/get_user_comment.php?book_id=${bookId}`);
+      const data = await response.json();
+      
+      if (data.success && data.comment) {
+        showExistingComment(data.comment);
+      } else {
+        hideExistingComment();
+      }
+    } catch (error) {
+      console.error('Error loading existing comment:', error);
+      hideExistingComment();
+    }
+  }
+
+  function showExistingComment(comment) {
+    const privateCommentForm = document.getElementById('privateCommentForm');
+    const existingComment = document.getElementById('existingComment');
+    const commentText = document.getElementById('commentText');
+    const commentDate = document.getElementById('commentDate');
+
+    if (privateCommentForm) privateCommentForm.style.display = 'none';
+    if (existingComment) existingComment.style.display = 'block';
+    if (commentText) commentText.textContent = comment.comment;
+    if (commentDate) commentDate.textContent = `Added on ${new Date(comment.created_at).toLocaleDateString()}`;
+  }
+
+  function hideExistingComment() {
+    const privateCommentForm = document.getElementById('privateCommentForm');
+    const existingComment = document.getElementById('existingComment');
+    const favoriteAutoAddMessage = document.getElementById('favoriteAutoAddMessage');
+
+    if (privateCommentForm) privateCommentForm.style.display = 'block';
+    if (existingComment) existingComment.style.display = 'none';
+    if (favoriteAutoAddMessage) favoriteAutoAddMessage.classList.add('hidden');
+  }
+
+  function editExistingComment() {
+    const privateCommentForm = document.getElementById('privateCommentForm');
+    const existingComment = document.getElementById('existingComment');
+    const privateCommentText = document.getElementById('privateCommentText');
+    const commentText = document.getElementById('commentText');
+    const favoriteAutoAddMessage = document.getElementById('favoriteAutoAddMessage');
+
+    if (privateCommentForm) privateCommentForm.style.display = 'block';
+    if (existingComment) existingComment.style.display = 'none';
+    if (privateCommentText && commentText) privateCommentText.value = commentText.textContent;
+    
+    // Show favorite auto-add message if there's text
+    if (favoriteAutoAddMessage && privateCommentText && privateCommentText.value.length > 0) {
+      favoriteAutoAddMessage.classList.remove('hidden');
+    }
+  }
+
+  async function submitPrivateComment(book) {
+    const privateCommentText = document.getElementById('privateCommentText');
+    const submitPrivateCommentBtn = document.getElementById('submitPrivateCommentBtn');
+    const privateCommentMessage = document.getElementById('privateCommentMessage');
+
+    if (!privateCommentText || !submitPrivateCommentBtn || !privateCommentMessage) return;
+
+    const comment = privateCommentText.value.trim();
+    
+    if (!comment) {
+      showPrivateCommentMessage('Please enter a comment', 'error');
+      return;
+    }
+
+    if (comment.length > 1000) {
+      showPrivateCommentMessage('Comment is too long (max 1000 characters)', 'error');
+      return;
+    }
+
+    // Disable submit button and show loading state
+    submitPrivateCommentBtn.disabled = true;
+    submitPrivateCommentBtn.textContent = 'Saving...';
+
+    try {
+      const response = await fetch('/book-Library/actions/add_private_comment.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          book_id: book.id,
+          comment: comment
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Show success message with favorite info if applicable
+        let message = data.message || 'Comment saved successfully!';
+        if (data.favorite_added) {
+          message += ' Book has been added to your favorites.';
+        }
+        
+        showPrivateCommentMessage(message, 'success');
+        privateCommentText.value = '';
+        if (charCount) charCount.textContent = '0/1000';
+        
+        // Show the existing comment
+        showExistingComment(data.comment);
+        
+        // If favorite was added, refresh the favorites display and update UI
+        if (data.favorite_added) {
+          // Update the favorite button in the modal to show it's now favorited
+          updateModalFavoriteButton(book.id, true);
+          
+          // Refresh the global favorites list
+          if (window.ensureFavoritesLoaded) {
+            window.ensureFavoritesLoaded();
+          }
+        }
+      } else {
+        showPrivateCommentMessage(data.error || 'Failed to save comment', 'error');
+      }
+    } catch (error) {
+      console.error('Error submitting comment:', error);
+      showPrivateCommentMessage('Error saving comment', 'error');
+    } finally {
+      // Re-enable submit button
+      submitPrivateCommentBtn.disabled = false;
+      submitPrivateCommentBtn.textContent = 'Save Note';
+    }
+  }
+
+  function showPrivateCommentMessage(message, type) {
+    const privateCommentMessage = document.getElementById('privateCommentMessage');
+    if (!privateCommentMessage) return;
+
+    privateCommentMessage.textContent = message;
+    privateCommentMessage.className = `text-sm mt-2 ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      privateCommentMessage.textContent = '';
+      privateCommentMessage.className = 'text-sm mt-2';
+    }, 5000);
+  }
+
+  /**
+   * Update the favorite button in the modal to reflect the current favorite state
+   */
+  function updateModalFavoriteButton(bookId, isFavorited) {
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    if (!favoriteBtn) return;
+    
+    const favoriteIcon = favoriteBtn.querySelector('i');
+    const favoriteText = favoriteBtn.querySelector('.favorite-text');
+    
+    if (favoriteIcon && favoriteText) {
+      // Update data attribute
+      favoriteBtn.dataset.favorited = isFavorited.toString();
+      
+      // Update UI
+      updateFavoriteButtonUI(favoriteBtn, favoriteIcon, favoriteText, isFavorited);
+      
+      // Also update any book card favorite buttons for this book
+      const cardButtons = document.querySelectorAll(`[data-book-id="${bookId}"].favorite-btn`);
+      cardButtons.forEach(btn => {
+        btn.dataset.favorited = isFavorited.toString();
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.className = isFavorited ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+        }
+        
+        // Update button styling for book card buttons
+        if (btn.classList.contains('absolute') && btn.classList.contains('top-2')) {
+          if (isFavorited) {
+            btn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+            btn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+          } else {
+            btn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
+            btn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+          }
+        }
+      });
+    }
   }
 });

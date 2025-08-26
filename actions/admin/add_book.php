@@ -2,12 +2,9 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../includes/autoload.php';
 
-session_start();
-
-if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-    header('Location: /book-Library/public/login.php');
-    exit();
-}
+// Security check - require admin access
+require_once __DIR__ . '/../../includes/auth.php';
+requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /book-Library/admin/books.php');

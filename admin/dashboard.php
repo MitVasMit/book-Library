@@ -19,6 +19,12 @@ $favorites = $favoriteModel->getAllUserFavorites();
 $totalFavorites = count($favorites);
 $uniqueUsersWithFavorites = count(array_unique(array_column($favorites, 'user_id')));
 
+// Get private comments statistics
+$privateCommentModel = new PrivateComment();
+$totalPrivateComments = $privateCommentModel->getCommentsCount();
+$allPrivateComments = $privateCommentModel->getAllComments();
+$uniqueUsersWithComments = count(array_unique(array_column($allPrivateComments, 'user_id')));
+
 $recentBooksList = array_slice($bookModel->getAllWithCategory(), 0, 5);
 $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
 
@@ -27,7 +33,7 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
 <div class="flex min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
     <?php include_once '../includes/admin/admin_nav.php'; ?>
 
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-6 mt-5">
         <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -91,6 +97,19 @@ $recentUsers = array_slice($userModel->getAllUsers(), 0, 5);
                         <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Favorites</p>
                         <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $totalFavorites ?></p>
                         <p class="text-sm text-red-600 dark:text-red-400"><?= $uniqueUsersWithFavorites ?> users</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900">
+                        <i class="fas fa-sticky-note text-indigo-600 dark:text-indigo-400 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Personal Notes</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white"><?= $totalPrivateComments ?></p>
+                        <p class="text-sm text-indigo-600 dark:text-indigo-400"><?= $uniqueUsersWithComments ?> users</p>
                     </div>
                 </div>
             </div>
