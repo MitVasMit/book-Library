@@ -10,18 +10,18 @@ $isLoggedIn = isset($_SESSION['user']);
 
 <?php include('../includes/header.php'); ?>
 
-<?php if (!empty($_SESSION['errors']['auth'])): ?>hi
-hi
-<div id="flash-message" class="relative bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center max-w-xl mx-auto my-6 transition-opacity duration-500 ease-in-out">
-    <span><?= $_SESSION['errors']['auth'];
-            unset($_SESSION['errors']['auth']); ?></span>
-    <button class="absolute top-0 right-0 px-3 py-2 text-red-700 hover:text-red-900" onclick="dismissFlash()">
-        &times;
-    </button>
-</div>
+<?php if (!empty($_SESSION['errors']['auth'])): ?>
+
+    <div id="flash-message" class="relative bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center max-w-xl mx-auto my-6 transition-opacity duration-500 ease-in-out">
+        <span><?= $_SESSION['errors']['auth'];
+                unset($_SESSION['errors']['auth']); ?></span>
+        <button class="absolute top-0 right-0 px-3 py-2 text-red-700 hover:text-red-900" onclick="dismissFlash()">
+            &times;
+        </button>
+    </div>
 <?php endif; ?>
 
-<div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto mt-8">
     <h2 class="text-2xl font-bold mb-4 text-center">Our Bestsellers:</h2>
 
     <div class="relative">
@@ -53,7 +53,7 @@ hi
             <span class="hidden sm:inline">Filters</span>
         </button>
     </div>
-    
+
     <div id="searchActiveFilters" class="max-w-xl mx-auto mt-3 hidden">
         <div class="flex flex-wrap gap-2" id="searchActiveFiltersList">
         </div>
@@ -178,7 +178,7 @@ hi
 <div class="modal-backdrop" id="bookModal">
     <div class="book-wrapper">
         <button id="closeBtn" class="close-button" onclick="closeBook()">×</button>
-        
+
         <div class="book" id="book">
             <div class="page left-page">
                 <div class="left-page-content">
@@ -197,13 +197,58 @@ hi
                         <p id="bookPages" class="book-pages"></p>
                         <p id="bookYear" class="book-year"></p>
                     </div>
+
+                    <!-- Private Comments Section -->
+                    <div class="private-comments-section mt-6">
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Personal Notes</h3>
+                        
+                        <!-- For logged in users -->
+                        <div id="privateCommentForm" class="space-y-3" style="display: none;">
+                            <textarea
+                                id="privateCommentText"
+                                rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                                placeholder="Add your personal notes about this book... (max 1000 characters)"></textarea>
+                            
+                            <div class="flex justify-between items-center">
+                                <span id="charCount" class="text-xs text-gray-500 dark:text-gray-400">0/1000</span>
+                                <button
+                                    id="submitPrivateCommentBtn"
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors text-sm">
+                                    Save Note
+                                </button>
+                            </div>
+                            
+                            <div id="privateCommentMessage" class="text-sm mt-2"></div>
+                            <div id="favoriteAutoAddMessage" class="text-xs text-green-600 dark:text-green-400 mt-1 hidden">
+                                <i class="fas fa-heart text-red-500 mr-1"></i>
+                                This book will be automatically added to your favorites
+                            </div>
+                        </div>
+
+                        <!-- For non-logged in users -->
+                        <div id="privateCommentLoginPrompt" class="text-center py-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to add your personal notes.</p>
+                        </div>
+
+                        <!-- Display existing comment -->
+                        <div id="existingComment" class="hidden mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex justify-between items-start">
+                                <p id="commentText" class="text-sm text-gray-700 dark:text-gray-300"></p>
+                                <button id="editCommentBtn" class="text-blue-600 hover:text-blue-700 text-xs ml-2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                            <p id="commentDate" class="text-xs text-gray-500 dark:text-gray-400 mt-2"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
+
             <div class="page right-page">
                 <div class="right-page-content">
                     <h2 class="section-title">Book Information</h2>
-                    
+
                     <!-- Favorite Button with Average Rating -->
                     <div id="favoriteSection" class="favorite-section">
                         <!-- Official Average Rating - Left of Favorite Button -->
@@ -215,7 +260,7 @@ hi
                             </div>
                             <span id="totalRatings" class="total-ratings">(0)</span>
                         </div>
-                        
+
                         <button id="favoriteBtn" class="favorite-btn-modal" style="display: none;">
                             <i class="far fa-heart"></i>
                             <span class="favorite-text">Add to Favorites</span>
@@ -247,29 +292,27 @@ hi
                         <!-- Review Section - Only for Database Books -->
                         <div id="reviewSection" class="review-section hidden">
                             <h3 class="action-title">Write a review</h3>
-                            
+
                             <div id="reviewForm" class="space-y-4">
                                 <div>
-                                    <textarea 
-                                        id="reviewComment" 
-                                        rows="3" 
+                                    <textarea
+                                        id="reviewComment"
+                                        rows="3"
                                         class="review-textarea"
-                                        placeholder="Share your thoughts about this book..."
-                                    ></textarea>
+                                        placeholder="Share your thoughts about this book..."></textarea>
                                 </div>
-                                
+
                                 <div class="flex justify-end">
-                                    <button 
-                                        id="submitReviewBtn" 
-                                        class="submit-review-btn"
-                                    >
+                                    <button
+                                        id="submitReviewBtn"
+                                        class="submit-review-btn">
                                         Submit Review
                                     </button>
                                 </div>
-                                
+
                                 <div id="reviewMessage" class="text-sm mt-2"></div>
                             </div>
-                            
+
                             <div id="reviewLoginPrompt" class="hidden">
                                 <p class="text-sm text-gray-600">Please <a href="login.php" class="text-blue-600 hover:underline">log in</a> to write a review.</p>
                             </div>
@@ -285,7 +328,7 @@ hi
                     </div>
                 </div>
             </div>
-            
+
             <div class="cover">
                 <h2 id="coverTitle">Cover</h2>
                 <p id="coverAuthor">Author</p>

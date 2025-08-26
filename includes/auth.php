@@ -1,5 +1,11 @@
 <?php
-session_start();
+// Session is already started by the calling file
+// No need to call session_start() here
+
+// Ensure session is available
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 //for every page that requires login
 function requireLogin()
