@@ -210,20 +210,14 @@ function renderReviewsList(container, reviews, tabName) {
     container.innerHTML = `<div class="grid gap-6">${reviewsHTML}</div>`;
 }
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
-    
-    
-    // Ensure all tabs are hidden initially
-    const allTabContents = document.querySelectorAll('.tab-content');
-    allTabContents.forEach(content => {
-        content.classList.add('hidden');
-
-    });
-    
-    // Show pending tab by default
-    showTab('pending');
-    
-    // Debug: Log all tab elements found
-    
+// Initialize the page - moved outside DOMContentLoaded to prevent conflicts
+// Ensure all tabs are hidden initially
+const allTabContents = document.querySelectorAll('.tab-content');
+allTabContents.forEach(content => {
+    content.classList.add('hidden');
 });
+
+// Show pending tab by default
+showTab('pending');
+
+// Debug: Log all tab elements found

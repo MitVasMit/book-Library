@@ -1,6 +1,7 @@
 <?php
-require_once '../includes/autoload.php';
 require_once '../includes/auth.php';
+require_once '../includes/autoload.php';
+
 requireAdmin();
 
 $reviewModel = new Review();
@@ -20,18 +21,18 @@ include('../includes/header.php');
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
             <nav class="-mb-px flex space-x-8">
-                <button onclick="showTab('pending')" id="pending-tab" 
+                <button onclick="showTab('pending')" id="pending-tab"
                     class="tab-button border-b-2 border-blue-500 text-blue-600 dark:text-blue-400 py-2 px-1 text-sm font-medium">
                     Pending Reviews
                     <span class="ml-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
                         <?= count($pendingReviews) ?>
                     </span>
                 </button>
-                <button onclick="showTab('approved')" id="approved-tab" 
+                <button onclick="showTab('approved')" id="approved-tab"
                     class="tab-button border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-2 px-1 text-sm font-medium">
                     Approved Reviews
                 </button>
-                <button onclick="showTab('rejected')" id="rejected-tab" 
+                <button onclick="showTab('rejected')" id="rejected-tab"
                     class="tab-button border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 py-2 px-1 text-sm font-medium">
                     Rejected Reviews
                 </button>
@@ -112,3 +113,4 @@ include('../includes/header.php');
 </div>
 
 <script src="../assets/js/admin/admin-reviews.js"></script>
+<script src="../assets/js/admin/admin.js"></script>
