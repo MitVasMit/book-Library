@@ -23,7 +23,6 @@ if (!$bookId || $rating < 1 || $rating > 5 || empty($comment)) {
 }
 
 try {
-    // Check if book exists in our database
     $bookModel = new Book();
     $book = $bookModel->getById($bookId);
     
@@ -35,15 +34,12 @@ try {
 
     $reviewModel = new Review();
     
-    // Check if user already has a review for this book
     $existingReview = $reviewModel->getUserReview($_SESSION['user_id'], $bookId);
     
     if ($existingReview) {
-        // Update existing review
         $success = $reviewModel->updateReview($existingReview['id'], $rating, $comment);
         $message = 'Review updated successfully! It will be reviewed by admin.';
     } else {
-        // Create new review
         $success = $reviewModel->createReview($_SESSION['user_id'], $bookId, $rating, $comment);
         $message = 'Review submitted successfully! It will be reviewed by admin.';
     }

@@ -135,6 +135,13 @@
     pointer-events: auto;
 }
 
+#userFavoritesModal.hidden {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
 #userFavoritesModal .bg-white {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateY(-20px) scale(0.95);
@@ -146,12 +153,10 @@
     opacity: 1;
 }
 
-/* Modal content smooth transitions */
 #favoritesContent, #userFavoritesContent {
     transition: opacity 0.2s ease-in-out;
 }
 
-/* Modal backdrop smooth transitions */
 #favoritesModal, #userFavoritesModal {
     backdrop-filter: blur(0px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.3s ease;
@@ -163,7 +168,6 @@
     transform: scale(1);
 }
 
-/* Smooth transitions for modal elements */
 #favoritesModal .bg-white > *, #userFavoritesModal .bg-white > * {
     transition: opacity 0.3s ease-in-out;
     opacity: 0;
@@ -173,7 +177,6 @@
     opacity: 1;
 }
 
-/* Modal content fade-in with delay */
 #favoritesContent, #userFavoritesContent {
     transition: opacity 0.4s ease-in-out;
     opacity: 0;
@@ -203,7 +206,6 @@
     }
 }
 
-/* Modal header gradient */
 #favoritesModal .bg-gradient-to-r {
     background: linear-gradient(135deg, #fef2f2 0%, #fce7f3 100%);
 }
@@ -212,7 +214,6 @@
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
 }
 
-/* Compact favorite cards */
 #favoritesGrid .bg-white {
     transition: all 0.2s ease;
 }
@@ -222,13 +223,11 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Remove button hover effects */
 .remove-favorite-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments for modal */
 @media (max-width: 640px) {
     #favoritesModal .max-w-2xl {
         max-width: 95vw;
@@ -244,7 +243,6 @@
     }
 }
 
-/* Favorite count badge */
 #favoriteCount {
     transition: all 0.2s ease-in-out;
 }
@@ -254,7 +252,6 @@
     transform: scale(0);
 }
 
-/* Favorite cards in modal */
 .favorite-card {
     transition: all 0.2s ease-in-out;
 }
@@ -264,7 +261,6 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* Remove favorite button */
 .remove-favorite-btn {
     transition: all 0.2s ease-in-out;
 }
@@ -275,7 +271,6 @@
     background-color: #dc2626;
 }
 
-/* View comments button */
 .view-comments-btn {
     transition: all 0.2s ease-in-out;
 }
@@ -285,13 +280,10 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Favorite card hover effects */
 #favoritesGrid .bg-white:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
-
-/* Line clamp for text truncation */
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -299,7 +291,6 @@
     overflow: hidden;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     #favoritesModal .max-w-4xl {
         max-width: 95vw;
@@ -315,7 +306,6 @@
     }
 }
 
-/* Close button smooth transitions */
 #closeFavoritesModal, #userFavoritesModal button {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -324,7 +314,6 @@
     transform: scale(1.05);
 }
 
-/* Staggered entrance animations for favorite cards */
 #favoritesGrid .bg-white, #userFavoritesContent .bg-white {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     animation: cardEntrance 0.6s ease-out forwards;
@@ -346,23 +335,19 @@
     }
 }
 
-/* Modal grid items smooth transitions */
 #favoritesGrid .bg-white:hover, #userFavoritesContent .bg-white:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Smooth loading transitions */
 #favoritesLoader {
     transition: opacity 0.3s ease-in-out;
 }
 
-/* Smooth count badge transitions */
 #favoritesCount {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Favorites button styling */
 #favoritesBtn {
     position: relative;
 }
@@ -375,7 +360,6 @@
     transition: all 0.2s ease-in-out;
 }
 
-/* Favorite count badge styling */
 #favoriteCount {
     position: absolute;
     right: -8px;
@@ -390,12 +374,10 @@
     z-index: 10;
 }
 
-/* Ensure count is visible on hover when there are favorites */
 #favoritesBtn:hover #favoriteCount:not(.opacity-0) {
     opacity: 1 !important;
 }
 
-/* Tablet Navigation Icon Styling */
 #favoritesBtnTablet {
     position: relative;
 }
@@ -404,7 +386,6 @@
     transform: scale(1.05);
 }
 
-/* Mobile menu backdrop click to close */
 #mobileMenu > div:first-child {
     cursor: pointer;
 }

@@ -1,33 +1,31 @@
 #adminSidebar.collapsed a {
-  padding-top: 0.75rem; /* Reduce vertical padding */
+  padding-top: 0.75rem; 
   padding-bottom: 0.75rem;
-  justify-content: center; /* Center icon horizontally */
-  margin-bottom: 0.5rem; /* Add margin between icons when collapsed */
+  justify-content: center; 
+  margin-bottom: 0.5rem; 
 }
 
 #adminSidebar.collapsed .sidebar-text {
-  display: none !important; /* Hide text completely */
+  display: none !important; 
 }
 
 #adminSidebar.collapsed i {
-  font-size: 1.5rem; /* Keep icon size consistent */
+  font-size: 1.5rem; 
   margin: 0 auto;
 }
 
-/* Ensure text appears in one row when expanded */
 #adminSidebar a {
-  white-space: nowrap; /* Prevent text wrapping */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* Show ellipsis if text is too long */
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
 }
 
 #adminSidebar .sidebar-text {
-  white-space: nowrap; /* Prevent text wrapping */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* Show ellipsis if text is too long */
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
 }
 
-/* Admin layout container - make it more specific */
 .admin-container {
   display: flex;
 }
@@ -41,7 +39,6 @@
   transition: margin-left 0.3s ease;
 }
 
-/* Tab Management Styles */
 .tab-content {
   display: block;
 }
@@ -50,7 +47,6 @@
   display: none !important;
 }
 
-/* Ensure proper tab button states */
 .tab-button {
   transition: all 0.2s ease;
 }

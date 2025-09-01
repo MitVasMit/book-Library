@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
 
-// Security check - require login
 require_once __DIR__ . '/../includes/auth.php';
 requireLogin();
 
@@ -21,13 +20,11 @@ try {
     $bookId = (int)$_GET['book_id'];
     $userId = $_SESSION['user']['id'];
     
-    // Verify book exists
     $book = $bookModel->getById($bookId);
     if (!$book) {
         throw new Exception('Book not found');
     }
     
-    // Get user's comment for this book
     $comment = $privateCommentModel->getUserComment($userId, $bookId);
     
     if ($comment) {

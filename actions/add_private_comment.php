@@ -1,11 +1,9 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
 
-// Security check - require login
 require_once __DIR__ . '/../includes/auth.php';
 requireLogin();
 
-// Initialize required models
 $bookModel = new Book();
 $favoriteModel = new Favorite();
 $privateCommentModel = new PrivateComment();
@@ -37,13 +35,11 @@ try {
         throw new Exception('Comment is too long (max 1000 characters)');
     }
     
-    // Verify book exists
     $book = $bookModel->getById($bookId);
     if (!$book) {
         throw new Exception('Book not found');
     }
     
-    // Add the comment
     if ($privateCommentModel->addComment($userId, $bookId, $comment)) {
         // Also add the book to user's favorites if not already there
         $favoriteAdded = false;
@@ -60,10 +56,8 @@ try {
             }
         } catch (Exception $e) {
             error_log("Error handling favorites for user $userId, book $bookId: " . $e->getMessage());
-            // Don't fail the comment addition if favorites fail
         }
         
-        // Get the newly created/updated comment
         $newComment = $privateCommentModel->getUserComment($userId, $bookId);
         
         $response = [

@@ -13,14 +13,12 @@ async function approveReview(reviewId) {
         const data = await response.json();
 
         if (data.success) {
-            // Remove the review card from the page
             const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`);
             reviewCard.remove();
 
-            // Check if no more reviews
             const remainingReviews = document.querySelectorAll('[data-review-id]');
             if (remainingReviews.length === 0) {
-                location.reload(); // Reload to show "no pending reviews" message
+                location.reload(); 
             }
         } else {
             alert('Error: ' + data.error);
@@ -50,11 +48,9 @@ async function rejectReview(reviewId) {
         const data = await response.json();
 
         if (data.success) {
-            // Remove the review card from the page
             const reviewCard = document.querySelector(`[data-review-id="${reviewId}"]`);
             reviewCard.remove();
 
-            // Check if no more reviews
             const remainingReviews = document.querySelectorAll('[data-review-id]');
             if (remainingReviews.length === 0) {
                 location.reload(); // Reload to show "no pending reviews" message
@@ -68,25 +64,21 @@ async function rejectReview(reviewId) {
     }
 }
 
-// Tab Management Functions
 function showTab(tabName) {
     
     
-    // Hide all tab contents first
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => {
         content.classList.add('hidden');
 
     });
     
-    // Remove active state from all tabs
     const tabButtons = document.querySelectorAll('.tab-button');
     tabButtons.forEach(button => {
         button.classList.remove('border-blue-500', 'text-blue-600', 'dark:text-blue-400');
         button.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
     });
     
-    // Show selected tab content
     const selectedContent = document.getElementById(`${tabName}-content`);
     if (selectedContent) {
         selectedContent.classList.remove('hidden');
@@ -95,14 +87,12 @@ function showTab(tabName) {
         console.error('Content not found for tab:', tabName); // Debug log
     }
     
-    // Activate selected tab button
     const selectedTab = document.getElementById(`${tabName}-tab`);
     if (selectedTab) {
         selectedTab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
         selectedTab.classList.add('border-blue-500', 'text-blue-600', 'dark:text-blue-400');
     }
     
-    // Load content for the selected tab
     loadTabContent(tabName);
 }
 
@@ -111,7 +101,6 @@ async function loadTabContent(tabName) {
     
     
     if (tabName === 'pending') {
-        // Pending reviews are already loaded via PHP
 
         return;
     }
@@ -210,14 +199,10 @@ function renderReviewsList(container, reviews, tabName) {
     container.innerHTML = `<div class="grid gap-6">${reviewsHTML}</div>`;
 }
 
-// Initialize the page - moved outside DOMContentLoaded to prevent conflicts
-// Ensure all tabs are hidden initially
 const allTabContents = document.querySelectorAll('.tab-content');
 allTabContents.forEach(content => {
     content.classList.add('hidden');
 });
 
-// Show pending tab by default
 showTab('pending');
 
-// Debug: Log all tab elements found

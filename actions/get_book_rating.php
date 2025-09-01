@@ -15,7 +15,7 @@ if (!$bookKey) {
 
 try {
     $ratingModel = new Rating();
-    $avgRating = $ratingModel->getAverageRating($bookKey);
+    $avgRating = $ratingModel->getBookRating($bookKey);
     $userRating = null;
     
     if (isset($_SESSION['user_id'])) {
@@ -23,8 +23,8 @@ try {
     }
     
     echo json_encode([
-        'average_rating' => $avgRating['average'],
-        'total_ratings' => $avgRating['total'],
+        'average_rating' => $avgRating['average_rating'],
+        'total_ratings' => $avgRating['total_ratings'],
         'user_rating' => $userRating
     ]);
 } catch (Exception $e) {

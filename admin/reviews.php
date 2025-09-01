@@ -18,7 +18,6 @@ include('../includes/header.php');
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Review Management</h1>
         </div>
 
-        <!-- Tab Navigation -->
         <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
             <nav class="-mb-px flex space-x-8">
                 <button onclick="showTab('pending')" id="pending-tab"
@@ -39,7 +38,6 @@ include('../includes/header.php');
             </nav>
         </div>
 
-        <!-- Pending Reviews Tab -->
         <div id="pending-content" class="tab-content hidden">
             <?php if (empty($pendingReviews)): ?>
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
@@ -96,14 +94,12 @@ include('../includes/header.php');
             <?php endif; ?>
         </div>
 
-        <!-- Approved Reviews Tab -->
         <div id="approved-content" class="tab-content hidden">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
                 <p class="text-gray-500 dark:text-gray-400 text-lg">Loading approved reviews...</p>
             </div>
         </div>
 
-        <!-- Rejected Reviews Tab -->
         <div id="rejected-content" class="tab-content hidden">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
                 <p class="text-gray-500 dark:text-gray-400 text-lg">Loading rejected reviews...</p>

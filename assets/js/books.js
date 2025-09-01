@@ -1,23 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Helper function to safely get DOM elements
   function safeGetElement(id, fallback = null) {
     const element = document.getElementById(id);
     if (!element && fallback !== null) {
-      
       return fallback;
     }
     return element;
   }
 
-  // Helper function to safely set element properties
   function safeSetElement(id, property, value, fallback = null) {
     const element = safeGetElement(id, fallback);
     if (element && element[property] !== undefined) {
       try {
         element[property] = value;
-      } catch (error) {
-
-      }
+      } catch (error) {}
     }
   }
 
@@ -36,36 +31,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const bookList = document.getElementById("book-list");
   const pagination = document.getElementById("pagination");
 
-  // Check if required elements exist before proceeding
   if (!bookList) {
-    
     return;
   }
 
   if (loader) loader.classList.remove("hidden");
-  
+
   const booksPerPage = 20;
   let currentPage = 1;
   let books = [];
 
-  // Load both OpenLibrary and database books
   loadAllBooks();
-  
+
   async function loadAllBooks() {
     try {
-      // Load OpenLibrary books
-      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
-      const openLibraryResponse = await fetch(`https://openlibrary.org/subjects/${randomCategory}.json?limit=50`);
+      const randomCategory =
+        categories[Math.floor(Math.random() * categories.length)];
+      const openLibraryResponse = await fetch(
+        `https://openlibrary.org/subjects/${randomCategory}.json?limit=50`
+      );
       const openLibraryData = await openLibraryResponse.json();
-      const openLibraryBooks = (openLibraryData.works || []).map(book => ({
+      const openLibraryBooks = (openLibraryData.works || []).map((book) => ({
         ...book,
-        source: 'openlibrary'
+        source: "openlibrary",
       }));
-      
-      // Load database books
-      const databaseResponse = await fetch('/book-Library/actions/get_filtered_books.php');
+
+      const databaseResponse = await fetch(
+        "/book-Library/actions/get_filtered_books.php"
+      );
       const databaseBooks = await databaseResponse.json();
-      const formattedDatabaseBooks = databaseBooks.map(book => ({
+      const formattedDatabaseBooks = databaseBooks.map((book) => ({
         id: book.id,
         title: book.title,
         author: book.author,
@@ -75,37 +70,30 @@ document.addEventListener("DOMContentLoaded", () => {
         rating: parseFloat(book.rating) || 0,
         cover_image: book.cover_image,
         category_name: book.category_name,
-        source: 'database'
+        source: "database",
       }));
-      
-      // Combine and sort books
+
       books = [...formattedDatabaseBooks, ...openLibraryBooks];
-      
-      // Safely hide loader if it exists
+
       if (loader) {
         loader.classList.add("hidden");
       }
-      
-      // Initialize favorites first if user is logged in and favorites functionality is available
+
       if (window.userIsLoggedIn && window.ensureFavoritesLoaded) {
         try {
           const favoritesLoaded = await window.ensureFavoritesLoaded();
           if (favoritesLoaded) {
-            // Favorites initialized successfully
           } else {
-    
           }
         } catch (error) {
-          console.error('Error initializing favorites:', error);
+          console.error("Error initializing favorites:", error);
         }
       } else if (window.userIsLoggedIn && !window.ensureFavoritesLoaded) {
-
       }
-      
+
       renderPage(currentPage);
       setupPagination();
     } catch (err) {
-      // Safely handle loader and bookList
       if (loader) {
         loader.classList.add("hidden");
       }
@@ -118,10 +106,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderPage(page) {
     if (!bookList) {
-      
       return;
     }
-    
+
     bookList.innerHTML = "";
 
     const start = (page - 1) * booksPerPage;
@@ -134,9 +121,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     pageBooks.forEach((book, index) => {
-      // Handle cover images for both book types
       let cover = null;
-      if (book.source === 'database' && book.cover_image) {
+      if (book.source === "database" && book.cover_image) {
         cover = `/book-Library/uploads/${book.cover_image}`;
       } else if (book.cover_id) {
         cover = `https://covers.openlibrary.org/b/id/${book.cover_id}-M.jpg`;
@@ -146,42 +132,57 @@ document.addEventListener("DOMContentLoaded", () => {
       item.className =
         "bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
 
-      // Get rating based on book source
       let rating = 0;
       let ratingCount = 0;
-      
-      if (book.source === 'database') {
-        // Database book - use the rating from database
+
+      if (book.source === "database") {
         rating = parseFloat(book.rating) || 0;
-        // For now, we'll show a default count, but you could add a rating count field to your database
         ratingCount = rating > 0 ? 1 : 0;
       } else {
-        // OpenLibrary book - use API rating
-        rating = book.rating_average || book.rating || book.ratings_average || book.ratings?.average || 0;
-        ratingCount = book.rating_count || book.ratings_count || book.ratings?.count || 0;
+        rating =
+          book.rating_average ||
+          book.rating ||
+          book.ratings_average ||
+          book.ratings?.average ||
+          0;
+        ratingCount =
+          book.rating_count || book.ratings_count || book.ratings?.count || 0;
       }
 
-      // Only show rating badge if there's a rating
-      const ratingBadge = rating > 0 ? `
+      const ratingBadge =
+        rating > 0
+          ? `
         <div class="absolute top-2 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 shadow-md z-10" style="left: auto; right: 8px;">
           <span class="text-yellow-800">★</span>
           <span>${rating.toFixed(1)}</span>
-          ${ratingCount > 0 ? `<span class="text-xs opacity-75 text-yellow-800">(${ratingCount})</span>` : ''}
+          ${
+            ratingCount > 0
+              ? `<span class="text-xs opacity-75 text-yellow-800">(${ratingCount})</span>`
+              : ""
+          }
         </div>
-      ` : '';
+      `
+          : "";
+      const bookIdForButton = book.source === "database" ? book.id : book.key;
 
-             // Add favorite button for logged-in users
-       const bookIdForButton = book.source === 'database' ? book.id : book.key;
-       
-       // Check if this book is already in favorites
-       const isFavorited = window.userFavorites && window.userFavorites.includes(bookIdForButton.toString());
-       
-       const favoriteButton = window.userIsLoggedIn ? `
-         <button class="favorite-btn absolute top-2 left-2 ${isFavorited ? 'bg-red-50 border-red-300 dark:bg-red-900/20 dark:border-red-600' : 'bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20'} text-gray-400 hover:text-red-500 p-2 rounded-full shadow-md z-10 transition-colors duration-200" 
+      const isFavorited =
+        window.userFavorites &&
+        window.userFavorites.includes(bookIdForButton.toString());
+
+      const favoriteButton = window.userIsLoggedIn
+        ? `
+         <button class="favorite-btn absolute top-2 left-2 ${
+           isFavorited
+             ? "bg-red-50 border-red-300 dark:bg-red-900/20 dark:border-red-600"
+             : "bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+         } text-gray-400 hover:text-red-500 p-2 rounded-full shadow-md z-10 transition-colors duration-200" 
                  data-book-id="${bookIdForButton}" data-favorited="${isFavorited}">
-           <i class="${isFavorited ? 'fas fa-heart text-red-500' : 'far fa-heart'}"></i>
+           <i class="${
+             isFavorited ? "fas fa-heart text-red-500" : "far fa-heart"
+           }"></i>
          </button>
-       ` : '';
+       `
+        : "";
 
       if (cover) {
         item.innerHTML = `
@@ -196,9 +197,15 @@ document.addEventListener("DOMContentLoaded", () => {
             book.title
           }</h3>
           <p class="text-sm text-gray-600 dark:text-gray-300 text-center">${
-            book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author")
+            book.source === "database"
+              ? book.author
+              : book.authors?.[0]?.name || "Unknown Author"
           }</p>
-          ${book.source === 'database' && book.category_name ? `<p class="text-xs text-blue-600 dark:text-blue-400 text-center mt-1">${book.category_name}</p>` : ''}
+          ${
+            book.source === "database" && book.category_name
+              ? `<p class="text-xs text-blue-600 dark:text-blue-400 text-center mt-1">${book.category_name}</p>`
+              : ""
+          }
         </div>
       </div>
     `;
@@ -215,56 +222,74 @@ document.addEventListener("DOMContentLoaded", () => {
             book.title
           }</h3>
           <p class="text-sm text-gray-600 dark:text-gray-300 text-center">${
-            book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author")
+            book.source === "database"
+              ? book.author
+              : book.authors?.[0]?.name || "Unknown Author"
           }</p>
-          ${book.source === 'database' && book.category_name ? `<p class="text-xs text-blue-600 dark:text-blue-400 text-center mt-1">${book.category_name}</p>` : ''}
+          ${
+            book.source === "database" && book.category_name
+              ? `<p class="text-xs text-blue-600 dark:text-blue-400 text-center mt-1">${book.category_name}</p>`
+              : ""
+          }
         </div>
       </div>
     `;
       }
 
-      // Add click event for opening book modal
-      item.addEventListener('click', (e) => {
-        // Don't open modal if clicking on favorite button
-        if (e.target.closest('.favorite-btn')) {
+      item.addEventListener("click", (e) => {
+        if (e.target.closest(".favorite-btn")) {
           return;
         }
-        
+
         window.openBookModal(book);
       });
 
-                    // Add favorite button functionality
-        if (window.userIsLoggedIn) {
-          const favoriteBtn = item.querySelector('.favorite-btn');
-          if (favoriteBtn) {
-            // Button state is already set correctly when created
-            const bookId = favoriteBtn.dataset.bookId;
-          
-          favoriteBtn.addEventListener('click', async (e) => {
+      if (window.userIsLoggedIn) {
+        const favoriteBtn = item.querySelector(".favorite-btn");
+        if (favoriteBtn) {
+          const bookId = favoriteBtn.dataset.bookId;
+
+          favoriteBtn.addEventListener("click", async (e) => {
             e.stopPropagation();
-            const isFavorited = favoriteBtn.dataset.favorited === 'true';
-            
+            const isFavorited = favoriteBtn.dataset.favorited === "true";
+
             if (window.toggleFavorite) {
               const newState = await window.toggleFavorite(bookId, isFavorited);
-              
+
               if (newState !== undefined) {
                 favoriteBtn.dataset.favorited = newState.toString();
-                const icon = favoriteBtn.querySelector('i');
+                const icon = favoriteBtn.querySelector("i");
                 if (icon) {
-                  icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+                  icon.className = newState
+                    ? "fas fa-heart text-red-500"
+                    : "far fa-heart text-gray-400";
                 }
-                
-                // Update button styling
+
                 if (newState) {
-                  favoriteBtn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-                  favoriteBtn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+                  favoriteBtn.classList.add(
+                    "bg-red-50",
+                    "border-red-300",
+                    "dark:bg-red-900/20",
+                    "dark:border-red-600"
+                  );
+                  favoriteBtn.classList.remove(
+                    "hover:bg-red-50",
+                    "dark:hover:bg-red-900/20"
+                  );
                 } else {
-                  favoriteBtn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-                  favoriteBtn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+                  favoriteBtn.classList.remove(
+                    "bg-red-50",
+                    "border-red-300",
+                    "dark:bg-red-900/20",
+                    "dark:border-red-600"
+                  );
+                  favoriteBtn.classList.add(
+                    "hover:bg-red-50",
+                    "dark:hover:bg-red-900/20"
+                  );
                 }
               }
             } else {
-              
             }
           });
         }
@@ -272,16 +297,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       bookList.appendChild(item);
     });
-    
-         // Favorite states are already initialized in loadAllBooks via ensureFavoritesLoaded
   }
 
   function setupPagination() {
     if (!pagination) {
-      
       return;
     }
-    
+
     pagination.innerHTML = "";
 
     const totalPages = Math.ceil(books.length / booksPerPage);
@@ -338,68 +360,69 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeBtn = document.getElementById("closeBtn");
     const coverElement = document.querySelector(".cover");
 
-    // Check if required elements exist
     if (!modal || !bookElement || !closeBtn || !coverElement) {
-      
       return;
     }
 
-    // Safely set text content for elements that might not exist
     const bookTitle = document.getElementById("bookTitle");
     const bookAuthor = document.getElementById("bookAuthor");
     const coverTitle = document.getElementById("coverTitle");
     const coverAuthor = document.getElementById("coverAuthor");
-    
-    if (bookTitle) bookTitle.textContent = book.title;
-    if (bookAuthor) bookAuthor.textContent = book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
-    if (coverTitle) coverTitle.textContent = book.title;
-    if (coverAuthor) coverAuthor.textContent = book.source === 'database' ? book.author : (book.authors?.[0]?.name || "Unknown Author");
 
-    // Populate category if available
+    if (bookTitle) bookTitle.textContent = book.title;
+    if (bookAuthor)
+      bookAuthor.textContent =
+        book.source === "database"
+          ? book.author
+          : book.authors?.[0]?.name || "Unknown Author";
+    if (coverTitle) coverTitle.textContent = book.title;
+    if (coverAuthor)
+      coverAuthor.textContent =
+        book.source === "database"
+          ? book.author
+          : book.authors?.[0]?.name || "Unknown Author";
+
     const categoryElement = document.getElementById("bookCategory");
     if (categoryElement) {
-      if (book.source === 'database' && book.category_name) {
+      if (book.source === "database" && book.category_name) {
         categoryElement.textContent = book.category_name;
-        categoryElement.style.display = 'block';
+        categoryElement.style.display = "block";
       } else {
-        categoryElement.style.display = 'none';
+        categoryElement.style.display = "none";
       }
     }
 
-    // Populate additional details for database books
-    if (book.source === 'database') {
+    if (book.source === "database") {
       const pagesElement = document.getElementById("bookPages");
       const yearElement = document.getElementById("bookYear");
-      
+
       if (pagesElement) {
         if (book.pages) {
           pagesElement.textContent = `${book.pages} pages`;
-          pagesElement.style.display = 'block';
+          pagesElement.style.display = "block";
         } else {
-          pagesElement.style.display = 'none';
+          pagesElement.style.display = "none";
         }
       }
-      
+
       if (yearElement) {
         if (book.published_year) {
           yearElement.textContent = `Published ${book.published_year}`;
-          yearElement.style.display = 'block';
+          yearElement.style.display = "block";
         } else {
-          yearElement.style.display = 'none';
+          yearElement.style.display = "none";
         }
       }
-      
-      // Fetch and display favorite count
+
       fetchFavoriteCount(book.id);
     } else {
-      // Hide additional details for API books
       const pagesElement = document.getElementById("bookPages");
       const yearElement = document.getElementById("bookYear");
       const favoriteCountElement = document.getElementById("bookFavoriteCount");
-      
-      if (pagesElement) pagesElement.style.display = 'none';
-      if (yearElement) yearElement.style.display = 'none';
-      if (favoriteCountElement) favoriteCountElement.style.display = 'none';
+
+      if (pagesElement) pagesElement.style.display = "none";
+      if (yearElement) yearElement.style.display = "none";
+      if (favoriteCountElement) favoriteCountElement.style.display = "none";
     }
 
     coverElement.style.background = "#8b5e3c";
@@ -443,7 +466,6 @@ document.addEventListener("DOMContentLoaded", () => {
       loadBookRating(book.key);
       setupRatingSystem(book);
     } else if (book.cover_image) {
-      // This is a database book - load database rating
       const bookId = getBookIdForReview(book);
       if (bookId) {
         loadDatabaseBookRating(bookId);
@@ -451,52 +473,43 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Handle review functionality for database books
     if (book.cover_image) {
-      // This is a database book - show review section
-      document.getElementById('reviewSection').classList.remove('hidden');
-      document.getElementById('reviewsSection').classList.remove('hidden');
-      
-      // Reset review form
+      document.getElementById("reviewSection").classList.remove("hidden");
+      document.getElementById("reviewsSection").classList.remove("hidden");
+
       resetReviewForm();
-      
-      // Check if user is logged in
+
       if (typeof userIsLoggedIn !== "undefined" && userIsLoggedIn) {
-        document.getElementById('reviewForm').classList.remove('hidden');
-        document.getElementById('reviewLoginPrompt').classList.add('hidden');
+        document.getElementById("reviewForm").classList.remove("hidden");
+        document.getElementById("reviewLoginPrompt").classList.add("hidden");
         setupReviewSystem(book);
       } else {
-        document.getElementById('reviewForm').classList.add('hidden');
-        document.getElementById('reviewLoginPrompt').classList.remove('hidden');
+        document.getElementById("reviewForm").classList.add("hidden");
+        document.getElementById("reviewLoginPrompt").classList.remove("hidden");
       }
-      
-      // Load existing reviews
+
       const bookId = getBookIdForReview(book);
       loadBookReviews(bookId);
     } else {
-      // This is an API book - hide review section
-      document.getElementById('reviewSection').classList.add('hidden');
-      document.getElementById('reviewsSection').classList.add('hidden');
+      document.getElementById("reviewSection").classList.add("hidden");
+      document.getElementById("reviewsSection").classList.add("hidden");
     }
 
-    // Handle private comments functionality
     setupPrivateComments(book);
 
-    // Handle favorite functionality
     if (typeof userIsLoggedIn !== "undefined" && userIsLoggedIn) {
-      document.getElementById('favoriteSection').classList.remove('hidden');
-      document.getElementById('favoriteBtn').style.display = 'inline-flex';
-      document.getElementById('favoriteLoginPrompt').classList.add('hidden');
-      
-              // Set up favorite button
-    setupFavoriteButton(book).catch(error => {
-      console.error('Error setting up favorite button:', error);
-    });
-  } else {
-    document.getElementById('favoriteSection').classList.remove('hidden');
-    document.getElementById('favoriteBtn').style.display = 'none';
-    document.getElementById('favoriteLoginPrompt').classList.remove('hidden');
-  }
+      document.getElementById("favoriteSection").classList.remove("hidden");
+      document.getElementById("favoriteBtn").style.display = "inline-flex";
+      document.getElementById("favoriteLoginPrompt").classList.add("hidden");
+
+      setupFavoriteButton(book).catch((error) => {
+        console.error("Error setting up favorite button:", error);
+      });
+    } else {
+      document.getElementById("favoriteSection").classList.remove("hidden");
+      document.getElementById("favoriteBtn").style.display = "none";
+      document.getElementById("favoriteLoginPrompt").classList.remove("hidden");
+    }
 
     if (book.key) {
       fetch(`https://openlibrary.org${book.key}.json`)
@@ -516,204 +529,224 @@ document.addEventListener("DOMContentLoaded", () => {
             ).textContent = `Pages: ${data.number_of_pages_median}`;
           }
         })
-        .catch((err) => {
-          // Error fetching book details
-        });
+        .catch((err) => {});
     }
   };
 
   async function setupFavoriteButton(book) {
-    const favoriteBtn = document.getElementById('favoriteBtn');
+    const favoriteBtn = document.getElementById("favoriteBtn");
     if (!favoriteBtn) {
-      console.error('Favorite button not found');
+      console.error("Favorite button not found");
       return;
     }
-    
-    const favoriteIcon = favoriteBtn.querySelector('i');
-    const favoriteText = favoriteBtn.querySelector('.favorite-text');
-    
+
+    const favoriteIcon = favoriteBtn.querySelector("i");
+    const favoriteText = favoriteBtn.querySelector(".favorite-text");
+
     if (!favoriteIcon || !favoriteText) {
-      console.error('Favorite button icon or text not found');
+      console.error("Favorite button icon or text not found");
       return;
     }
-    
-    // Get book ID for database books or key for API books
+
     let bookId = null;
     if (book.cover_image) {
-      // Database book
       bookId = book.id;
     } else if (book.key) {
-        // API book - we'll use the key as identifier
-        bookId = book.key;
+      bookId = book.key;
     }
-    
+
     if (!bookId) {
-      console.error('No book ID found for:', book);
+      console.error("No book ID found for:", book);
       return;
     }
-    
-    // Remove any existing event listeners by cloning the button
+
     const newFavoriteBtn = favoriteBtn.cloneNode(true);
     favoriteBtn.parentNode.replaceChild(newFavoriteBtn, favoriteBtn);
-    
-    // Get the new button reference
-    const freshFavoriteBtn = document.getElementById('favoriteBtn');
-    const freshFavoriteIcon = freshFavoriteBtn.querySelector('i');
-    const freshFavoriteText = freshFavoriteBtn.querySelector('.favorite-text');
-    
-    // Set data attributes
+
+    const freshFavoriteBtn = document.getElementById("favoriteBtn");
+    const freshFavoriteIcon = freshFavoriteBtn.querySelector("i");
+    const freshFavoriteText = freshFavoriteBtn.querySelector(".favorite-text");
+
     freshFavoriteBtn.dataset.bookId = bookId;
-    
-    // Check if this book is already in favorites (use global favorites list if available)
+
     let isFavorited = false;
-    
+
     if (window.userFavorites && Array.isArray(window.userFavorites)) {
       isFavorited = window.userFavorites.includes(bookId.toString());
     } else if (window.ensureFavoritesLoaded) {
-      // Ensure favorites are loaded if the function is available
       const favoritesLoaded = await window.ensureFavoritesLoaded();
-      
-      if (favoritesLoaded && window.userFavorites && Array.isArray(window.userFavorites)) {
+
+      if (
+        favoritesLoaded &&
+        window.userFavorites &&
+        Array.isArray(window.userFavorites)
+      ) {
         isFavorited = window.userFavorites.includes(bookId.toString());
       } else {
-        // Fallback: check from server
         try {
-          const response = await fetch('../actions/get_user_favorites.php');
+          const response = await fetch("../actions/get_user_favorites.php");
           const data = await response.json();
-          
+
           if (data.success && data.favorites) {
-            const favoriteBookIds = data.favorites.map(fav => fav.id.toString());
+            const favoriteBookIds = data.favorites.map((fav) =>
+              fav.id.toString()
+            );
             isFavorited = favoriteBookIds.includes(bookId.toString());
           }
         } catch (error) {
-          console.error('Error checking favorite state:', error);
+          console.error("Error checking favorite state:", error);
         }
       }
     } else {
-      // Favorites functionality not available, check from server directly
       try {
-        const response = await fetch('../actions/get_user_favorites.php');
+        const response = await fetch("../actions/get_user_favorites.php");
         const data = await response.json();
-        
+
         if (data.success && data.favorites) {
-          const favoriteBookIds = data.favorites.map(fav => fav.id.toString());
+          const favoriteBookIds = data.favorites.map((fav) =>
+            fav.id.toString()
+          );
           isFavorited = favoriteBookIds.includes(bookId.toString());
         }
       } catch (error) {
-        console.error('Error checking favorite state:', error);
+        console.error("Error checking favorite state:", error);
       }
     }
-    
-    // Set the correct initial state
+
     freshFavoriteBtn.dataset.favorited = isFavorited.toString();
-    
-    // Update the UI immediately with the correct state
-    updateFavoriteButtonUI(freshFavoriteBtn, freshFavoriteIcon, freshFavoriteText, isFavorited);
-    
-    // Add a flag to prevent this button from being overwritten by refreshFavoriteState
-    freshFavoriteBtn.dataset.setupComplete = 'true';
-    
-    // Add click event
-    freshFavoriteBtn.addEventListener('click', async () => {
-      const currentState = freshFavoriteBtn.dataset.favorited === 'true';
-      
+
+    updateFavoriteButtonUI(
+      freshFavoriteBtn,
+      freshFavoriteIcon,
+      freshFavoriteText,
+      isFavorited
+    );
+
+    freshFavoriteBtn.dataset.setupComplete = "true";
+
+    freshFavoriteBtn.addEventListener("click", async () => {
+      const currentState = freshFavoriteBtn.dataset.favorited === "true";
+
       if (window.toggleFavorite) {
         const newState = await window.toggleFavorite(bookId, currentState);
-        
+
         if (newState !== undefined) {
           freshFavoriteBtn.dataset.favorited = newState.toString();
-          updateFavoriteButtonUI(freshFavoriteBtn, freshFavoriteIcon, freshFavoriteText, newState);
-          
-          // Also update any book card favorite buttons for this book
-          const cardButtons = document.querySelectorAll(`[data-book-id="${bookId}"].favorite-btn`);
-          
-          cardButtons.forEach(btn => {
+          updateFavoriteButtonUI(
+            freshFavoriteBtn,
+            freshFavoriteIcon,
+            freshFavoriteText,
+            newState
+          );
+
+          const cardButtons = document.querySelectorAll(
+            `[data-book-id="${bookId}"].favorite-btn`
+          );
+
+          cardButtons.forEach((btn) => {
             btn.dataset.favorited = newState.toString();
-            const icon = btn.querySelector('i');
+            const icon = btn.querySelector("i");
             if (icon) {
-              icon.className = newState ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+              icon.className = newState
+                ? "fas fa-heart text-red-500"
+                : "far fa-heart text-gray-400";
             }
-            
-            // Update button styling for book card buttons
-            if (btn.classList.contains('absolute') && btn.classList.contains('top-2')) {
+
+            if (
+              btn.classList.contains("absolute") &&
+              btn.classList.contains("top-2")
+            ) {
               if (newState) {
-                btn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-                btn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+                btn.classList.add(
+                  "bg-red-50",
+                  "border-red-300",
+                  "dark:bg-red-900/20",
+                  "dark:border-red-600"
+                );
+                btn.classList.remove(
+                  "hover:bg-red-50",
+                  "dark:hover:bg-red-900/20"
+                );
               } else {
-                btn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-                btn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+                btn.classList.remove(
+                  "bg-red-50",
+                  "border-red-300",
+                  "dark:bg-red-900/20",
+                  "dark:border-red-600"
+                );
+                btn.classList.add(
+                  "hover:bg-red-50",
+                  "dark:hover:bg-red-900/20"
+                );
               }
             }
           });
         }
       } else {
-        
       }
     });
   }
 
-
-
-  function updateFavoriteButtonUI(favoriteBtn, favoriteIcon, favoriteText, isFavorited) {
+  function updateFavoriteButtonUI(
+    favoriteBtn,
+    favoriteIcon,
+    favoriteText,
+    isFavorited
+  ) {
     if (isFavorited) {
-      favoriteIcon.className = 'fas fa-heart text-red-500';
-      favoriteText.textContent = 'Remove from Favorites';
-      // For modal button, we don't need to add/remove classes as CSS handles it via data-favorited attribute
+      favoriteIcon.className = "fas fa-heart text-red-500";
+      favoriteText.textContent = "Remove from Favorites";
     } else {
-      favoriteIcon.className = 'far fa-heart text-gray-400';
-      favoriteText.textContent = 'Add to Favorites';
-      // For modal button, we don't need to add/remove classes as CSS handles it via data-favorited attribute
+      favoriteIcon.className = "far fa-heart text-gray-400";
+      favoriteText.textContent = "Add to Favorites";
     }
   }
 
-  // Make the function globally accessible
   window.updateFavoriteButtonUI = updateFavoriteButtonUI;
 
-  // Function to fetch favorite count for a book
   async function fetchFavoriteCount(bookId) {
     try {
-      const response = await fetch(`/book-Library/actions/get_book_favorite_count.php?book_id=${bookId}`);
+      const response = await fetch(
+        `/book-Library/actions/get_book_favorite_count.php?book_id=${bookId}`
+      );
       const data = await response.json();
-      
+
       if (data.success) {
-        const favoriteCountElement = document.getElementById("bookFavoriteCount");
+        const favoriteCountElement =
+          document.getElementById("bookFavoriteCount");
         const count = data.favorite_count;
-        
+
         if (count === 0) {
-          favoriteCountElement.textContent = "This book hasn't been favorited yet";
+          favoriteCountElement.textContent =
+            "This book hasn't been favorited yet";
         } else if (count === 1) {
-          favoriteCountElement.textContent = "This book is a favorite to 1 user";
+          favoriteCountElement.textContent =
+            "This book is a favorite to 1 user";
         } else {
           favoriteCountElement.textContent = `This book is a favorite to ${count} users`;
         }
-        
-        favoriteCountElement.style.display = 'flex';
+
+        favoriteCountElement.style.display = "flex";
       }
     } catch (error) {
-      console.error('Error fetching favorite count:', error);
-      // Hide the element if there's an error
-      document.getElementById("bookFavoriteCount").style.display = 'none';
+      console.error("Error fetching favorite count:", error);
+      document.getElementById("bookFavoriteCount").style.display = "none";
     }
   }
 
-  // Missing functions that are referenced in the code
   function getBookIdForReview(book) {
-    // First try to get the ID directly from the book object
     if (book.id) {
       return book.id;
     }
-    
-    // If no ID, try to find it by title in the current books array
+
     if (book.title) {
-      const foundBook = books.find(b => b.title === book.title);
+      const foundBook = books.find((b) => b.title === book.title);
       if (foundBook && foundBook.id) {
         return foundBook.id;
       }
     }
-    
-    // If still no ID, try to get it from the DOM or other sources
-    // For now, return null and show a helpful error
-    console.warn('Could not find book ID for:', book);
+
+    console.warn("Could not find book ID for:", book);
     return null;
   }
 
@@ -735,8 +768,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const avgRatingStars = document.getElementById("avgRatingStars");
 
         if (!data.total_ratings || data.average_rating === 0) {
-          avgRatingValue.textContent = '-.-';
-          totalRatings.textContent = '(0 ratings)';
+          avgRatingValue.textContent = "-.-";
+          totalRatings.textContent = "(0 ratings)";
           avgRatingStars.innerHTML = getStarHTML(0, false);
         } else {
           avgRatingValue.textContent = data.average_rating;
@@ -911,127 +944,122 @@ document.addEventListener("DOMContentLoaded", () => {
     return html;
   }
 
-  // Review System Functions
   function setupReviewSystem(book) {
-    const submitReviewBtn = document.getElementById('submitReviewBtn');
-    const reviewComment = document.getElementById('reviewComment');
-    
-    // Create separate star rating for reviews to avoid conflicts
+    const submitReviewBtn = document.getElementById("submitReviewBtn");
+    const reviewComment = document.getElementById("reviewComment");
+
     let currentReviewRating = 0;
-    
-    // We'll use the existing star buttons but track review rating separately
+
     const starButtons = document.querySelectorAll(".star-btn");
-    
-    // Store original click handlers
     const originalClickHandlers = [];
     starButtons.forEach((btn, index) => {
       originalClickHandlers[index] = btn.onclick;
-      
-      // Add review rating functionality
-      btn.addEventListener('click', (e) => {
-        // Only handle review rating if this is a review context
-        if (book.cover_image) { // Database book
+
+      btn.addEventListener("click", (e) => {
+        if (book.cover_image) {
           currentReviewRating = index + 1;
           highlightStars(currentReviewRating);
           e.stopPropagation(); // Prevent triggering the main rating system
         }
       });
-      
-      btn.addEventListener('mouseenter', () => {
-        if (book.cover_image) { // Database book
+
+      btn.addEventListener("mouseenter", () => {
+        if (book.cover_image) {
           highlightStars(index + 1);
         }
       });
-      
-      btn.addEventListener('mouseleave', () => {
-        if (book.cover_image) { // Database book
+
+      btn.addEventListener("mouseleave", () => {
+        if (book.cover_image) {
           highlightStars(currentReviewRating);
         }
       });
     });
-    
-    submitReviewBtn.addEventListener('click', () => {
+
+    submitReviewBtn.addEventListener("click", () => {
       const comment = reviewComment.value.trim();
-      
+
       if (!comment) {
-        showReviewMessage('Please write a review comment', 'error');
+        showReviewMessage("Please write a review comment", "error");
         return;
       }
-      
+
       if (currentReviewRating === 0) {
-        showReviewMessage('Please select a rating', 'error');
+        showReviewMessage("Please select a rating", "error");
         return;
       }
-      
+
       submitReview(book, currentReviewRating, comment);
     });
   }
 
   function submitReview(book, rating, comment) {
     const bookId = getBookIdForReview(book);
-    
+
     if (!bookId) {
-      showReviewMessage('Could not identify book for review. Please try refreshing the page.', 'error');
-      console.error('Book object for review:', book);
+      showReviewMessage(
+        "Could not identify book for review. Please try refreshing the page.",
+        "error"
+      );
+      console.error("Book object for review:", book);
       return;
     }
-    
+
     const reviewData = {
       book_id: bookId,
       rating: rating,
-      comment: comment
+      comment: comment,
     };
-    
-    fetch('/book-Library/actions/submit_review.php', {
-      method: 'POST',
+
+    fetch("/book-Library/actions/submit_review.php", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(reviewData)
+      body: JSON.stringify(reviewData),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        showReviewMessage(data.message, 'success');
-        document.getElementById('reviewComment').value = '';
-        // Reload reviews to show the new one
-        loadBookReviews(bookId);
-      } else {
-        showReviewMessage(data.error || 'Failed to submit review', 'error');
-      }
-    })
-    .catch(err => {
-      console.error('Error submitting review:', err);
-      showReviewMessage('Error submitting review', 'error');
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          showReviewMessage(data.message, "success");
+          document.getElementById("reviewComment").value = "";
+          // Reload reviews to show the new one
+          loadBookReviews(bookId);
+        } else {
+          showReviewMessage(data.error || "Failed to submit review", "error");
+        }
+      })
+      .catch((err) => {
+        console.error("Error submitting review:", err);
+        showReviewMessage("Error submitting review", "error");
+      });
   }
 
   function loadBookReviews(bookId) {
     if (!bookId) return;
-    
+
     fetch(`/book-Library/actions/get_reviews.php?book_id=${bookId}`)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
           displayReviews(data.reviews);
         }
       })
-      .catch(err => {
-        console.error('Error loading reviews:', err);
+      .catch((err) => {
+        console.error("Error loading reviews:", err);
       });
   }
 
   function displayReviews(reviews) {
-    const reviewsList = document.getElementById('reviewsList');
-    
+    const reviewsList = document.getElementById("reviewsList");
+
     if (reviews.length === 0) {
-      reviewsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm">No reviews yet. Be the first to review this book!</p>';
+      reviewsList.innerHTML =
+        '<p class="text-gray-500 dark:text-gray-400 text-sm">No reviews yet. Be the first to review this book!</p>';
       return;
     }
-    
-    // Show only the most recent review
-    const latestReview = reviews[0]; // Assuming reviews are sorted by date desc
-    
+
+    const latestReview = reviews[0]; 
     let reviewsHTML = `
       <div class="review-item show bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-3">
         <div class="flex items-center justify-between mb-2">
@@ -1039,75 +1067,87 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="flex text-yellow-400">
               ${getStarHTML(latestReview.rating, false)}
             </div>
-            <span class="text-sm font-medium text-gray-900 dark:text-white">${latestReview.user_name}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">${
+              latestReview.user_name
+            }</span>
           </div>
-          <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(latestReview.created_at).toLocaleDateString()}</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(
+            latestReview.created_at
+          ).toLocaleDateString()}</span>
         </div>
-        <p class="text-sm text-gray-700 dark:text-gray-300">${latestReview.comment}</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300">${
+          latestReview.comment
+        }</p>
       </div>
     `;
-    
-    // Add "read more reviews" link if there are more than 1 review
+
     if (reviews.length > 1) {
       reviewsHTML += `
         <div class="text-center">
           <button id="showAllReviewsBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-            Read ${reviews.length - 1} more review${reviews.length > 2 ? 's' : ''}
+            Read ${reviews.length - 1} more review${
+        reviews.length > 2 ? "s" : ""
+      }
           </button>
         </div>
       `;
     }
-    
+
     reviewsList.innerHTML = reviewsHTML;
-    
-    // Add event listener for "read more reviews" button
-    const showAllReviewsBtn = document.getElementById('showAllReviewsBtn');
+
+    const showAllReviewsBtn = document.getElementById("showAllReviewsBtn");
     if (showAllReviewsBtn) {
-      showAllReviewsBtn.addEventListener('click', () => {
+      showAllReviewsBtn.addEventListener("click", () => {
         showAllReviews(reviews);
       });
     }
   }
 
   function showAllReviews(reviews) {
-    const reviewsList = document.getElementById('reviewsList');
-    const showAllReviewsBtn = document.getElementById('showAllReviewsBtn');
-    
-    // Add loading state to button
+    const reviewsList = document.getElementById("reviewsList");
+    const showAllReviewsBtn = document.getElementById("showAllReviewsBtn");
+
     if (showAllReviewsBtn) {
-      showAllReviewsBtn.classList.add('loading');
-      showAllReviewsBtn.textContent = 'Loading...';
+      showAllReviewsBtn.classList.add("loading");
+      showAllReviewsBtn.textContent = "Loading...";
     }
-    
-    // First, fade out the current content
-    const currentContent = reviewsList.querySelector('.review-item');
+
+    const currentContent = reviewsList.querySelector(".review-item");
     if (currentContent) {
-      currentContent.classList.remove('show');
-      currentContent.classList.add('hide');
+      currentContent.classList.remove("show");
+      currentContent.classList.add("hide");
     }
-    
-    // Wait for fade out, then show all reviews
+
     setTimeout(() => {
-      let allReviewsHTML = '';
-      
+      let allReviewsHTML = "";
+
       reviews.forEach((review, index) => {
         allReviewsHTML += `
-          <div class="review-item ${index === 0 ? 'show' : ''} bg-gray-50 dark:bg-gray-700 rounded-lg p-3 ${index > 0 ? 'mt-3' : ''}">
+          <div class="review-item ${
+            index === 0 ? "show" : ""
+          } bg-gray-50 dark:bg-gray-700 rounded-lg p-3 ${
+          index > 0 ? "mt-3" : ""
+        }">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
                 <div class="flex text-yellow-400">
                   ${getStarHTML(review.rating, false)}
                 </div>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">${review.user_name}</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-white">${
+                  review.user_name
+                }</span>
               </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(review.created_at).toLocaleDateString()}</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(
+                review.created_at
+              ).toLocaleDateString()}</span>
             </div>
-            <p class="text-sm text-gray-700 dark:text-gray-300">${review.comment}</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300">${
+              review.comment
+            }</p>
           </div>
         `;
       });
-      
-      // Add "show less" button
+
       allReviewsHTML += `
         <div class="text-center mt-3">
           <button id="showLessReviewsBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
@@ -1115,53 +1155,47 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
         </div>
       `;
-      
+
       reviewsList.innerHTML = allReviewsHTML;
-      
-      // Animate in the additional reviews with staggered delay
-      const reviewItems = reviewsList.querySelectorAll('.review-item');
+
+      const reviewItems = reviewsList.querySelectorAll(".review-item");
       reviewItems.forEach((item, index) => {
-        if (index > 0) { // Skip the first one (already visible)
+        if (index > 0) {
           setTimeout(() => {
-            item.classList.add('show');
+            item.classList.add("show");
           }, index * 100); // Stagger the animation
         }
       });
-      
-      // Add event listener for "show less" button
-      const showLessReviewsBtn = document.getElementById('showLessReviewsBtn');
+
+      const showLessReviewsBtn = document.getElementById("showLessReviewsBtn");
       if (showLessReviewsBtn) {
-        showLessReviewsBtn.addEventListener('click', () => {
-          showLessReviews(reviews); // Use the new smooth function
+        showLessReviewsBtn.addEventListener("click", () => {
+          showLessReviews(reviews); 
         });
       }
-    }, 200); // Wait for fade out animation
+    }, 200); 
   }
 
   function showLessReviews(reviews) {
-    const reviewsList = document.getElementById('reviewsList');
-    const showLessReviewsBtn = document.getElementById('showLessReviewsBtn');
-    
-    // Add loading state to button
+    const reviewsList = document.getElementById("reviewsList");
+    const showLessReviewsBtn = document.getElementById("showLessReviewsBtn");
+
     if (showLessReviewsBtn) {
-      showLessReviewsBtn.classList.add('loading');
-      showLessReviewsBtn.textContent = 'Loading...';
+      showLessReviewsBtn.classList.add("loading");
+      showLessReviewsBtn.textContent = "Loading...";
     }
-    
-    // Fade out all reviews except the first one
-    const reviewItems = reviewsList.querySelectorAll('.review-item');
+
+    const reviewItems = reviewsList.querySelectorAll(".review-item");
     reviewItems.forEach((item, index) => {
-      if (index > 0) { // Skip the first one
-        item.classList.remove('show');
-        item.classList.add('hide');
+      if (index > 0) {
+        item.classList.remove("show");
+        item.classList.add("hide");
       }
     });
-    
-    // Wait for fade out, then show only the first review
+
     setTimeout(() => {
-      // Show only the most recent review
       const latestReview = reviews[0];
-      
+
       let reviewsHTML = `
         <div class="review-item show bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-3">
           <div class="flex items-center justify-between mb-2">
@@ -1169,67 +1203,72 @@ document.addEventListener("DOMContentLoaded", () => {
               <div class="flex text-yellow-400">
                 ${getStarHTML(latestReview.rating, false)}
               </div>
-              <span class="text-sm font-medium text-gray-900 dark:text-white">${latestReview.user_name}</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">${
+                latestReview.user_name
+              }</span>
             </div>
-            <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(latestReview.created_at).toLocaleDateString()}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(
+              latestReview.created_at
+            ).toLocaleDateString()}</span>
           </div>
-          <p class="text-sm text-gray-700 dark:text-gray-300">${latestReview.comment}</p>
+          <p class="text-sm text-gray-700 dark:text-gray-300">${
+            latestReview.comment
+          }</p>
         </div>
       `;
-      
-      // Add "read more reviews" link if there are more than 1 review
+
       if (reviews.length > 1) {
         reviewsHTML += `
           <div class="text-center">
             <button id="showAllReviewsBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-              Read ${reviews.length - 1} more review${reviews.length > 2 ? 's' : ''}
+              Read ${reviews.length - 1} more review${
+          reviews.length > 2 ? "s" : ""
+        }
             </button>
           </div>
         `;
       }
-      
+
       reviewsList.innerHTML = reviewsHTML;
-      
-      // Add event listener for "read more reviews" button
-      const showAllReviewsBtn = document.getElementById('showAllReviewsBtn');
+
+      const showAllReviewsBtn = document.getElementById("showAllReviewsBtn");
       if (showAllReviewsBtn) {
-        showAllReviewsBtn.addEventListener('click', () => {
+        showAllReviewsBtn.addEventListener("click", () => {
           showAllReviews(reviews);
         });
       }
-    }, 200); // Wait for fade out animation
+    }, 200); 
   }
 
   function showReviewMessage(message, type) {
-    const reviewMessage = document.getElementById('reviewMessage');
+    const reviewMessage = document.getElementById("reviewMessage");
     reviewMessage.textContent = message;
     reviewMessage.className = `text-sm mt-2 ${
-      type === 'success' ? 'text-green-600' : 'text-red-600'
+      type === "success" ? "text-green-600" : "text-red-600"
     }`;
 
     setTimeout(() => {
-      reviewMessage.textContent = '';
-      reviewMessage.className = 'text-sm mt-2';
+      reviewMessage.textContent = "";
+      reviewMessage.className = "text-sm mt-2";
     }, 3000);
   }
 
   function resetReviewForm() {
-    // Reset comment field
-    const reviewComment = document.getElementById('reviewComment');
+    const reviewComment = document.getElementById("reviewComment");
     if (reviewComment) {
-      reviewComment.value = '';
+      reviewComment.value = "";
     }
-    
-    // Reset rating message
-    const reviewMessage = document.getElementById('reviewMessage');
+
+    const reviewMessage = document.getElementById("reviewMessage");
     if (reviewMessage) {
-      reviewMessage.textContent = '';
-      reviewMessage.className = 'text-sm mt-2';
+      reviewMessage.textContent = "";
+      reviewMessage.className = "text-sm mt-2";
     }
-    
-    // Reset stars to default state (gray) - but only if this is a review context
-    // We don't want to interfere with the main rating system
-    if (document.getElementById('reviewSection') && !document.getElementById('reviewSection').classList.contains('hidden')) {
+
+    if (
+      document.getElementById("reviewSection") &&
+      !document.getElementById("reviewSection").classList.contains("hidden")
+    ) {
       const starButtons = document.querySelectorAll(".star-btn");
       starButtons.forEach((btn) => {
         btn.classList.remove("text-yellow-400");
@@ -1238,17 +1277,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Database Book Rating Functions
   function loadDatabaseBookRating(bookId) {
-    fetch(`/book-Library/actions/get_database_book_rating.php?book_id=${bookId}`)
-      .then(response => response.json())
-      .then(data => {
+    fetch(
+      `/book-Library/actions/get_database_book_rating.php?book_id=${bookId}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
           updateDatabaseBookRating(data);
         }
       })
-      .catch(err => {
-        console.error('Error loading database book rating:', err);
+      .catch((err) => {
+        console.error("Error loading database book rating:", err);
       });
   }
 
@@ -1259,20 +1299,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingLabel = document.getElementById("ratingLabel");
 
     if (!data.total_ratings || data.average_rating === 0) {
-      avgRatingValue.textContent = '0.0';
-      totalRatings.textContent = '(0 ratings)';
+      avgRatingValue.textContent = "0.0";
+      totalRatings.textContent = "(0 ratings)";
       avgRatingStars.innerHTML = getStarHTML(0, false);
-      ratingLabel.textContent = 'Rate this book:';
+      ratingLabel.textContent = "Rate this book:";
     } else {
       avgRatingValue.textContent = data.average_rating;
       totalRatings.textContent = `(${data.total_ratings} ratings)`;
       avgRatingStars.innerHTML = getStarHTML(data.average_rating, false);
-      
-      // Change label text if user has rated
+
       if (data.user_rating) {
-        ratingLabel.textContent = 'Your Rating for this book:';
+        ratingLabel.textContent = "Your Rating for this book:";
       } else {
-        ratingLabel.textContent = 'Rate this book:';
+        ratingLabel.textContent = "Rate this book:";
       }
     }
 
@@ -1329,7 +1368,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const ratingData = {
       book_id: bookId,
-      rating: rating
+      rating: rating,
     };
 
     fetch("/book-Library/actions/rate_database_book.php", {
@@ -1350,10 +1389,9 @@ document.addEventListener("DOMContentLoaded", () => {
           setUserRating(rating);
           updateDatabaseBookRating(data);
           showRatingMessage("Rating saved successfully!", "success");
-          
-          // Update the label to show "Your Rating"
+
           const ratingLabel = document.getElementById("ratingLabel");
-          ratingLabel.textContent = 'Your Rating for this book:';
+          ratingLabel.textContent = "Your Rating for this book:";
         } else {
           showRatingMessage(data.error || "Failed to save rating", "error");
         }
@@ -1430,8 +1468,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const avgRatingStars = document.getElementById("avgRatingStars");
 
         if (!data.total_ratings || data.average_rating === 0) {
-          avgRatingValue.textContent = '-.-';
-          totalRatings.textContent = '(0 ratings)';
+          avgRatingValue.textContent = "-.-";
+          totalRatings.textContent = "(0 ratings)";
           avgRatingStars.innerHTML = getStarHTML(0, false);
         } else {
           avgRatingValue.textContent = data.average_rating;
@@ -1606,127 +1644,124 @@ document.addEventListener("DOMContentLoaded", () => {
     return html;
   }
 
-  // Review System Functions
   function setupReviewSystem(book) {
-    const submitReviewBtn = document.getElementById('submitReviewBtn');
-    const reviewComment = document.getElementById('reviewComment');
-    
-    // Create separate star rating for reviews to avoid conflicts
+    const submitReviewBtn = document.getElementById("submitReviewBtn");
+    const reviewComment = document.getElementById("reviewComment");
+
     let currentReviewRating = 0;
-    
-    // We'll use the existing star buttons but track review rating separately
+
     const starButtons = document.querySelectorAll(".star-btn");
-    
-    // Store original click handlers
+
     const originalClickHandlers = [];
     starButtons.forEach((btn, index) => {
       originalClickHandlers[index] = btn.onclick;
-      
-      // Add review rating functionality
-      btn.addEventListener('click', (e) => {
-        // Only handle review rating if this is a review context
-        if (book.cover_image) { // Database book
+
+      btn.addEventListener("click", (e) => {
+        if (book.cover_image) {
           currentReviewRating = index + 1;
           highlightStars(currentReviewRating);
-          e.stopPropagation(); // Prevent triggering the main rating system
+          e.stopPropagation(); 
         }
       });
-      
-      btn.addEventListener('mouseenter', () => {
-        if (book.cover_image) { // Database book
+
+      btn.addEventListener("mouseenter", () => {
+        if (book.cover_image) {
           highlightStars(index + 1);
         }
       });
-      
-      btn.addEventListener('mouseleave', () => {
-        if (book.cover_image) { // Database book
+
+      btn.addEventListener("mouseleave", () => {
+        if (book.cover_image) {
           highlightStars(currentReviewRating);
         }
       });
     });
-    
-    submitReviewBtn.addEventListener('click', () => {
+
+    submitReviewBtn.addEventListener("click", () => {
       const comment = reviewComment.value.trim();
-      
+
       if (!comment) {
-        showReviewMessage('Please write a review comment', 'error');
+        showReviewMessage("Please write a review comment", "error");
         return;
       }
-      
+
       if (currentReviewRating === 0) {
-        showReviewMessage('Please select a rating', 'error');
+        showReviewMessage("Please select a rating", "error");
         return;
       }
-      
+
       submitReview(book, currentReviewRating, comment);
     });
   }
 
   function submitReview(book, rating, comment) {
     const bookId = getBookIdForReview(book);
-    
+
     if (!bookId) {
-      showReviewMessage('Could not identify book for review. Please try refreshing the page.', 'error');
-      console.error('Book object for review:', book);
+      showReviewMessage(
+        "Could not identify book for review. Please try refreshing the page.",
+        "error"
+      );
+      console.error("Book object for review:", book);
       return;
     }
-    
+
     const reviewData = {
       book_id: bookId,
       rating: rating,
-      comment: comment
+      comment: comment,
     };
-    
-    fetch('/book-Library/actions/submit_review.php', {
-      method: 'POST',
+
+    fetch("/book-Library/actions/submit_review.php", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(reviewData)
+      body: JSON.stringify(reviewData),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        showReviewMessage(data.message, 'success');
-        document.getElementById('reviewComment').value = '';
-        // Reload reviews to show the new one
-        loadBookReviews(bookId);
-      } else {
-        showReviewMessage(data.error || 'Failed to submit review', 'error');
-      }
-    })
-    .catch(err => {
-      console.error('Error submitting review:', err);
-      showReviewMessage('Error submitting review', 'error');
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          showReviewMessage(data.message, "success");
+          document.getElementById("reviewComment").value = "";
+          // Reload reviews to show the new one
+          loadBookReviews(bookId);
+        } else {
+          showReviewMessage(data.error || "Failed to submit review", "error");
+        }
+      })
+      .catch((err) => {
+        console.error("Error submitting review:", err);
+        showReviewMessage("Error submitting review", "error");
+      });
   }
 
   function loadBookReviews(bookId) {
     if (!bookId) return;
-    
+
     fetch(`/book-Library/actions/get_reviews.php?book_id=${bookId}`)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
           displayReviews(data.reviews);
         }
       })
-      .catch(err => {
-        console.error('Error loading reviews:', err);
+      .catch((err) => {
+        console.error("Error loading reviews:", err);
       });
   }
 
   function displayReviews(reviews) {
-    const reviewsList = document.getElementById('reviewsList');
-    
+    const reviewsList = document.getElementById("reviewsList");
+
     if (reviews.length === 0) {
-      reviewsList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm pb-3">No reviews yet. Be the first to review this book!</p>';
+      reviewsList.innerHTML =
+        '<p class="text-gray-500 dark:text-gray-400 text-sm pb-3">No reviews yet. Be the first to review this book!</p>';
       return;
     }
-    
-    // Show only the most recent review
-    const latestReview = reviews[0]; // Assuming reviews are sorted by date desc
-    
+
+    const latestReview = reviews[0]; 
+
     let reviewsHTML = `
       <div class="review-item show bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-3">
         <div class="flex items-center justify-between mb-2">
@@ -1734,75 +1769,87 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="flex text-yellow-400">
               ${getStarHTML(latestReview.rating, false)}
             </div>
-            <span class="text-sm font-medium text-gray-900 dark:text-white">${latestReview.user_name}</span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white">${
+              latestReview.user_name
+            }</span>
           </div>
-          <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(latestReview.created_at).toLocaleDateString()}</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(
+            latestReview.created_at
+          ).toLocaleDateString()}</span>
         </div>
-        <p class="text-sm text-gray-700 dark:text-gray-300">${latestReview.comment}</p>
+        <p class="text-sm text-gray-700 dark:text-gray-300">${
+          latestReview.comment
+        }</p>
       </div>
     `;
-    
-    // Add "read more reviews" link if there are more than 1 review
+
     if (reviews.length > 1) {
       reviewsHTML += `
         <div class="text-center">
           <button id="showAllReviewsBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-            Read ${reviews.length - 1} more review${reviews.length > 2 ? 's' : ''}
+            Read ${reviews.length - 1} more review${
+        reviews.length > 2 ? "s" : ""
+      }
           </button>
         </div>
       `;
     }
-    
+
     reviewsList.innerHTML = reviewsHTML;
-    
-    // Add event listener for "read more reviews" button
-    const showAllReviewsBtn = document.getElementById('showAllReviewsBtn');
+
+    const showAllReviewsBtn = document.getElementById("showAllReviewsBtn");
     if (showAllReviewsBtn) {
-      showAllReviewsBtn.addEventListener('click', () => {
+      showAllReviewsBtn.addEventListener("click", () => {
         showAllReviews(reviews);
       });
     }
   }
 
   function showAllReviews(reviews) {
-    const reviewsList = document.getElementById('reviewsList');
-    const showAllReviewsBtn = document.getElementById('showAllReviewsBtn');
-    
-    // Add loading state to button
+    const reviewsList = document.getElementById("reviewsList");
+    const showAllReviewsBtn = document.getElementById("showAllReviewsBtn");
+
     if (showAllReviewsBtn) {
-      showAllReviewsBtn.classList.add('loading');
-      showAllReviewsBtn.textContent = 'Loading...';
+      showAllReviewsBtn.classList.add("loading");
+      showAllReviewsBtn.textContent = "Loading...";
     }
-    
-    // First, fade out the current content
-    const currentContent = reviewsList.querySelector('.review-item');
+
+    const currentContent = reviewsList.querySelector(".review-item");
     if (currentContent) {
-      currentContent.classList.remove('show');
-      currentContent.classList.add('hide');
+      currentContent.classList.remove("show");
+      currentContent.classList.add("hide");
     }
-    
-    // Wait for fade out, then show all reviews
+
     setTimeout(() => {
-      let allReviewsHTML = '';
-      
+      let allReviewsHTML = "";
+
       reviews.forEach((review, index) => {
         allReviewsHTML += `
-          <div class="review-item ${index === 0 ? 'show' : ''} bg-gray-50 dark:bg-gray-700 rounded-lg p-3 ${index > 0 ? 'mt-3' : ''}">
+          <div class="review-item ${
+            index === 0 ? "show" : ""
+          } bg-gray-50 dark:bg-gray-700 rounded-lg p-3 ${
+          index > 0 ? "mt-3" : ""
+        }">
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-2">
                 <div class="flex text-yellow-400">
                   ${getStarHTML(review.rating, false)}
                 </div>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">${review.user_name}</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-white">${
+                  review.user_name
+                }</span>
               </div>
-              <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(review.created_at).toLocaleDateString()}</span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(
+                review.created_at
+              ).toLocaleDateString()}</span>
             </div>
-            <p class="text-sm text-gray-700 dark:text-gray-300">${review.comment}</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300">${
+              review.comment
+            }</p>
           </div>
         `;
       });
-      
-      // Add "show less" button
+
       allReviewsHTML += `
         <div class="text-center mt-3">
           <button id="showLessReviewsBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
@@ -1810,53 +1857,47 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
         </div>
       `;
-      
+
       reviewsList.innerHTML = allReviewsHTML;
-      
-      // Animate in the additional reviews with staggered delay
-      const reviewItems = reviewsList.querySelectorAll('.review-item');
+
+      const reviewItems = reviewsList.querySelectorAll(".review-item");
       reviewItems.forEach((item, index) => {
-        if (index > 0) { // Skip the first one (already visible)
+        if (index > 0) {
           setTimeout(() => {
-            item.classList.add('show');
-          }, index * 100); // Stagger the animation
+            item.classList.add("show");
+          }, index * 100); 
         }
       });
-      
-      // Add event listener for "show less" button
-      const showLessReviewsBtn = document.getElementById('showLessReviewsBtn');
+
+      const showLessReviewsBtn = document.getElementById("showLessReviewsBtn");
       if (showLessReviewsBtn) {
-        showLessReviewsBtn.addEventListener('click', () => {
-          showLessReviews(reviews); // Use the new smooth function
+        showLessReviewsBtn.addEventListener("click", () => {
+          showLessReviews(reviews); 
         });
       }
-    }, 200); // Wait for fade out animation
+    }, 200); 
   }
 
   function showLessReviews(reviews) {
-    const reviewsList = document.getElementById('reviewsList');
-    const showLessReviewsBtn = document.getElementById('showLessReviewsBtn');
-    
-    // Add loading state to button
+    const reviewsList = document.getElementById("reviewsList");
+    const showLessReviewsBtn = document.getElementById("showLessReviewsBtn");
+
     if (showLessReviewsBtn) {
-      showLessReviewsBtn.classList.add('loading');
-      showLessReviewsBtn.textContent = 'Loading...';
+      showLessReviewsBtn.classList.add("loading");
+      showLessReviewsBtn.textContent = "Loading...";
     }
-    
-    // Fade out all reviews except the first one
-    const reviewItems = reviewsList.querySelectorAll('.review-item');
+
+    const reviewItems = reviewsList.querySelectorAll(".review-item");
     reviewItems.forEach((item, index) => {
-      if (index > 0) { // Skip the first one
-        item.classList.remove('show');
-        item.classList.add('hide');
+      if (index > 0) {
+        item.classList.remove("show");
+        item.classList.add("hide");
       }
     });
-    
-    // Wait for fade out, then show only the first review
+
     setTimeout(() => {
-      // Show only the most recent review
       const latestReview = reviews[0];
-      
+
       let reviewsHTML = `
         <div class="review-item show bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-3">
           <div class="flex items-center justify-between mb-2">
@@ -1864,95 +1905,93 @@ document.addEventListener("DOMContentLoaded", () => {
               <div class="flex text-yellow-400">
                 ${getStarHTML(latestReview.rating, false)}
               </div>
-              <span class="text-sm font-medium text-gray-900 dark:text-white">${latestReview.user_name}</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white">${
+                latestReview.user_name
+              }</span>
             </div>
-            <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(latestReview.created_at).toLocaleDateString()}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">${new Date(
+              latestReview.created_at
+            ).toLocaleDateString()}</span>
           </div>
-          <p class="text-sm text-gray-700 dark:text-gray-300">${latestReview.comment}</p>
+          <p class="text-sm text-gray-700 dark:text-gray-300">${
+            latestReview.comment
+          }</p>
         </div>
       `;
-      
-      // Add "read more reviews" link if there are more than 1 review
+
       if (reviews.length > 1) {
         reviewsHTML += `
           <div class="text-center">
             <button id="showAllReviewsBtn" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">
-              Read ${reviews.length - 1} more review${reviews.length > 2 ? 's' : ''}
+              Read ${reviews.length - 1} more review${
+          reviews.length > 2 ? "s" : ""
+        }
             </button>
           </div>
         `;
       }
-      
+
       reviewsList.innerHTML = reviewsHTML;
-      
-      // Add event listener for "read more reviews" button
-      const showAllReviewsBtn = document.getElementById('showAllReviewsBtn');
+
+      const showAllReviewsBtn = document.getElementById("showAllReviewsBtn");
       if (showAllReviewsBtn) {
-        showAllReviewsBtn.addEventListener('click', () => {
+        showAllReviewsBtn.addEventListener("click", () => {
           showAllReviews(reviews);
         });
       }
-    }, 200); // Wait for fade out animation
+    }, 200); 
   }
 
   function getBookIdFromTitle(title) {
-    // This is a fallback - ideally we should have the book ID
-    // For now, we'll try to find it in the current books array
-    const book = books.find(b => b.title === title);
+    const book = books.find((b) => b.title === title);
     return book ? book.id : null;
   }
 
-  // Better book ID detection function
   function getBookIdForReview(book) {
-    // First try to get the ID directly from the book object
     if (book.id) {
       return book.id;
     }
-    
-    // If no ID, try to find it by title in the current books array
+
     if (book.title) {
-      const foundBook = books.find(b => b.title === book.title);
+      const foundBook = books.find((b) => b.title === book.title);
       if (foundBook && foundBook.id) {
         return foundBook.id;
       }
     }
-    
-    // If still no ID, try to get it from the DOM or other sources
-    // For now, return null and show a helpful error
-    console.warn('Could not find book ID for:', book);
+
+    console.warn("Could not find book ID for:", book);
     return null;
   }
 
   function showReviewMessage(message, type) {
-    const reviewMessage = document.getElementById('reviewMessage');
+    const reviewMessage = document.getElementById("reviewMessage");
     reviewMessage.textContent = message;
     reviewMessage.className = `text-sm mt-2 ${
-      type === 'success' ? 'text-green-600' : 'text-red-600'
+      type === "success" ? "text-green-600" : "text-red-600"
     }`;
 
     setTimeout(() => {
-      reviewMessage.textContent = '';
-      reviewMessage.className = 'text-sm mt-2';
+      reviewMessage.textContent = "";
+      reviewMessage.className = "text-sm mt-2";
     }, 3000);
   }
 
   function resetReviewForm() {
-    // Reset comment field
-    const reviewComment = document.getElementById('reviewComment');
+    const reviewComment = document.getElementById("reviewComment");
     if (reviewComment) {
-      reviewComment.value = '';
+      reviewComment.value = "";
     }
-    
-    // Reset rating message
-    const reviewMessage = document.getElementById('reviewMessage');
+
+    const reviewMessage = document.getElementById("reviewMessage");
     if (reviewMessage) {
-      reviewMessage.textContent = '';
-      reviewMessage.className = 'text-sm mt-2';
+      reviewMessage.textContent = "";
+      reviewMessage.className = "text-sm mt-2";
     }
-    
-    // Reset stars to default state (gray) - but only if this is a review context
-    // We don't want to interfere with the main rating system
-    if (document.getElementById('reviewSection').classList.contains('hidden') === false) {
+
+    if (
+      document.getElementById("reviewSection").classList.contains("hidden") ===
+      false
+    ) {
       const starButtons = document.querySelectorAll(".star-btn");
       starButtons.forEach((btn) => {
         btn.classList.remove("text-yellow-400");
@@ -1961,17 +2000,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Database Book Rating Functions
   function loadDatabaseBookRating(bookId) {
-    fetch(`/book-Library/actions/get_database_book_rating.php?book_id=${bookId}`)
-      .then(response => response.json())
-      .then(data => {
+    fetch(
+      `/book-Library/actions/get_database_book_rating.php?book_id=${bookId}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
           updateDatabaseBookRating(data);
         }
       })
-      .catch(err => {
-        console.error('Error loading database book rating:', err);
+      .catch((err) => {
+        console.error("Error loading database book rating:", err);
       });
   }
 
@@ -1982,20 +2022,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingLabel = document.getElementById("ratingLabel");
 
     if (!data.total_ratings || data.average_rating === 0) {
-      avgRatingValue.textContent = '0.0';
-      totalRatings.textContent = '(0 ratings)';
+      avgRatingValue.textContent = "0.0";
+      totalRatings.textContent = "(0 ratings)";
       avgRatingStars.innerHTML = getStarHTML(0, false);
-      ratingLabel.textContent = 'Rate this book:';
+      ratingLabel.textContent = "Rate this book:";
     } else {
       avgRatingValue.textContent = data.average_rating;
       totalRatings.textContent = `(${data.total_ratings} ratings)`;
       avgRatingStars.innerHTML = getStarHTML(data.average_rating, false);
-      
-      // Change label text if user has rated
+
       if (data.user_rating) {
-        ratingLabel.textContent = 'Your Rating for this book:';
+        ratingLabel.textContent = "Your Rating for this book:";
       } else {
-        ratingLabel.textContent = 'Rate this book:';
+        ratingLabel.textContent = "Rate this book:";
       }
     }
 
@@ -2052,7 +2091,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const ratingData = {
       book_id: bookId,
-      rating: rating
+      rating: rating,
     };
 
     fetch("/book-Library/actions/rate_database_book.php", {
@@ -2073,10 +2112,9 @@ document.addEventListener("DOMContentLoaded", () => {
           setUserRating(rating);
           updateDatabaseBookRating(data);
           showRatingMessage("Rating saved successfully!", "success");
-          
-          // Update the label to show "Your Rating"
+
           const ratingLabel = document.getElementById("ratingLabel");
-          ratingLabel.textContent = 'Your Rating for this book:';
+          ratingLabel.textContent = "Your Rating for this book:";
         } else {
           showRatingMessage(data.error || "Failed to save rating", "error");
         }
@@ -2087,64 +2125,64 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 
-  // Private Comments Functionality
   function setupPrivateComments(book) {
-    const privateCommentForm = document.getElementById('privateCommentForm');
-    const privateCommentLoginPrompt = document.getElementById('privateCommentLoginPrompt');
-    const existingComment = document.getElementById('existingComment');
-    const privateCommentText = document.getElementById('privateCommentText');
-    const charCount = document.getElementById('charCount');
-    const submitPrivateCommentBtn = document.getElementById('submitPrivateCommentBtn');
-    const editCommentBtn = document.getElementById('editCommentBtn');
+    const privateCommentForm = document.getElementById("privateCommentForm");
+    const privateCommentLoginPrompt = document.getElementById(
+      "privateCommentLoginPrompt"
+    );
+    const existingComment = document.getElementById("existingComment");
+    const privateCommentText = document.getElementById("privateCommentText");
+    const charCount = document.getElementById("charCount");
+    const submitPrivateCommentBtn = document.getElementById(
+      "submitPrivateCommentBtn"
+    );
+    const editCommentBtn = document.getElementById("editCommentBtn");
 
-    // Check if user is logged in
     if (typeof userIsLoggedIn !== "undefined" && userIsLoggedIn) {
-      if (privateCommentForm) privateCommentForm.style.display = 'block';
-      if (privateCommentLoginPrompt) privateCommentLoginPrompt.style.display = 'none';
-      
-      // Load existing comment if it's a database book
+      if (privateCommentForm) privateCommentForm.style.display = "block";
+      if (privateCommentLoginPrompt)
+        privateCommentLoginPrompt.style.display = "none";
+
       if (book.cover_image) {
         loadExistingComment(book.id);
       }
     } else {
-      if (privateCommentForm) privateCommentForm.style.display = 'none';
-      if (privateCommentLoginPrompt) privateCommentLoginPrompt.style.display = 'block';
-      if (existingComment) existingComment.style.display = 'none';
+      if (privateCommentForm) privateCommentForm.style.display = "none";
+      if (privateCommentLoginPrompt)
+        privateCommentLoginPrompt.style.display = "block";
+      if (existingComment) existingComment.style.display = "none";
     }
 
-    // Character count for textarea
     if (privateCommentText) {
-      privateCommentText.addEventListener('input', function() {
+      privateCommentText.addEventListener("input", function () {
         const count = this.value.length;
         if (charCount) charCount.textContent = `${count}/1000`;
-        
-        // Show/hide favorite auto-add message
-        const favoriteAutoAddMessage = document.getElementById('favoriteAutoAddMessage');
+
+        const favoriteAutoAddMessage = document.getElementById(
+          "favoriteAutoAddMessage"
+        );
         if (favoriteAutoAddMessage) {
           if (count > 0) {
-            favoriteAutoAddMessage.classList.remove('hidden');
+            favoriteAutoAddMessage.classList.remove("hidden");
           } else {
-            favoriteAutoAddMessage.classList.add('hidden');
+            favoriteAutoAddMessage.classList.add("hidden");
           }
         }
-        
-        // Disable submit button if comment is too long
+
         if (submitPrivateCommentBtn) {
           submitPrivateCommentBtn.disabled = count > 1000;
         }
       });
     }
 
-    // Submit comment
     if (submitPrivateCommentBtn) {
-      submitPrivateCommentBtn.addEventListener('click', function() {
+      submitPrivateCommentBtn.addEventListener("click", function () {
         submitPrivateComment(book);
       });
     }
 
-    // Edit comment
     if (editCommentBtn) {
-      editCommentBtn.addEventListener('click', function() {
+      editCommentBtn.addEventListener("click", function () {
         editExistingComment();
       });
     }
@@ -2152,181 +2190,223 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadExistingComment(bookId) {
     try {
-      const response = await fetch(`/book-Library/actions/get_user_comment.php?book_id=${bookId}`);
+      const response = await fetch(
+        `/book-Library/actions/get_user_comment.php?book_id=${bookId}`
+      );
       const data = await response.json();
-      
+
       if (data.success && data.comment) {
         showExistingComment(data.comment);
       } else {
         hideExistingComment();
       }
     } catch (error) {
-      console.error('Error loading existing comment:', error);
+      console.error("Error loading existing comment:", error);
       hideExistingComment();
     }
   }
 
   function showExistingComment(comment) {
-    const privateCommentForm = document.getElementById('privateCommentForm');
-    const existingComment = document.getElementById('existingComment');
-    const commentText = document.getElementById('commentText');
-    const commentDate = document.getElementById('commentDate');
+    const privateCommentForm = document.getElementById("privateCommentForm");
+    const existingComment = document.getElementById("existingComment");
+    const commentText = document.getElementById("commentText");
+    const commentDate = document.getElementById("commentDate");
 
-    if (privateCommentForm) privateCommentForm.style.display = 'none';
-    if (existingComment) existingComment.style.display = 'block';
+    if (privateCommentForm) privateCommentForm.style.display = "none";
+    if (existingComment) existingComment.style.display = "block";
     if (commentText) commentText.textContent = comment.comment;
-    if (commentDate) commentDate.textContent = `Added on ${new Date(comment.created_at).toLocaleDateString()}`;
+    if (commentDate)
+      commentDate.textContent = `Added on ${new Date(
+        comment.created_at
+      ).toLocaleDateString()}`;
   }
 
   function hideExistingComment() {
-    const privateCommentForm = document.getElementById('privateCommentForm');
-    const existingComment = document.getElementById('existingComment');
-    const favoriteAutoAddMessage = document.getElementById('favoriteAutoAddMessage');
+    const privateCommentForm = document.getElementById("privateCommentForm");
+    const existingComment = document.getElementById("existingComment");
+    const favoriteAutoAddMessage = document.getElementById(
+      "favoriteAutoAddMessage"
+    );
 
-    if (privateCommentForm) privateCommentForm.style.display = 'block';
-    if (existingComment) existingComment.style.display = 'none';
-    if (favoriteAutoAddMessage) favoriteAutoAddMessage.classList.add('hidden');
+    if (privateCommentForm) privateCommentForm.style.display = "block";
+    if (existingComment) existingComment.style.display = "none";
+    if (favoriteAutoAddMessage) favoriteAutoAddMessage.classList.add("hidden");
   }
 
   function editExistingComment() {
-    const privateCommentForm = document.getElementById('privateCommentForm');
-    const existingComment = document.getElementById('existingComment');
-    const privateCommentText = document.getElementById('privateCommentText');
-    const commentText = document.getElementById('commentText');
-    const favoriteAutoAddMessage = document.getElementById('favoriteAutoAddMessage');
+    const privateCommentForm = document.getElementById("privateCommentForm");
+    const existingComment = document.getElementById("existingComment");
+    const privateCommentText = document.getElementById("privateCommentText");
+    const commentText = document.getElementById("commentText");
+    const favoriteAutoAddMessage = document.getElementById(
+      "favoriteAutoAddMessage"
+    );
 
-    if (privateCommentForm) privateCommentForm.style.display = 'block';
-    if (existingComment) existingComment.style.display = 'none';
-    if (privateCommentText && commentText) privateCommentText.value = commentText.textContent;
-    
-    // Show favorite auto-add message if there's text
-    if (favoriteAutoAddMessage && privateCommentText && privateCommentText.value.length > 0) {
-      favoriteAutoAddMessage.classList.remove('hidden');
+    if (privateCommentForm) privateCommentForm.style.display = "block";
+    if (existingComment) existingComment.style.display = "none";
+    if (privateCommentText && commentText)
+      privateCommentText.value = commentText.textContent;
+
+    if (
+      favoriteAutoAddMessage &&
+      privateCommentText &&
+      privateCommentText.value.length > 0
+    ) {
+      favoriteAutoAddMessage.classList.remove("hidden");
     }
   }
 
   async function submitPrivateComment(book) {
-    const privateCommentText = document.getElementById('privateCommentText');
-    const submitPrivateCommentBtn = document.getElementById('submitPrivateCommentBtn');
-    const privateCommentMessage = document.getElementById('privateCommentMessage');
+    const privateCommentText = document.getElementById("privateCommentText");
+    const submitPrivateCommentBtn = document.getElementById(
+      "submitPrivateCommentBtn"
+    );
+    const privateCommentMessage = document.getElementById(
+      "privateCommentMessage"
+    );
 
-    if (!privateCommentText || !submitPrivateCommentBtn || !privateCommentMessage) return;
+    if (
+      !privateCommentText ||
+      !submitPrivateCommentBtn ||
+      !privateCommentMessage
+    )
+      return;
 
     const comment = privateCommentText.value.trim();
-    
+
     if (!comment) {
-      showPrivateCommentMessage('Please enter a comment', 'error');
+      showPrivateCommentMessage("Please enter a comment", "error");
       return;
     }
 
     if (comment.length > 1000) {
-      showPrivateCommentMessage('Comment is too long (max 1000 characters)', 'error');
+      showPrivateCommentMessage(
+        "Comment is too long (max 1000 characters)",
+        "error"
+      );
       return;
     }
 
-    // Disable submit button and show loading state
     submitPrivateCommentBtn.disabled = true;
-    submitPrivateCommentBtn.textContent = 'Saving...';
+    submitPrivateCommentBtn.textContent = "Saving...";
 
     try {
-      const response = await fetch('/book-Library/actions/add_private_comment.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          book_id: book.id,
-          comment: comment
-        })
-      });
+      const response = await fetch(
+        "/book-Library/actions/add_private_comment.php",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            book_id: book.id,
+            comment: comment,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
-        // Show success message with favorite info if applicable
-        let message = data.message || 'Comment saved successfully!';
+        let message = data.message || "Comment saved successfully!";
         if (data.favorite_added) {
-          message += ' Book has been added to your favorites.';
+          message += " Book has been added to your favorites.";
         }
-        
-        showPrivateCommentMessage(message, 'success');
-        privateCommentText.value = '';
-        if (charCount) charCount.textContent = '0/1000';
-        
-        // Show the existing comment
+
+        showPrivateCommentMessage(message, "success");
+        privateCommentText.value = "";
+        if (charCount) charCount.textContent = "0/1000";
+
         showExistingComment(data.comment);
-        
-        // If favorite was added, refresh the favorites display and update UI
+
         if (data.favorite_added) {
-          // Update the favorite button in the modal to show it's now favorited
           updateModalFavoriteButton(book.id, true);
-          
-          // Refresh the global favorites list
+
           if (window.ensureFavoritesLoaded) {
             window.ensureFavoritesLoaded();
           }
         }
       } else {
-        showPrivateCommentMessage(data.error || 'Failed to save comment', 'error');
+        showPrivateCommentMessage(
+          data.error || "Failed to save comment",
+          "error"
+        );
       }
     } catch (error) {
-      console.error('Error submitting comment:', error);
-      showPrivateCommentMessage('Error saving comment', 'error');
+      console.error("Error submitting comment:", error);
+      showPrivateCommentMessage("Error saving comment", "error");
     } finally {
-      // Re-enable submit button
       submitPrivateCommentBtn.disabled = false;
-      submitPrivateCommentBtn.textContent = 'Save Note';
+      submitPrivateCommentBtn.textContent = "Save Note";
     }
   }
 
   function showPrivateCommentMessage(message, type) {
-    const privateCommentMessage = document.getElementById('privateCommentMessage');
+    const privateCommentMessage = document.getElementById(
+      "privateCommentMessage"
+    );
     if (!privateCommentMessage) return;
 
     privateCommentMessage.textContent = message;
-    privateCommentMessage.className = `text-sm mt-2 ${type === 'success' ? 'text-green-600' : 'text-red-600'}`;
-    
-    // Auto-hide after 5 seconds
+    privateCommentMessage.className = `text-sm mt-2 ${
+      type === "success" ? "text-green-600" : "text-red-600"
+    }`;
+
     setTimeout(() => {
-      privateCommentMessage.textContent = '';
-      privateCommentMessage.className = 'text-sm mt-2';
+      privateCommentMessage.textContent = "";
+      privateCommentMessage.className = "text-sm mt-2";
     }, 5000);
   }
 
-  /**
-   * Update the favorite button in the modal to reflect the current favorite state
-   */
   function updateModalFavoriteButton(bookId, isFavorited) {
-    const favoriteBtn = document.getElementById('favoriteBtn');
+    const favoriteBtn = document.getElementById("favoriteBtn");
     if (!favoriteBtn) return;
-    
-    const favoriteIcon = favoriteBtn.querySelector('i');
-    const favoriteText = favoriteBtn.querySelector('.favorite-text');
-    
+
+    const favoriteIcon = favoriteBtn.querySelector("i");
+    const favoriteText = favoriteBtn.querySelector(".favorite-text");
+
     if (favoriteIcon && favoriteText) {
-      // Update data attribute
       favoriteBtn.dataset.favorited = isFavorited.toString();
-      
-      // Update UI
-      updateFavoriteButtonUI(favoriteBtn, favoriteIcon, favoriteText, isFavorited);
-      
-      // Also update any book card favorite buttons for this book
-      const cardButtons = document.querySelectorAll(`[data-book-id="${bookId}"].favorite-btn`);
-      cardButtons.forEach(btn => {
+
+      updateFavoriteButtonUI(
+        favoriteBtn,
+        favoriteIcon,
+        favoriteText,
+        isFavorited
+      );
+
+      const cardButtons = document.querySelectorAll(
+        `[data-book-id="${bookId}"].favorite-btn`
+      );
+      cardButtons.forEach((btn) => {
         btn.dataset.favorited = isFavorited.toString();
-        const icon = btn.querySelector('i');
+        const icon = btn.querySelector("i");
         if (icon) {
-          icon.className = isFavorited ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400';
+          icon.className = isFavorited
+            ? "fas fa-heart text-red-500"
+            : "far fa-heart text-gray-400";
         }
-        
-        // Update button styling for book card buttons
-        if (btn.classList.contains('absolute') && btn.classList.contains('top-2')) {
+
+        if (
+          btn.classList.contains("absolute") &&
+          btn.classList.contains("top-2")
+        ) {
           if (isFavorited) {
-            btn.classList.add('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-            btn.classList.remove('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+            btn.classList.add(
+              "bg-red-50",
+              "border-red-300",
+              "dark:bg-red-900/20",
+              "dark:border-red-600"
+            );
+            btn.classList.remove("hover:bg-red-50", "dark:hover:bg-red-900/20");
           } else {
-            btn.classList.remove('bg-red-50', 'border-red-300', 'dark:bg-red-900/20', 'dark:border-red-600');
-            btn.classList.add('hover:bg-red-50', 'dark:hover:bg-red-900/20');
+            btn.classList.remove(
+              "bg-red-50",
+              "border-red-300",
+              "dark:bg-red-900/20",
+              "dark:border-red-600"
+            );
+            btn.classList.add("hover:bg-red-50", "dark:hover:bg-red-900/20");
           }
         }
       });

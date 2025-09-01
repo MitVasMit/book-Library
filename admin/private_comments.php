@@ -8,7 +8,6 @@ $privateCommentModel = new PrivateComment();
 $allComments = $privateCommentModel->getAllComments();
 $totalComments = count($allComments);
 
-// Group comments by user for statistics
 $userStats = [];
 foreach ($allComments as $comment) {
     $userId = $comment['user_id'];
@@ -24,7 +23,6 @@ foreach ($allComments as $comment) {
     $userStats[$userId]['comments'][] = $comment;
 }
 
-// Sort users by comment count (descending)
 uasort($userStats, function($a, $b) {
     return $b['count'] - $a['count'];
 });
@@ -40,7 +38,6 @@ uasort($userStats, function($a, $b) {
                 <p class="text-gray-600 dark:text-gray-400">Monitor and analyze user personal notes</p>
             </div>
 
-            <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                     <div class="flex items-center">
@@ -79,7 +76,6 @@ uasort($userStats, function($a, $b) {
                 </div>
             </div>
 
-            <!-- User Comments Table -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white">User Personal Notes Breakdown</h2>
@@ -162,7 +158,6 @@ uasort($userStats, function($a, $b) {
     </main>
 </div>
 
-<!-- User Comments Modal -->
 <div id="userCommentsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
@@ -174,7 +169,6 @@ uasort($userStats, function($a, $b) {
             </div>
             
             <div id="userCommentsContent" class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                <!-- Content will be loaded here -->
             </div>
         </div>
     </div>
@@ -185,11 +179,9 @@ function viewUserComments(userId, userName) {
     const modal = document.getElementById('userCommentsModal');
     const content = document.getElementById('userCommentsContent');
     
-    // Show loading
     content.innerHTML = '<div class="flex justify-center items-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div></div>';
     modal.classList.remove('hidden');
     
-    // Get user comments from the existing data (no need to fetch)
     const userRow = document.querySelector(`tr[data-user-id="${userId}"]`);
     if (userRow) {
         const commentsData = userRow.dataset.comments;
