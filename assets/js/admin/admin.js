@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const sidebarTitle = document.getElementById("sidebarTitle");
   const navLinks = sidebar ? sidebar.querySelectorAll("nav a") : [];
 
-  // If no sidebar exists, don't proceed (this script is loaded on all pages)
   if (!sidebar) return;
 
   function getCookie(name) {
@@ -66,11 +65,9 @@ document.addEventListener("DOMContentLoaded", function () {
   navLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
       if (!isExpanded) {
-        // Handle collapsed sidebar navigation if needed
       }
     });
   });
 
-  // Initialize sidebar state
   updateSidebar();
 });

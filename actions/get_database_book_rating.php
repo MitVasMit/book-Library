@@ -12,7 +12,6 @@ try {
         exit;
     }
     
-    // Check if book exists in database
     $bookModel = new Book();
     $book = $bookModel->getById($bookId);
     
@@ -22,7 +21,6 @@ try {
         exit;
     }
     
-    // Get rating data
     $ratingModel = new Rating();
     $userId = $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? null;
     $ratingData = $ratingModel->getBookRatingWithUser($bookId, $userId);

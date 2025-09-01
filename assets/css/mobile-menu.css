@@ -1,6 +1,4 @@
-/* Mobile Menu Styles - Available for all users including admins */
 
-/* Mobile Menu Container */
 #mobileMenu {
     transition: opacity 0.3s ease-in-out;
     z-index: 60;
@@ -10,7 +8,6 @@
     opacity: 1;
 }
 
-/* Mobile Menu Content */
 #mobileMenuContent {
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform: translateX(100%);
@@ -34,7 +31,6 @@
     opacity: 1;
 }
 
-/* Ensure mobile menu doesn't go off-screen on small devices */
 @media (max-height: 600px) {
     #mobileMenuContent {
         max-height: calc(100vh - 4rem);
@@ -44,39 +40,32 @@
 
 
 
-/* Responsive Navigation */
 @media (max-width: 768px) {
-    /* Hide desktop navigation on mobile */
     .hidden.md\\:flex {
         display: none !important;
     }
     
-    /* Show mobile menu button */
     .sm\\:hidden {
         display: block !important;
     }
 }
 
 @media (min-width: 640px) and (max-width: 767px) {
-    /* Hide tablet navigation on mobile */
     .hidden.sm\\:flex.md\\:hidden {
         display: none !important;
     }
     
-    /* Show mobile menu button on small screens */
     .sm\\:hidden {
         display: block !important;
     }
 }
 
 @media (min-width: 768px) {
-    /* Hide mobile menu button on larger screens */
     .sm\\:hidden {
         display: none !important;
     }
 }
 
-/* Mobile Menu Button Styling */
 #mobileMenuBtn {
     position: relative;
 }
@@ -86,7 +75,6 @@
     background-color: rgba(59, 130, 246, 0.1);
 }
 
-/* Mobile Menu Item Hover Effects */
 #mobileMenu nav button:hover,
 #mobileMenu nav a:hover {
     background-color: rgba(59, 130, 246, 0.1);

@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../includes/autoload.php';
 
-// Security check - require admin access
 require_once __DIR__ . '/../../includes/auth.php';
 requireAdmin();
 

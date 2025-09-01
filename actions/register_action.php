@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = [];
 
-    // simple validations
+    // simple validations, will make them stronger in the future
     if (strlen($name) < 3) {
         $errors['username'] = "Invalid Name, must be at least 3 characters long.";
     }

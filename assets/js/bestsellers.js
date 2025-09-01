@@ -2,13 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const bestsellerList = document.getElementById("bestseller-list");
   const bestsellerLoader = document.getElementById("bestseller-loader");
 
-  // Check if required elements exist before proceeding
   if (!bestsellerList) {
     
     return;
   }
 
-  // check if loader exists before using it
   if (bestsellerLoader) {
     bestsellerLoader.classList.remove("hidden");
   }
@@ -61,8 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }</p>
           </div>
 `;
-
-        // Safely append the slide if bestsellerList exists
         if (bestsellerList) {
           bestsellerList.appendChild(slide);
         } else {
@@ -72,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const bookCard = slide.querySelector("div");
         bookCard.addEventListener("click", (e) => {
-          // Don't open modal if clicking on favorite button
           if (e.target.closest(".favorite-btn")) {
             return;
           }
@@ -89,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
 
-        // Add favorite button functionality
         if (window.userIsLoggedIn) {
           const favoriteBtn = slide.querySelector(".favorite-btn");
           if (favoriteBtn) {
@@ -122,14 +116,12 @@ document.addEventListener("DOMContentLoaded", () => {
         bestsellerList.classList.remove("hidden");
       }
 
-      // Initialize favorite states after books are displayed
       if (window.userIsLoggedIn && window.initializeFavoriteStates) {
         setTimeout(() => {
           window.initializeFavoriteStates();
         }, 100);
       }
 
-      // Safely initialize Swiper if the container exists
       const swiperContainer = document.querySelector(".bestseller-swiper");
       if (swiperContainer) {
         const swiper = new Swiper(".bestseller-swiper", {

@@ -25,15 +25,15 @@ if (!$bookKey || !$bookTitle || !$bookAuthor || $rating < 1 || $rating > 5) {
 
 try {
     $ratingModel = new Rating();
-    $success = $ratingModel->saveRating($_SESSION['user_id'], $bookKey, $bookTitle, $bookAuthor, $rating);
+    $success = $ratingModel->createRating($_SESSION['user_id'], $bookKey, $rating);
     
     if ($success) {
-        $avgRating = $ratingModel->getAverageRating($bookKey);
+        $avgRating = $ratingModel->getBookRating($bookKey);
         echo json_encode([
             'success' => true,
             'message' => 'Rating saved successfully',
-            'average_rating' => $avgRating['average'],
-            'total_ratings' => $avgRating['total']
+            'average_rating' => $avgRating['average_rating'],
+            'total_ratings' => $avgRating['total_ratings']
         ]);
     } else {
         http_response_code(500);

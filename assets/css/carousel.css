@@ -45,9 +45,8 @@
   margin: 0;
 }
 
-/* Ensure carousel container has proper spacing for arrows */
 .bestseller-swiper {
-  position: relative; /* important for arrows to align inside */
+  position: relative;
   padding: 0 60px !important;
   margin: 0 !important;
   height: auto !important;
@@ -58,7 +57,6 @@
   height: auto !important;
 }
 
-/* Force remove any spacing that might be causing the gap */
 .max-w-6xl {
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
@@ -69,7 +67,6 @@
   padding-bottom: 0 !important;
 }
 
-/* Fix the spacing between swiper-wrapper and pagination */
 .bestseller-swiper .swiper-wrapper {
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
@@ -84,7 +81,6 @@
   bottom: 0 !important;
 }
 
-/* More aggressive overrides for Swiper spacing */
 .bestseller-swiper .swiper-wrapper,
 .bestseller-swiper .swiper-slide,
 .bestseller-swiper .swiper-pagination {
@@ -103,7 +99,6 @@
   min-height: 0 !important;
 }
 
-/* Try to force the carousel to be compact */
 .bestseller-swiper {
   display: flex !important;
   flex-direction: column !important;
@@ -116,7 +111,6 @@
   align-items: center !important;
 }
 
-/* Enhance book spacing and appearance */
 .bestseller-swiper .swiper-slide {
   padding: 10px !important;
   box-sizing: border-box !important;
@@ -131,7 +125,6 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Ensure arrows and pagination are visible */
 .swiper-button-next,
 .swiper-button-prev {
   display: block !important;

@@ -13,13 +13,11 @@ $reviewModel = new Review();
 $totalReviews = $reviewModel->getAllReviews();
 $pendingReviews = count($reviewModel->getPendingReviews());
 
-// Get favorites statistics
 $favoriteModel = new Favorite();
 $favorites = $favoriteModel->getAllUserFavorites();
 $totalFavorites = count($favorites);
 $uniqueUsersWithFavorites = count(array_unique(array_column($favorites, 'user_id')));
 
-// Get private comments statistics
 $privateCommentModel = new PrivateComment();
 $totalPrivateComments = $privateCommentModel->getCommentsCount();
 $allPrivateComments = $privateCommentModel->getAllComments();

@@ -3,11 +3,13 @@ require_once '../includes/auth.php';
 require_once '../includes/autoload.php';
 requireAdmin();
 include('../includes/header.php');
+?>
+<link rel="stylesheet" href="../assets/css/favorites.css" />
 
+<?php
 $favorites = $favoriteModel->getAllUserFavorites();
 $totalFavorites = count($favorites);
 
-// Group favorites by user for statistics
 $userStats = [];
 foreach ($favorites as $favorite) {
     $userId = $favorite['user_id'];
@@ -23,7 +25,6 @@ foreach ($favorites as $favorite) {
     $userStats[$userId]['favorites'][] = $favorite;
 }
 
-// Sort users by favorite count (descending)
 uasort($userStats, function($a, $b) {
     return $b['count'] - $a['count'];
 });
@@ -39,7 +40,6 @@ uasort($userStats, function($a, $b) {
                     <p class="text-gray-600 dark:text-gray-400">Monitor and analyze user book preferences</p>
                 </div>
 
-                <!-- Statistics Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                         <div class="flex items-center">
@@ -78,7 +78,6 @@ uasort($userStats, function($a, $b) {
                     </div>
                 </div>
 
-                <!-- User Favorites Table -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                         <h2 class="text-lg font-medium text-gray-900 dark:text-white">User Favorites Breakdown</h2>
@@ -159,8 +158,7 @@ uasort($userStats, function($a, $b) {
         </main>
     </div>
 
-    <!-- User Favorites Modal -->
-    <div id="userFavoritesModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div id="userFavoritesModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white" id="modalTitle">User Favorites</h2>
@@ -168,24 +166,28 @@ uasort($userStats, function($a, $b) {
             </div>
             
             <div id="userFavoritesContent">
-                <!-- Content will be loaded here -->
             </div>
         </div>
     </div>
 
     <script>
         function viewUserFavorites(userId) {
+
             const modal = document.getElementById('userFavoritesModal');
             const content = document.getElementById('userFavoritesContent');
             const title = document.getElementById('modalTitle');
             
-            // Find user data
+            if (!modal) {
+                return;
+            }
+            
             const userData = <?= json_encode($userStats) ?>[userId];
-            if (!userData) return;
+            if (!userData) {
+                return;
+            }
             
             title.textContent = `${userData.user_name}'s Favorites (${userData.count})`;
             
-            // Generate content
             content.innerHTML = `
                 <div class="mb-4">
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
@@ -210,42 +212,71 @@ uasort($userStats, function($a, $b) {
                                     <div class="flex items-center gap-1">
                                         <i class="fas fa-star text-yellow-400"></i>
                                         <span class="text-sm text-gray-600 dark:text-gray-300">${favorite.rating || 'N/A'}</span>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                    Added: ${new Date(favorite.created_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </div>
-                    `).join('')}
+                    </div>
                 </div>
-            `;
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Added: ${new Date(favorite.created_at).toLocaleDateString()}
+                </p>
+            </div>
+        </div>
+    `).join('')}
+            </div>
+        `;
             
-            // Add show class for smooth animation
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+            modal.style.pointerEvents = 'auto';
             modal.classList.add('show');
         }
 
         function closeUserFavoritesModal() {
             const modal = document.getElementById('userFavoritesModal');
             if (modal) {
-                // Remove show class to trigger closing animation
                 modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
             }
         }
 
-        // Close modal when clicking outside
         document.getElementById('userFavoritesModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeUserFavoritesModal();
             }
         });
 
-        // Close modal with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeUserFavoritesModal();
             }
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('userFavoritesModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('show');
+                
+                modal.style.display = 'none';
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+                modal.style.pointerEvents = 'none';
+            }
+        });
+
+        (function() {
+            const modal = document.getElementById('userFavoritesModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+                modal.style.pointerEvents = 'none';
+            }
+        })();
     </script>
 
 <?php include('../includes/footer.php'); ?>
