@@ -34,9 +34,43 @@
   flex-shrink: 0;
 }
 
+/* Responsive sidebar behavior */
+@media (max-width: 640px) {
+  #adminSidebar {
+    width: 4rem !important;
+    min-width: 4rem !important;
+  }
+  
+  #adminSidebar .sidebar-text {
+    display: none !important;
+  }
+  
+  #adminSidebar a {
+    justify-content: center;
+    padding: 0.75rem;
+  }
+  
+  #adminSidebar i {
+    font-size: 1.5rem;
+    margin: 0 auto;
+  }
+  
+  #adminSidebar h2 {
+    display: none;
+  }
+  
+  #adminSidebar .flex.items-center.mb-5 {
+    justify-content: center;
+  }
+}
+
+
+
 .admin-main {
   flex: 1;
   transition: margin-left 0.3s ease;
+  min-width: 0;
+  overflow-x: auto;
 }
 
 .tab-content {

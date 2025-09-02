@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         slide.className = "swiper-slide p-4";
 
         slide.innerHTML = `
-          <div class="bg-white dark:bg-gray-700 rounded shadow p-4 flex flex-col items-center max-w-[180px] mx-auto cursor-pointer hover:scale-105 transition-transform duration-300 relative">
+          <div class="bg-white dark:bg-gray-700 rounded shadow border border-gray-200 dark:border-gray-600 p-4 flex flex-col items-center max-w-[180px] mx-auto cursor-pointer hover:scale-105 transition-transform duration-300 relative">
             <!-- Favorite Button for Logged In Users -->
             ${
               window.userIsLoggedIn
@@ -46,10 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
               🔥
             </div>
             
-            <div class="w-full h-[220px] p-2 bg-white dark:bg-gray-600 rounded flex items-center justify-center">
+            <div class="w-[120px] h-[180px] p-2 bg-white dark:bg-gray-100 rounded shadow flex items-center justify-center">
               <img src="${cover}" alt="${
           book.title
-        }" class="max-h-full object-contain" />
+        }" class="max-w-full max-h-full object-contain" />
             </div>
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white text-center mt-3">${
               book.title
