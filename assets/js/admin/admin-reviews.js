@@ -65,12 +65,9 @@ async function rejectReview(reviewId) {
 }
 
 function showTab(tabName) {
-    
-    
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(content => {
         content.classList.add('hidden');
-
     });
     
     const tabButtons = document.querySelectorAll('.tab-button');
