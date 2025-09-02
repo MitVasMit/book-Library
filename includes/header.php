@@ -5,6 +5,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once __DIR__ . '/user_helpers.php';
 $user = $_SESSION['user'] ?? null;
+
+// Get the correct base path for assets
+$basePath = dirname($_SERVER['SCRIPT_NAME']);
+if ($basePath === '/book-Library/public') {
+    $assetPath = '../assets';
+} else {
+    $assetPath = '/book-Library/assets';
+}
 ?>
 
 <!DOCTYPE html>
@@ -17,40 +25,40 @@ $user = $_SESSION['user'] ?? null;
     <title>Book Library</title>
 
     <!-- Dark Mode CSS - Loaded first to prevent flash -->
-    <link rel="stylesheet" href="../assets/css/dark-mode.css" />
+    <link rel="stylesheet" href="/book-Library/assets/css/dark-mode.css" />
 
     <!-- Main CSS -->
-    <link href="../assets/css/output.css" rel="stylesheet" />
+    <link href="/book-Library/assets/css/output.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <!-- swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-papm6Q+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Admin Navigation CSS -->
-    <link rel="stylesheet" href="../assets/css/admin-nav.css" />
+    <link rel="stylesheet" href="/book-Library/assets/css/admin-nav.css" />
     <!-- Book Modal CSS -->
-    <link rel="stylesheet" href="../assets/css/book-modal.css" />
+    <link rel="stylesheet" href="/book-Library/assets/css/book-modal.css" />
     <!-- Carousel CSS -->
-    <link rel="stylesheet" href="../assets/css/carousel.css" />
+    <link rel="stylesheet" href="/book-Library/assets/css/carousel.css" />
     <!-- Filters CSS -->
-    <link rel="stylesheet" href="../assets/css/filters.css" />
+    <link rel="stylesheet" href="/book-Library/assets/css/filters.css" />
     <!-- Mobile Menu CSS - Available for all users -->
-    <link rel="stylesheet" href="../assets/css/mobile-menu.css" />
+    <link rel="stylesheet" href="/book-Library/assets/css/mobile-menu.css" />
     <!-- Favorites CSS - Only for non-admin users -->
     <?php if (isRegularUser()): ?>
-        <link rel="stylesheet" href="../assets/css/favorites.css" />
+        <link rel="stylesheet" href="/book-Library/assets/css/favorites.css" />
     <?php endif; ?>
 
     <!-- Dark Mode JavaScript - Loaded early to prevent flash -->
-    <script src="../assets/js/dark-mode.js"></script>
+    <script src="/book-Library/assets/js/dark-mode.js"></script>
 
     <!-- Other JavaScript -->
-    <script src="../assets/js/filters.js" defer></script>
-    <script src="../assets/js/main.js" defer></script>
+    <script src="/book-Library/assets/js/filters.js" defer></script>
+    <script src="/book-Library/assets/js/main.js" defer></script>
     <!-- Mobile Menu JavaScript - Loaded for all users -->
-    <script src="../assets/js/mobile-menu.js" defer></script>
+    <script src="/book-Library/assets/js/mobile-menu.js" defer></script>
     <?php if (isRegularUser()): ?>
-        <script src="../assets/js/favorites.js" defer></script>
+        <script src="/book-Library/assets/js/favorites.js" defer></script>
     <?php endif; ?>
 
     <!-- User Authentication Status -->
@@ -66,14 +74,15 @@ $user = $_SESSION['user'] ?? null;
     <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md shadow">
         <div class="w-full px-8 py-4 flex items-center">
             <!-- Left Section: Logo and Welcome Message -->
-            <div class="flex items-center gap-4 flex-shrink-0 ml-2">
-                <a href="../public/index.php"><img class="w-[40px]" src="../assets/images/logo.png" alt="logo"></a>
+            <div class="flex items-center gap-4 flex-shrink-0 ml-2 relative z-10 min-w-0">
+                <a href="/book-Library/public/index.php" class="block" style="display: block !important;">
+                    <img src="<?= $assetPath ?>/images/logo.png" alt="logo" style="display: block !important; width: 40px !important; height: 40px !important; object-fit: contain !important;">
+                </a>
 
                 <?php if ($user): ?>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 hidden sm:flex">
                         <span class="text-sm text-gray-600 dark:text-gray-300">
                             Welcome, <strong class="text-blue-600 dark:text-blue-400"><?= htmlspecialchars($user['name']) ?></strong>
-
                         </span>
                     </div>
                 <?php endif; ?>
@@ -81,7 +90,7 @@ $user = $_SESSION['user'] ?? null;
 
             <!-- Center Section: open Library Branding -->
             <div class="flex-1 flex justify-center">
-                <a href="../public/index.php" class="flex flex-col">
+                <a href="/book-Library/public/index.php" class="flex flex-col">
                     <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">open</span>
                     <span class="text-4xl font-extrabold text-gray-900 dark:text-white drop-shadow-lg transition-transform duration-300 hover:scale-105">Library</span>
                 </a>
@@ -91,8 +100,8 @@ $user = $_SESSION['user'] ?? null;
             <nav class="flex-shrink-0 mr-2">
                 <?php if (!$user): ?>
                     <div class="flex items-center space-x-4">
-                        <a href="../public/login.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Login</a>
-                        <a href="../public/register.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Register</a>
+                        <a href="/book-Library/public/login.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Login</a>
+                        <a href="/book-Library/public/register.php" class="text-gray-600 hover:text-blue-600 inline-flex items-center font-medium">Register</a>
 
                         <!-- Standalone Dark Mode Toggle for guest users -->
                         <button id="darkToggleStandalone" class="text-gray-600 dark:text-gray-300 hover:text-yellow-500 transition-colors ml-4" title="Toggle Dark Mode">
@@ -111,10 +120,10 @@ $user = $_SESSION['user'] ?? null;
                         <?php endif; ?>
 
                         <?php if (isAdmin()): ?>
-                            <a href="../admin/dashboard.php" class="text-blue-600 font-semibold">Admin Panel</a>
+                            <a href="/book-Library/admin/dashboard.php" class="text-blue-600 font-semibold">Admin Panel</a>
                         <?php endif; ?>
 
-                        <a href="../actions/logout.php" class="inline-flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium">
+                        <a href="/book-Library/actions/logout.php" class="inline-flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
@@ -137,12 +146,12 @@ $user = $_SESSION['user'] ?? null;
                         <?php endif; ?>
 
                         <?php if (isAdmin()): ?>
-                            <a href="../admin/dashboard.php" class="text-blue-600 w-10 h-10 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center justify-center" title="Admin Panel">
+                            <a href="/book-Library/admin/dashboard.php" class="text-blue-600 w-10 h-10 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center justify-center" title="Admin Panel">
                                 <i class="fas fa-cog text-lg"></i>
                             </a>
                         <?php endif; ?>
 
-                        <a href="../actions/logout.php" class="text-gray-600 hover:text-blue-600 w-10 h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center" title="Logout">
+                        <a href="/book-Library/actions/logout.php" class="text-gray-600 hover:text-blue-600 w-10 h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center" title="Logout">
                             <i class="fas fa-sign-out-alt text-lg"></i>
                         </a>
 
@@ -209,7 +218,7 @@ $user = $_SESSION['user'] ?? null;
                         </div>
                         <h3 class="text-base font-semibold text-gray-800 dark:text-white mb-2">No favorites yet</h3>
                         <p class="text-gray-500 dark:text-gray-400 text-sm mb-3">You haven't added any books to your favorites collection.</p>
-                        <a href="../public/index.php" class="inline-block px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
+                        <a href="/book-Library/public/index.php" class="inline-block px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm">
                             Start Exploring
                         </a>
                     </div>
@@ -241,7 +250,7 @@ $user = $_SESSION['user'] ?? null;
                     <?php endif; ?>
 
                     <?php if (isAdmin()): ?>
-                        <a href="../admin/dashboard.php" class="block p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <a href="/book-Library/admin/dashboard.php" class="block p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-cog text-blue-600 text-lg"></i>
                                 <span class="text-gray-800 dark:text-white font-medium">Admin Panel</span>
@@ -249,7 +258,7 @@ $user = $_SESSION['user'] ?? null;
                         </a>
                     <?php endif; ?>
 
-                    <a href="../actions/logout.php" class="block p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="/book-Library/actions/logout.php" class="block p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <div class="flex items-center gap-3">
                             <i class="fas fa-sign-out-alt text-gray-600 text-lg"></i>
                             <span class="text-gray-800 dark:text-white font-medium">Logout</span>
