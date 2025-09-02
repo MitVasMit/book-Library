@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $bookId = (int)$_POST['id'];
     try {
         if ($bookModel->softDelete($bookId)) {
-            $_SESSION['success'] = 'Book has been deleted (soft delete).';
+            $_SESSION['success'] = 'Book has been transfered to inactive books.';
         } else {
             $_SESSION['error'] = 'Failed to delete book.';
         }

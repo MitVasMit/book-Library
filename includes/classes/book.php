@@ -73,4 +73,23 @@ class Book extends DB
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function update($id, array $data): bool
+    {
+        $sql = "UPDATE books SET 
+                title = :title, 
+                author = :author, 
+                description = :description, 
+                published_year = :published_year, 
+                pages = :pages, 
+                rating = :rating, 
+                cover_image = :cover_image, 
+                category_id = :category_id,
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = :id";
+        
+        $data['id'] = $id;
+        $stmt = $this->instance->prepare($sql);
+        return $stmt->execute($data);
+    }
 }

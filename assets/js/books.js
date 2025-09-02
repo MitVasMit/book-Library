@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const item = document.createElement("div");
       item.className =
-        "bg-white dark:bg-gray-700 rounded-lg shadow-md p-2 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
+        "bg-white dark:bg-gray-700 rounded-lg shadow-md border border-gray-200 dark:border-gray-600 p-3 mx-auto flex flex-col items-center w-full max-w-[160px] min-h-[320px] hover:scale-105 transition duration-300 ease-in-out cursor-pointer relative";
 
       let rating = 0;
       let ratingCount = 0;
@@ -190,8 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ${favoriteButton}
         ${ratingBadge}
         <div class="flex flex-col items-center">
-          <img src="${cover}" alt="${book.title}" 
-         class="w-[120px] h-[180px] object-contain mb-4 p-2 bg-white rounded shadow" />
+          <div class="w-[120px] h-[180px] bg-white dark:bg-gray-100 rounded shadow flex items-center justify-center mb-4 p-2">
+            <img src="${cover}" alt="${book.title}" 
+         class="max-w-full max-h-full object-contain" />
+          </div>
 
           <h3 class="text-md font-semibold text-gray-900 dark:text-white text-center">${
             book.title
@@ -215,8 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ${favoriteButton}
         ${ratingBadge}
         <div class="flex flex-col items-center">
-          <div class="w-full max-w-[150px] h-[200px] flex items-center justify-center bg-gray-200 dark:bg-gray-600 mb-4 rounded text-gray-500 dark:text-gray-400 italic text-center px-2">
-            No cover available from this book.
+          <div class="w-[120px] h-[180px] flex items-center justify-center bg-gray-200 dark:bg-gray-600 mb-4 rounded shadow text-gray-500 dark:text-gray-400 italic text-center px-2">
+            No cover available
           </div>
           <h3 class="text-md font-semibold text-gray-900 dark:text-white text-center">${
             book.title

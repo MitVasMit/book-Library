@@ -18,7 +18,7 @@ $categories = $categoryModel->getAll();
 <div class="flex min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
     <?php include_once '../includes/admin/admin_nav.php'; ?>
 
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-3 sm:p-6 min-w-0">
         <?php if (isset($_SESSION['success'])): ?>
             <div class="bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4">
                 <?= htmlspecialchars($_SESSION['success']) ?>
@@ -33,6 +33,13 @@ $categories = $categoryModel->getAll();
             </div>
         <?php endif; ?>
 
+        <?php if (isset($_SESSION['no_changes'])): ?>
+            <div class="bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 dark:border-yellow-600 text-yellow-700 dark:text-yellow-300 px-4 py-3 rounded mb-4">
+                <?= htmlspecialchars($_SESSION['no_changes']) ?>
+                <?php unset($_SESSION['no_changes']); ?>
+            </div>
+        <?php endif; ?>
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Manage Books</h1>
             <button id="addBookBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
@@ -41,6 +48,7 @@ $categories = $categoryModel->getAll();
             </button>
         </div>
 
+        <!-- add book modal -->
         <div id="addBookModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
@@ -121,6 +129,93 @@ $categories = $categoryModel->getAll();
             </div>
         </div>
 
+        <!-- edit book modal -->
+        <div id="editBookModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Edit Book</h2>
+                    <button id="closeEditModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+
+                <form id="editBookForm" action="../actions/admin/edit_book.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <input type="hidden" id="edit_book_id" name="id">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title *</label>
+                            <input type="text" id="edit_title" name="title" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+
+                        <div>
+                            <label for="edit_author" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Author *</label>
+                            <input type="text" id="edit_author" name="author" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="edit_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <textarea id="edit_description" name="description" rows="4"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="edit_published_year" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Published Year</label>
+                            <input type="number" id="edit_published_year" name="published_year" min="1000" max="<?= date('Y') + 1 ?>"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+
+                        <div>
+                            <label for="edit_pages" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pages</label>
+                            <input type="number" id="edit_pages" name="pages" min="1"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+
+                        <div>
+                            <label for="edit_rating" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rating</label>
+                            <input type="number" id="edit_rating" name="rating" min="0" max="5" step="0.1"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit_category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category *</label>
+                            <select id="edit_category_id" name="category_id" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                                <option value="">Select a category</option>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?= $category['id'] ?>"><?= htmlspecialchars($category['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="edit_cover_image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cover Image</label>
+                            <input type="file" id="edit_cover_image" name="cover_image" accept="image/*"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Accepted formats: JPG, PNG, GIF. Max size: 5MB. Leave empty to keep current image.</p>
+                            <div id="current_image_preview" class="mt-2 hidden">
+                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">Current image:</p>
+                                <img id="current_image" src="" alt="Current cover" class="w-16 h-16 object-cover rounded border">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4">
+                        <button type="button" id="cancelEditBtn" class="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Update Book
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <div class="bg-white dark:bg-gray-700 rounded-lg shadow-sm p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Active books (<?= count(array_filter($books, function($b){return !$b['deleted'];})) ?>)</h3>
@@ -152,10 +247,10 @@ $categories = $categoryModel->getAll();
                                     <?= htmlspecialchars($book['category_name']) ?>
                                 </span>
                                 <div class="flex gap-1.5">
-                                    <a href="edit_book.php?id=<?= $book['id'] ?>"
-                                       class="flex-1 text-center text-xs bg-blue-600 hover:bg-blue-700 text-white px-1.5 py-1 rounded transition-colors">
+                                    <button onclick="editBook(<?= $book['id'] ?>, '<?= htmlspecialchars($book['title'], ENT_QUOTES) ?>', '<?= htmlspecialchars($book['author'], ENT_QUOTES) ?>', '<?= htmlspecialchars($book['description'], ENT_QUOTES) ?>', <?= $book['published_year'] ?: 'null' ?>, <?= $book['pages'] ?: 'null' ?>, <?= $book['rating'] ?: '0' ?>, <?= $book['category_id'] ?>, '<?= htmlspecialchars($book['cover_image'], ENT_QUOTES) ?>')"
+                                            class="flex-1 text-center text-xs bg-blue-600 hover:bg-blue-700 text-white px-1.5 py-1 rounded transition-colors">
                                         <i class="fas fa-edit mr-1"></i>Edit
-                                    </a>
+                                    </button>
                                     <button onclick="deleteBook(<?= $book['id'] ?>)"
                                             class="flex-1 text-center text-xs bg-red-500 hover:bg-red-600 text-white px-1.5 py-1 rounded transition-colors">
                                         <i class="fas fa-trash mr-1"></i>Delete

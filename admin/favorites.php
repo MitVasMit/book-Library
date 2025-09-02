@@ -33,7 +33,7 @@ uasort($userStats, function($a, $b) {
 <div class="flex min-h-screen bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
     <?php include_once '../includes/admin/admin_nav.php'; ?>
 
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-3 sm:p-6 min-w-0">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-8">
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">User Favorites Management</h1>
