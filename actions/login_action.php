@@ -5,6 +5,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token first
+    if (!CSRF::validatePostToken()) {
+        $_SESSION['errors']['csrf'] = 'Invalid request. Please try again.';
+        header('Location: ../public/login.php');
+        exit;
+    }
+    
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -27,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user'] = $user;
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
+            
+            // Regenerate CSRF token after successful login
+            CSRF::regenerateToken();
 
             if ($user['role'] === 'admin') {
                 header('Location: ../admin/dashboard.php');

@@ -9,6 +9,7 @@ require_once __DIR__ . '/classes/rating.php';
 require_once __DIR__ . '/classes/review.php';
 require_once __DIR__ . '/classes/favorite.php';
 require_once __DIR__ . '/classes/private_comment.php';
+require_once __DIR__ . '/classes/csrf.php';
 // require_once __DIR__ . '/classes/author.php';
 // require_once __DIR__ . '/classes/comment.php';
 // require_once __DIR__ . '/classes/private-note.php';

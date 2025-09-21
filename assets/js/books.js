@@ -1,4 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // CSRF token management
+  function getCSRFToken() {
+    const tokenField = document.querySelector('input[name="csrf_token"]');
+    return tokenField ? tokenField.value : null;
+  }
+
   function safeGetElement(id, fallback = null) {
     const element = document.getElementById(id);
     if (!element && fallback !== null) {
@@ -1011,6 +1017,7 @@ document.addEventListener("DOMContentLoaded", () => {
       book_id: bookId,
       rating: rating,
       comment: comment,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/submit_review.php", {
@@ -1371,6 +1378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingData = {
       book_id: bookId,
       rating: rating,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/rate_database_book.php", {
@@ -1712,6 +1720,7 @@ document.addEventListener("DOMContentLoaded", () => {
       book_id: bookId,
       rating: rating,
       comment: comment,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/submit_review.php", {
@@ -2094,6 +2103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingData = {
       book_id: bookId,
       rating: rating,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/rate_database_book.php", {

@@ -10,6 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
+// Validate CSRF token first
+if (!CSRF::validatePostToken()) {
+    $_SESSION['error'] = 'Invalid request. Please try again.';
+    header('Location: /book-Library/admin/books.php');
+    exit();
+}
+
 try {
     $required_fields = ['title', 'author', 'category_id'];
     foreach ($required_fields as $field) {

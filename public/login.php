@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../includes/autoload.php';
 include('../includes/header.php');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -20,14 +21,17 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <small class="mb-2 block text-center text-base font-semibold text-red-700 dark:text-red-300"><?= !empty($_SESSION['errors']['login']) ? $_SESSION['errors']['login'] : ''; ?></small>
 
+        <small class="mb-2 block text-center text-base font-semibold text-red-700 dark:text-red-300"><?= !empty($_SESSION['errors']['csrf']) ? $_SESSION['errors']['csrf'] : ''; ?></small>
+
         <form action="../actions/login_action.php" method="POST" class="space-y-6">
+            <?= CSRF::getTokenField() ?>
             <div>
                 <label for="email" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Email Address</label>
                 <input
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="you@example.com"
+                    placeholder="you@example.com"`
                     value="<?= htmlspecialchars($_SESSION['old']['email'] ?? '') ?>"
                     class="w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <small class="mt-2 block font-semibold text-red-700 dark:text-red-300"><?= !empty($_SESSION['errors']['email']) ? $_SESSION['errors']['email'] : ''; ?></small>

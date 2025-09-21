@@ -6,6 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token first
+    if (!CSRF::validatePostToken()) {
+        $_SESSION['errors']['csrf'] = 'Invalid request. Please try again.';
+        header('Location: ../public/register.php');
+        exit;
+    }
+    
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';

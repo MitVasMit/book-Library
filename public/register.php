@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../includes/autoload.php';
 include('../includes/header.php');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -12,8 +13,10 @@ if (session_status() === PHP_SESSION_NONE) {
         <h2 class="text-3xl font-extrabold text-blue-600 mb-4">Create Your Account</h2>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-10 max-w-md w-full">
+        <small class="mb-2 block text-center text-base font-semibold text-red-700 dark:text-red-300"><?= !empty($_SESSION['errors']['csrf']) ? $_SESSION['errors']['csrf'] : ''; ?></small>
 
         <form action="../actions/register_action.php" method="POST" class="space-y-6">
+            <?= CSRF::getTokenField() ?>
 
             <div>
                 <label for="name" class="block mb-1 font-medium text-gray-700 dark:text-gray-200">Full Name</label>

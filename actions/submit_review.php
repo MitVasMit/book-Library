@@ -12,6 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
+
+// Validate CSRF token for AJAX request
+$csrfToken = $input['csrf_token'] ?? '';
+if (!CSRF::validateToken($csrfToken)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Invalid request. Please refresh the page and try again.']);
+    exit;
+}
+
 $bookId = (int)($input['book_id'] ?? 0);
 $rating = (int)($input['rating'] ?? 0);
 $comment = trim($input['comment'] ?? '');

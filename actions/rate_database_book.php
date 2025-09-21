@@ -24,6 +24,14 @@ try {
         exit;
     }
     
+    // Validate CSRF token for AJAX request
+    $csrfToken = $input['csrf_token'] ?? '';
+    if (!CSRF::validateToken($csrfToken)) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Invalid request. Please refresh the page and try again.']);
+        exit;
+    }
+    
     $bookId = $input['book_id'] ?? null;
     $rating = $input['rating'] ?? null;
     
