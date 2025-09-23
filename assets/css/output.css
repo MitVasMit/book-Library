@@ -879,10 +879,6 @@ video {
   height: 2rem;
 }
 
-.h-auto {
-  height: auto;
-}
-
 .max-h-\[90vh\] {
   max-height: 90vh;
 }
@@ -945,10 +941,6 @@ video {
 
 .w-8 {
   width: 2rem;
-}
-
-.w-\[40px\] {
-  width: 40px;
 }
 
 .w-auto {

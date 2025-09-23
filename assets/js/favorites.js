@@ -105,6 +105,22 @@ class FavoritesManager {
 
         try {
             const response = await fetch('../actions/get_user_favorites.php');
+            
+            // Check for session timeout first
+            if (response.status === 401) {
+                try {
+                    const data = await response.json();
+                    if (data.error === 'Session expired' && data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                } catch (e) {
+                    // If we can't parse JSON, it might be a regular 401, redirect anyway
+                    window.location.href = '/book-Library/public/login.php';
+                    return;
+                }
+            }
+            
             const data = await response.json();
 
             if (data.success) {
@@ -214,6 +230,22 @@ class FavoritesManager {
     async loadFavoriteCount() {
         try {
             const response = await fetch('../actions/get_user_favorites.php');
+            
+            // Check for session timeout first
+            if (response.status === 401) {
+                try {
+                    const data = await response.json();
+                    if (data.error === 'Session expired' && data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                } catch (e) {
+                    // If we can't parse JSON, it might be a regular 401, redirect anyway
+                    window.location.href = '/book-Library/public/login.php';
+                    return;
+                }
+            }
+            
             const data = await response.json();
             
             if (data.success) {
@@ -274,6 +306,15 @@ class FavoritesManager {
                     action: 'remove'
                 })
             });
+
+            // Check for session timeout
+            if (response.status === 401) {
+                const data = await response.json();
+                if (data.error === 'Session expired' && data.redirect) {
+                    window.location.href = data.redirect;
+                    return;
+                }
+            }
 
             const data = await response.json();
             
@@ -364,6 +405,21 @@ class FavoritesManager {
                 })
             });
 
+            // Check for session timeout first
+            if (response.status === 401) {
+                try {
+                    const data = await response.json();
+                    if (data.error === 'Session expired' && data.redirect) {
+                        window.location.href = data.redirect;
+                        return currentState;
+                    }
+                } catch (e) {
+                    // If we can't parse JSON, it might be a regular 401, redirect anyway
+                    window.location.href = '/book-Library/public/login.php';
+                    return currentState;
+                }
+            }
+
             const data = await response.json();
             
             if (data.success) {
@@ -399,6 +455,22 @@ class FavoritesManager {
     async initializeFavoriteStates() {
         try {
             const response = await fetch('../actions/get_user_favorites.php');
+            
+            // Check for session timeout first
+            if (response.status === 401) {
+                try {
+                    const data = await response.json();
+                    if (data.error === 'Session expired' && data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                } catch (e) {
+                    // If we can't parse JSON, it might be a regular 401, redirect anyway
+                    window.location.href = '/book-Library/public/login.php';
+                    return;
+                }
+            }
+            
             const data = await response.json();
             
             if (data.success && data.favorites) {
@@ -506,6 +578,22 @@ class FavoritesManager {
             
             // Fallback: fetch from server only if global favorites not available
             const response = await fetch('../actions/get_user_favorites.php');
+            
+            // Check for session timeout first
+            if (response.status === 401) {
+                try {
+                    const data = await response.json();
+                    if (data.error === 'Session expired' && data.redirect) {
+                        window.location.href = data.redirect;
+                        return;
+                    }
+                } catch (e) {
+                    // If we can't parse JSON, it might be a regular 401, redirect anyway
+                    window.location.href = '/book-Library/public/login.php';
+                    return;
+                }
+            }
+            
             const data = await response.json();
             
             if (data.success && data.favorites) {

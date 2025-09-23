@@ -1,6 +1,7 @@
 <?php
-require_once '../includes/auth.php';
 require_once '../includes/autoload.php';
+SecureSession::start();
+require_once '../includes/auth.php';
 requireAdmin();
 include('../includes/header.php');
 ?>

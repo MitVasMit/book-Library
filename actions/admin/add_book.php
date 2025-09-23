@@ -2,10 +2,18 @@
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../includes/autoload.php';
 
+SecureSession::start();
 require_once __DIR__ . '/../../includes/auth.php';
 requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: /book-Library/admin/books.php');
+    exit();
+}
+
+// Validate CSRF token first
+if (!CSRF::validatePostToken()) {
+    $_SESSION['error'] = 'Invalid request. Please try again.';
     header('Location: /book-Library/admin/books.php');
     exit();
 }

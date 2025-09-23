@@ -3,13 +3,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
-session_start();
 
+require_once __DIR__ . '/../includes/autoload.php';
+SecureSession::start();
 require_once __DIR__ . '/../includes/auth.php';
 requireAdmin();
 
 include('../includes/header.php');
-require_once __DIR__ . '/../includes/autoload.php';
 $books = $bookModel->getAllWithCategory();
 
 $categories = $categoryModel->getAll();
@@ -57,6 +57,7 @@ $categories = $categoryModel->getAll();
                 </div>
 
                 <form id="addBookForm" action="../actions/admin/add_book.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <?= CSRF::getTokenField() ?>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title *</label>

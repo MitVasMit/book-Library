@@ -1,10 +1,16 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
+SecureSession::start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token first
+    if (!CSRF::validatePostToken()) {
+        $_SESSION['errors']['csrf'] = 'Invalid request. Please try again.';
+        header('Location: ../public/login.php');
+        exit;
+    }
+    
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -27,6 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user'] = $user;
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
+            
+            SecureSession::regenerate();
+            
+            CSRF::regenerateToken();
 
             if ($user['role'] === 'admin') {
                 header('Location: ../admin/dashboard.php');

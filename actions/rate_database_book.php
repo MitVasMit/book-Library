@@ -1,11 +1,12 @@
 <?php
 header('Content-Type: application/json');
 require_once '../includes/autoload.php';
+SecureSession::start();
 require_once '../includes/auth.php';
 
-if (!isset($_SESSION['user'])) {
+if (!SecureSession::isLoggedIn()) {
     http_response_code(401);
-    echo json_encode(['error' => 'Please log in to rate this book']);
+    echo json_encode(['error' => 'Session expired', 'redirect' => '/book-Library/public/login.php']);
     exit;
 }
 
@@ -21,6 +22,14 @@ try {
     if (!$input) {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid JSON input']);
+        exit;
+    }
+    
+    // Validate CSRF token for AJAX request
+    $csrfToken = $input['csrf_token'] ?? '';
+    if (!CSRF::validateToken($csrfToken)) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Invalid request. Please refresh the page and try again.']);
         exit;
     }
     
@@ -49,7 +58,8 @@ try {
     }
     
     $ratingModel = new Rating();
-    $userId = $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? null;
+    $user = SecureSession::getCurrentUser();
+    $userId = $user['id'] ?? null;
     
     if (!$userId) {
         http_response_code(400);

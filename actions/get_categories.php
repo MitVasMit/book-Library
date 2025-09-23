@@ -1,6 +1,8 @@
 <?php
-header('Content-Type: application/json');
 require_once '../includes/autoload.php';
+SecureSession::start();
+
+header('Content-Type: application/json');
 
 try {
     $categories = $categoryModel->getAll();

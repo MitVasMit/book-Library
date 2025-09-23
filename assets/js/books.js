@@ -1,4 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // CSRF token management
+  function getCSRFToken() {
+    const tokenField = document.querySelector('input[name="csrf_token"]');
+    return tokenField ? tokenField.value : null;
+  }
+
+  // Helper function to handle AJAX responses with session timeout detection
+  async function handleAjaxResponse(response) {
+    // Check for session timeout first
+    if (response.status === 401) {
+      try {
+        const data = await response.json();
+        if (data.error === 'Session expired' && data.redirect) {
+          window.location.href = data.redirect;
+          return null;
+        }
+      } catch (e) {
+        // If we can't parse JSON, it might be a regular 401, redirect anyway
+        window.location.href = '/book-Library/public/login.php';
+        return null;
+      }
+    }
+    
+    return await response.json();
+  }
+
   function safeGetElement(id, fallback = null) {
     const element = document.getElementById(id);
     if (!element && fallback !== null) {
@@ -587,9 +613,9 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         try {
           const response = await fetch("../actions/get_user_favorites.php");
-          const data = await response.json();
-
-          if (data.success && data.favorites) {
+          const data = await handleAjaxResponse(response);
+          
+          if (data && data.success && data.favorites) {
             const favoriteBookIds = data.favorites.map((fav) =>
               fav.id.toString()
             );
@@ -602,9 +628,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       try {
         const response = await fetch("../actions/get_user_favorites.php");
-        const data = await response.json();
+        const data = await handleAjaxResponse(response);
 
-        if (data.success && data.favorites) {
+        if (data && data.success && data.favorites) {
           const favoriteBookIds = data.favorites.map((fav) =>
             fav.id.toString()
           );
@@ -848,12 +874,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify(ratingData),
     })
       .then(async (response) => {
-        if (response.status === 401) {
-          document.getElementById("loginPrompt").classList.remove("hidden");
-          showRatingMessage("Please log in to rate this book.", "error");
-          return;
-        }
-        const data = await response.json();
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           setUserRating(rating);
           updateAverageRating(data.average_rating, data.total_ratings);
@@ -1011,6 +1034,7 @@ document.addEventListener("DOMContentLoaded", () => {
       book_id: bookId,
       rating: rating,
       comment: comment,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/submit_review.php", {
@@ -1020,8 +1044,10 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       body: JSON.stringify(reviewData),
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(async (response) => {
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           showReviewMessage(data.message, "success");
           document.getElementById("reviewComment").value = "";
@@ -1041,8 +1067,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!bookId) return;
 
     fetch(`/book-Library/actions/get_reviews.php?book_id=${bookId}`)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(async (response) => {
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           displayReviews(data.reviews);
         }
@@ -1371,6 +1399,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingData = {
       book_id: bookId,
       rating: rating,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/rate_database_book.php", {
@@ -1381,12 +1410,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify(ratingData),
     })
       .then(async (response) => {
-        if (response.status === 401) {
-          document.getElementById("loginPrompt").classList.remove("hidden");
-          showRatingMessage("Please log in to rate this book.", "error");
-          return;
-        }
-        const data = await response.json();
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           setUserRating(rating);
           updateDatabaseBookRating(data);
@@ -1548,12 +1574,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify(ratingData),
     })
       .then(async (response) => {
-        if (response.status === 401) {
-          document.getElementById("loginPrompt").classList.remove("hidden");
-          showRatingMessage("Please log in to rate this book.", "error");
-          return;
-        }
-        const data = await response.json();
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           setUserRating(rating);
           updateAverageRating(data.average_rating, data.total_ratings);
@@ -1712,6 +1735,7 @@ document.addEventListener("DOMContentLoaded", () => {
       book_id: bookId,
       rating: rating,
       comment: comment,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/submit_review.php", {
@@ -1721,8 +1745,10 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       body: JSON.stringify(reviewData),
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then(async (response) => {
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           showReviewMessage(data.message, "success");
           document.getElementById("reviewComment").value = "";
@@ -1742,8 +1768,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!bookId) return;
 
     fetch(`/book-Library/actions/get_reviews.php?book_id=${bookId}`)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(async (response) => {
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           displayReviews(data.reviews);
         }
@@ -2094,6 +2122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const ratingData = {
       book_id: bookId,
       rating: rating,
+      csrf_token: getCSRFToken(),
     };
 
     fetch("/book-Library/actions/rate_database_book.php", {
@@ -2104,12 +2133,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify(ratingData),
     })
       .then(async (response) => {
-        if (response.status === 401) {
-          document.getElementById("loginPrompt").classList.remove("hidden");
-          showRatingMessage("Please log in to rate this book.", "error");
-          return;
-        }
-        const data = await response.json();
+        const data = await handleAjaxResponse(response);
+        if (!data) return; // Session timeout handled by helper
+        
         if (data.success) {
           setUserRating(rating);
           updateDatabaseBookRating(data);

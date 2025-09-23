@@ -2,8 +2,7 @@
 header('Content-Type: application/json');
 
 require_once '../includes/autoload.php';
-
-session_start();
+SecureSession::start();
 
 $bookKey = $_GET['book_key'] ?? '';
 

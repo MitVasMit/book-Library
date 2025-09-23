@@ -6,9 +6,7 @@ $dotenv->load();
 require_once __DIR__ . '/../includes/autoload.php';
 require_once __DIR__ . '/../utils/Mailer.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+SecureSession::start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../public/forgot_password.php');

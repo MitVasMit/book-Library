@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+SecureSession::start();
 
 $token = $_GET['token'] ?? '';
 

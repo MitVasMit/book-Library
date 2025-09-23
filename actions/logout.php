@@ -1,8 +1,11 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-session_unset();
-session_destroy();
+require_once __DIR__ . '/../includes/autoload.php';
+
+// Start secure session
+SecureSession::start();
+
+// Destroy the secure session (clears all data and removes cookie)
+SecureSession::destroy();
+
 header('Location: ../public/login.php');
 exit;

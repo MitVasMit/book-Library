@@ -1,8 +1,7 @@
 <?php
+require_once __DIR__ . '/../includes/autoload.php';
+SecureSession::start();
 include('../includes/header.php');
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 ?>
 
 <div class="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50 dark:bg-gray-900">
