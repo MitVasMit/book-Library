@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
+SecureSession::start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validate CSRF token first
@@ -35,7 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
             
-            // Regenerate CSRF token after successful login
+            SecureSession::regenerate();
+            
             CSRF::regenerateToken();
 
             if ($user['role'] === 'admin') {

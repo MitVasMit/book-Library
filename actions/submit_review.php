@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 
 require_once '../includes/autoload.php';
+SecureSession::start();
 require_once '../includes/auth.php';
 requireLogin();
 

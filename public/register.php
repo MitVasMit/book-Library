@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
+SecureSession::start();
 include('../includes/header.php');
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 ?>
 

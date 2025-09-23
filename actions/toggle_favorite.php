@@ -1,12 +1,13 @@
 <?php
-session_start();
 require_once __DIR__ . '/../includes/autoload.php';
+SecureSession::start();
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user'])) {
+// Check if user is logged in after session timeout check
+if (!SecureSession::isLoggedIn()) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'User not authenticated']);
+    echo json_encode(['error' => 'Session expired', 'redirect' => '/book-Library/public/login.php']);
     exit;
 }
 
@@ -26,7 +27,8 @@ if (!$bookId || !in_array($action, ['add', 'remove'])) {
     exit;
 }
 
-$userId = $_SESSION['user']['id'];
+$user = SecureSession::getCurrentUser();
+$userId = $user['id'];
 
 try {
     if ($action === 'add') {

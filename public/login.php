@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/autoload.php';
+SecureSession::start();
 include('../includes/header.php');
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 ?>
 
@@ -22,6 +20,16 @@ if (session_status() === PHP_SESSION_NONE) {
         <small class="mb-2 block text-center text-base font-semibold text-red-700 dark:text-red-300"><?= !empty($_SESSION['errors']['login']) ? $_SESSION['errors']['login'] : ''; ?></small>
 
         <small class="mb-2 block text-center text-base font-semibold text-red-700 dark:text-red-300"><?= !empty($_SESSION['errors']['csrf']) ? $_SESSION['errors']['csrf'] : ''; ?></small>
+
+        <small class="mb-2 block text-center text-base font-semibold text-orange-600 dark:text-orange-400">
+            <?php 
+            if (isset($_GET['timeout']) && $_GET['timeout'] == '1') {
+                echo 'Your session has expired due to inactivity. Please log in again.';
+            } elseif (!empty($_SESSION['timeout_message'])) {
+                echo $_SESSION['timeout_message'];
+            }
+            ?>
+        </small>
 
         <form action="../actions/login_action.php" method="POST" class="space-y-6">
             <?= CSRF::getTokenField() ?>
@@ -68,4 +76,4 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
 <?php include('../includes/footer.php');
-unset($_SESSION['success'], $_SESSION['errors']);
+unset($_SESSION['success'], $_SESSION['errors'], $_SESSION['timeout_message']);

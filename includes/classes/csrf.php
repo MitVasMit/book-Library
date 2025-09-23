@@ -1,33 +1,17 @@
 <?php
 
-/**
- * CSRF Protection Class
- * 
- * This class provides Cross-Site Request Forgery (CSRF) protection by:
- * 1. Generating unique, unpredictable tokens
- * 2. Storing tokens in session
- * 3. Validating tokens on form submission
- * 4. Regenerating tokens after each use
- * 
- * How it works:
- * - When user visits a form page, we generate a CSRF token
- * - Token is stored in session and included in form as hidden field
- * - When form is submitted, we validate the token matches session
- * - After validation, we generate a new token for next form
- */
-
 class CSRF
 {
     /**
      * Generate a new CSRF token
      * 
-     * @return string The generated CSRF token
+     * @return string 
      */
     public static function generateToken()
     {
-        // Start session if not already started
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        // Session must be started before calling this method
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            throw new Exception('Session must be started before generating CSRF token');
         }
 
         // Generate cryptographically secure random token
@@ -46,12 +30,13 @@ class CSRF
     /**
      * Get the current CSRF token from session
      * 
-     * @return string|null The current CSRF token or null if not set
+     * @return string|null
      */
     public static function getToken()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        // Session must be started before calling this method
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return null;
         }
 
         return $_SESSION['csrf_token'] ?? null;
@@ -60,14 +45,15 @@ class CSRF
     /**
      * Validate CSRF token
      * 
-     * @param string $token The token to validate
-     * @param int $maxAge Maximum age of token in seconds (default: 1 hour)
-     * @return bool True if token is valid, false otherwise
+     * @param string 
+     * @param int 
+     * @return bool 
      */
     public static function validateToken($token, $maxAge = 3600)
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        // Session must be started before calling this method
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return false;
         }
 
         // Check if token exists in session
@@ -83,7 +69,6 @@ class CSRF
         // Check if token has expired (optional security enhancement)
         if (isset($_SESSION['csrf_token_time'])) {
             if ((time() - $_SESSION['csrf_token_time']) > $maxAge) {
-                // Token expired, remove it
                 unset($_SESSION['csrf_token']);
                 unset($_SESSION['csrf_token_time']);
                 return false;
@@ -108,13 +93,15 @@ class CSRF
     /**
      * Generate CSRF token HTML input field
      * 
-     * @return string HTML input field with CSRF token
+     * @return string 
      */
     public static function getTokenField()
     {
         $token = self::getToken();
         if (!$token) {
-            $token = self::generateToken();
+            // If no token exists and session is not active, return empty field
+            // This should not happen if SecureSession::start() is called first
+            return '<input type="hidden" name="csrf_token" value="">';
         }
 
         return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars($token, ENT_QUOTES, 'UTF-8') . '">';
@@ -123,8 +110,8 @@ class CSRF
     /**
      * Validate CSRF token from POST data
      * 
-     * @param int $maxAge Maximum age of token in seconds
-     * @return bool True if token is valid, false otherwise
+     * @param int 
+     * @return bool 
      */
     public static function validatePostToken($maxAge = 1800)
     {
@@ -135,8 +122,8 @@ class CSRF
     /**
      * Validate CSRF token from GET data (for AJAX requests)
      * 
-     * @param int $maxAge Maximum age of token in seconds
-     * @return bool True if token is valid, false otherwise
+     * @param int
+     * @return bool 
      */
     public static function validateGetToken($maxAge = 3600)
     {
@@ -150,8 +137,9 @@ class CSRF
      */
     public static function clearToken()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        // Session must be started before calling this method
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return;
         }
 
         unset($_SESSION['csrf_token']);

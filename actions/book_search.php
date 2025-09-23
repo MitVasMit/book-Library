@@ -1,10 +1,12 @@
 <?php
+require_once '../includes/autoload.php';
+SecureSession::start();
+
 header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 try {
-    require_once '../includes/autoload.php';
     
     $searchQuery = $_GET['q'] ?? '';
     $debug = $_GET['debug'] ?? false;

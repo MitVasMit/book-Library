@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/autoload.php';
+SecureSession::start();
 
 header('Content-Type: application/json');
 

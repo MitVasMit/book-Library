@@ -1,8 +1,4 @@
 <?php
-// Start session if not already started (this is the main session starter)
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 require_once __DIR__ . '/user_helpers.php';
 $user = $_SESSION['user'] ?? null;
 

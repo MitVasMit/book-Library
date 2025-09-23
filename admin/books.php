@@ -3,9 +3,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
-session_start();
 
 require_once __DIR__ . '/../includes/autoload.php';
+SecureSession::start();
 require_once __DIR__ . '/../includes/auth.php';
 requireAdmin();
 
