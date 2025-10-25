@@ -5,12 +5,12 @@ class SecureSession
     /**
      * Session timeout in seconds (30 minutes)
      */
-    const SESSION_TIMEOUT = 60; // 30 minutes
+    const SESSION_TIMEOUT = 1800; // 30 minutes
     
     /**
      * Session regeneration interval in seconds (15 minutes)
      */
-    const REGENERATE_INTERVAL = 120; // 15 minutes
+    const REGENERATE_INTERVAL = 900; // 15 minutes
     
     /**
      * Start a secure session with all security settings
